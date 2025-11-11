@@ -45,6 +45,11 @@ HIGHPASS_ORDER = 5
 CLASSES = ['Healthy', 'Patients']
 
 # ===========================
+# ENLACE A LA BASE DE DATOS DE AUDIOS
+# ===========================
+GOOGLE_DRIVE_URL = "https://drive.google.com/drive/folders/13sL7mHUxTyaVShrbLtBg1Obz1JFU5Sdh"
+
+# ===========================
 # CARGA DE MODELOS (ENSAMBLE DE 5 FOLDS)
 # ===========================
 @st.cache_resource
@@ -260,15 +265,73 @@ if 'processing_time' not in st.session_state:
     st.session_state.processing_time = None
 if 'audio_waveform' not in st.session_state:
     st.session_state.audio_waveform = None
+if 'current_audio_name' not in st.session_state:
+    st.session_state.current_audio_name = None
 
 # =======================
-# SECCIÓN DE SUBIDA DE AUDIO
+# SECCIÓN: ACCESO A BASE DE DATOS DE AUDIOS
+# =======================
+st.header("Base de Datos de Audios de Referencia")
+
+# Tarjeta con el enlace a Google Drive
+st.markdown(f"""
+<div style="padding: 20px; background-color: #f0f2f6; border-radius: 10px; border: 2px solid #4CAF50;">
+    <h3 style="color: #2E86AB; margin-top: 0;">Audios de Referencia Disponibles</h3>
+    <p style="font-size: 16px; margin-bottom: 15px;">
+        Accede a nuestra colección de audios de referencia para probar el sistema:
+    </p>
+    <a href="{GOOGLE_DRIVE_URL}" target="_blank" style="
+        display: inline-block; 
+        padding: 12px 24px; 
+        background-color: #4CAF50; 
+        color: white; 
+        text-decoration: none; 
+        border-radius: 5px; 
+        font-weight: bold;
+        font-size: 16px;
+        text-align: center;
+        margin: 10px 0;">
+        Abrir Google Drive
+    </a>
+    <p style="font-size: 14px; color: #666; margin-top: 10px;">
+        <strong>Contenido disponible:</strong><br>
+        • Audios de niños <strong>Healthy</strong> (sanos)<br>
+        • Audios de niños <strong>Patients</strong> (con TEL)<br>
+        • Diferentes niveles de severidad
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+# Instrucciones
+with st.expander("Instrucciones para usar los audios"):
+    st.write("""
+    **Cómo utilizar la base de datos:**
+    
+    1. **Haz clic en "Abrir Google Drive"** arriba
+    2. **Navega por las carpetas** para encontrar los audios que necesites
+    3. **Descarga los archivos WAV** a tu computadora
+    4. **Regresa a esta página** y sube el archivo en la sección de abajo
+    5. **Ejecuta el análisis** para obtener los resultados
+    
+    **Estructura de la base de datos:**
+    - **Healthy/**: Audios de niños con desarrollo típico del lenguaje
+    - **Patients/**: Audios de niños con Trastorno Específico del Lenguaje (TEL)
+    - **Diferentes categorías**: Vocales, palabras, frases
+    
+    **Formato requerido:** Archivos WAV (recomendado: 16kHz, mono)
+    """)
+
+st.divider()
+
+# =======================
+# SECCIÓN ORIGINAL: SUBIDA DE AUDIO PERSONAL
 # =======================
 st.header("Subir Audio para Análisis")
-uploaded_file = st.file_uploader("Selecciona un archivo de audio WAV", type=["wav"])
+uploaded_file = st.file_uploader("Selecciona un archivo de audio WAV desde tu computadora", type=["wav"])
 
 if uploaded_file:
     st.audio(uploaded_file, format="audio/wav")
+    st.session_state.current_audio_name = uploaded_file.name
     
     if st.button("Ejecutar Análisis V5", type="primary", use_container_width=True):
         with st.spinner("Procesando con HuBERT + MLP Ensemble (5 modelos)..."):
@@ -310,6 +373,10 @@ if uploaded_file:
 # =======================
 st.divider()
 st.header("Resultados del Análisis")
+
+# Mostrar nombre del audio actual
+if st.session_state.current_audio_name:
+    st.info(f"**Audio actual:** {st.session_state.current_audio_name}")
 
 if st.session_state.analysis_complete:
     # Resultados disponibles
@@ -372,7 +439,13 @@ if st.session_state.analysis_complete:
     # Análisis de consenso
     healthy_votes = sum(1 for d in individual_details if d['pred_class'] == 'Healthy')
     patient_votes = sum(1 for d in individual_details if d['pred_class'] == 'Patient')
-    st.info(f"**Consenso**: {healthy_votes}/5 modelos votan por Healthy, {patient_votes}/5 por Patient")
+    
+    if healthy_votes == 5:
+        st.success(f"**Consenso unánime**: 5/5 modelos votan por Healthy")
+    elif patient_votes == 5:
+        st.error(f"**Consenso unánime**: 5/5 modelos votan por Patient")
+    else:
+        st.warning(f"**Consenso dividido**: {healthy_votes}/5 modelos votan por Healthy, {patient_votes}/5 por Patient")
 
     # KPIs del audio
     st.subheader("Características de la Señal de Audio")
@@ -422,8 +495,8 @@ if st.session_state.analysis_complete:
 
 else:
     # Estado inicial - resultados vacíos
-    st.info("**Esperando análisis...** Sube un archivo de audio WAV y haz clic en 'Ejecutar Análisis V5' para ver los resultados.")
-    
+    st.info("**Esperando análisis...** Descarga audios de referencia o sube tu propio archivo WAV")
+
     # Placeholders para mantener el layout
     st.subheader("Métricas de Predicción")
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
@@ -474,18 +547,6 @@ else:
     with c4:
         st.metric("SNR Aproximado", "0.0 dB", help="Relación Señal-Ruido - Ratio entre la potencia de la señal y el ruido de fondo")
 
-    # Visualizaciones vacías
-    st.subheader("Visualización de Señales")
-    tab1, tab2 = st.tabs(["Onda Procesada (Input Modelo)", "Análisis Espectral"])
-    
-    with tab1:
-        st.caption("Representación temporal de la señal de audio después del preprocesamiento")
-        st.info("Gráfico disponible después del análisis")
-    
-    with tab2:
-        st.caption("Densidad espectral de potencia - Distribución de energía en frecuencias")
-        st.info("Gráfico disponible después del análisis")
-
 # ===========================
 # INFORMACIÓN ADICIONAL
 # ===========================
@@ -496,6 +557,10 @@ with st.expander("Información del Sistema"):
     - **Embedding**: HuBERT Base (768 dim → 6 stats → 4608 dim)
     - **Preprocesamiento**: 16kHz, 2s, filtro high-pass 100Hz
     - **Escalado**: StandardScaler del entrenamiento original
+    
+    **Fuentes de audio:**
+    - Base de datos de audios de referencia (Google Drive)
+    - Subida de archivos personales
     
     **Archivos requeridos:**
     - `itelv5_mlp_fold_1.pt` a `itelv5_mlp_fold_5.pt`
@@ -512,4 +577,5 @@ if st.session_state.analysis_complete:
         st.session_state.audio_kpis = None
         st.session_state.processing_time = None
         st.session_state.audio_waveform = None
+        st.session_state.current_audio_name = None
         st.rerun()
