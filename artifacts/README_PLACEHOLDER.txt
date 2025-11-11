@@ -1,1 +1,0 @@
-Coloca aquí: mejor_modelo_LOGREG.pkl  y  scaler_4608.pkl
