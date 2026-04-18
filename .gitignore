@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Node / frontend
+apps/web/node_modules/
+apps/web/dist/
+apps/web/.vite/
+
+# Local legacy folder kept if a dev server is locking it
+frontend/
+
+# Environment files
+.env
+.env.*
+*.env
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Large raw data not tracked
+Datos_Brutos/
+Datos_Brutos_Nuevos/
+Test/

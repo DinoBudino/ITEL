@@ -1,0 +1,7 @@
+{
+  "dropout": 0.5,
+  "epochs": 100,
+  "hidden": 256,
+  "lr": 0.001,
+  "weight_decay": 1e-05
+}

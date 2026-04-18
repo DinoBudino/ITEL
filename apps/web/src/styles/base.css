@@ -1,0 +1,95 @@
+:root {
+  color-scheme: light;
+  --bg: #f7f7f8;
+  --surface: #ffffff;
+  --surface-soft: #f3f4f6;
+  --surface-muted: #eceef1;
+  --sidebar: #171717;
+  --sidebar-soft: #232323;
+  --sidebar-line: rgba(255, 255, 255, 0.08);
+  --text: #1f2937;
+  --muted: #6b7280;
+  --line: rgba(15, 23, 42, 0.08);
+  --line-strong: rgba(15, 23, 42, 0.14);
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
+  --accent-soft: rgba(37, 99, 235, 0.1);
+  --success: #1d4ed8;
+  --danger: #b91c1c;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.04);
+  font-family: 'Public Sans', sans-serif;
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+body,
+button,
+input {
+  font-weight: 500;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.brand-block h1,
+.hero-copy h2,
+.section-heading h3,
+.panel h3,
+.pipeline-card h4,
+.subpanel h4,
+.focus-card h3 {
+  margin: 0;
+  font-family: 'Public Sans', sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.text-success {
+  color: #60a5fa;
+}
+
+.text-danger {
+  color: #f87171;
+}
+
+ul,
+dl {
+  margin: 0;
+  padding: 0;
+}

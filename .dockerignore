@@ -1,0 +1,12 @@
+.git
+.gitignore
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+Datos_Brutos/
+Datos_Brutos_Nuevos/
+apps/web/node_modules/
+apps/web/dist/
+apps/web/.vite/
+frontend/
+research/processed_data/
