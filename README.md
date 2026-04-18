@@ -157,6 +157,35 @@ Notas importantes:
 - la URL publica cambia cada vez que se vuelve a iniciar
 - este modo esta pensado para demo, no para despliegue permanente
 
+### Cloudflare Tunnel con notificacion a Telegram
+
+Tambien puedes usar un script separado que envie automaticamente la URL publica a Telegram.
+
+La primera vez, el script puede pedirte estos dos valores y guardarlos automaticamente en `.env.telegram.local`:
+
+```powershell
+ITEL_TELEGRAM_BOT_TOKEN=<tu-bot-token>
+ITEL_TELEGRAM_CHAT_ID=<tu-chat-id>
+```
+
+Opcionalmente, tambien puedes definirlos como variables de entorno antes de ejecutar el script.
+
+Ejecucion:
+
+```bash
+scripts\start_cloudflare_tunnel_telegram.bat
+```
+
+El mensaje enviado al chat sera:
+
+```text
+ITEL demo online: https://*.trycloudflare.com
+```
+
+Para obtener el token, crea un bot con `@BotFather`. Para obtener el `chat_id`, escribe al bot y consulta `https://api.telegram.org/bot<TOKEN>/getUpdates`.
+
+Si alguna vez quieres cambiar la configuracion guardada, edita o elimina `.env.telegram.local` y el script volvera a preguntarte ambos valores.
+
 ## Variables de entorno del backend
 
 - `ITEL_MODEL_DIR`
