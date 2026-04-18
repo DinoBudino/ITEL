@@ -52,16 +52,21 @@ La ruta oficial de inferencia se mantiene sin reescribir la logica principal:
 
 ### 1. Backend
 
+Se recomienda usar `Python 3.12` en un entorno virtual.
+
 Instalar dependencias:
 
 ```bash
-py -3.14 -m pip install -r apps/api/requirements.txt
+py -3.12 -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r apps/api/requirements.txt
 ```
 
 Levantar API:
 
 ```bash
-py -3.14 -m uvicorn apps.api.app.main:app --reload
+python -m uvicorn apps.api.app.main:app --reload
 ```
 
 URLs:
@@ -100,6 +105,57 @@ Servicios esperados:
 - frontend: `http://localhost:5173`
 - backend: `http://localhost:8000`
 - docs: `http://localhost:8000/docs`
+
+## Stack productivo local
+
+Para ejecutar el frontend compilado con `Nginx` y el backend detras de un proxy local:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+URLs esperadas:
+
+- app: `http://127.0.0.1`
+- api: `http://127.0.0.1/api/health`
+
+Para revisar estado y logs:
+
+```bash
+docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml logs -f
+```
+
+Para apagar el stack:
+
+```bash
+docker compose -f docker-compose.prod.yml down
+```
+
+### Produccion local con Cloudflare Tunnel
+
+Para publicar una demo desde tu propia PC sin IP publica y sin abrir puertos, puedes usar el stack de produccion junto con un Quick Tunnel de Cloudflare.
+
+1. Instalar `cloudflared`.
+2. Levantar el stack productivo y abrir el tunel:
+
+```bash
+scripts\start_cloudflare_tunnel.bat
+```
+
+El script:
+
+- levanta `docker-compose.prod.yml`
+- espera a que el proxy local responda en `http://127.0.0.1`
+- abre un Quick Tunnel apuntando a `http://127.0.0.1:80`
+
+Cloudflare imprimira una URL publica temporal `https://*.trycloudflare.com` que puedes compartir para la demo.
+
+Notas importantes:
+
+- el Quick Tunnel solo dura mientras `cloudflared` siga corriendo
+- la URL publica cambia cada vez que se vuelve a iniciar
+- este modo esta pensado para demo, no para despliegue permanente
 
 ## Variables de entorno del backend
 
