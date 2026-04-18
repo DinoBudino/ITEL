@@ -90,6 +90,7 @@ function PipelineCard({ step, isActive }) {
 
 export function PipelineSection() {
   const sectionRef = useRef(null);
+  const touchStartXRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -99,6 +100,35 @@ export function PipelineSection() {
 
 const prevSlide = () => {
     setActiveIndex((prev) => (prev - 1 + pipelineStepsData.length) % pipelineStepsData.length);
+  };
+
+  const handleTouchStart = (event) => {
+    touchStartXRef.current = event.changedTouches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd = (event) => {
+    const endX = event.changedTouches[0]?.clientX;
+    const startX = touchStartXRef.current;
+
+    if (startX === null || typeof endX !== 'number') {
+      touchStartXRef.current = null;
+      return;
+    }
+
+    const deltaX = endX - startX;
+
+    if (Math.abs(deltaX) < 40) {
+      touchStartXRef.current = null;
+      return;
+    }
+
+    if (deltaX < 0) {
+      nextSlide();
+    } else {
+      prevSlide();
+    }
+
+    touchStartXRef.current = null;
   };
 
   return (
@@ -119,7 +149,7 @@ const prevSlide = () => {
             <FaChevronLeft size={20} />
           </button>
           
-          <div className="pipeline-carousel__track">
+          <div className="pipeline-carousel__track" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             <AnimatePresence mode="wait">
               <PipelineCard
                 key={activeIndex}

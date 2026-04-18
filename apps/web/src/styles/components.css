@@ -637,6 +637,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .pipeline-carousel__indicators {
@@ -843,9 +845,25 @@
 }
 
 @media (max-width: 600px) {
+  .home-section {
+    padding: 16px;
+  }
+
+  .pipeline-main .section-heading {
+    text-align: left;
+  }
+
+  .pipeline-main .section-heading h3 {
+    font-size: 1.15rem;
+  }
+
   .pipeline-carousel {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .pipeline-carousel__track {
+    touch-action: pan-y;
   }
 
   .carousel-nav {
@@ -870,6 +888,19 @@
 
   .mini-card__info {
     align-items: center;
+  }
+
+  .pipeline-metrics {
+    justify-content: flex-start;
+    padding: 16px;
+  }
+
+  .pipeline-ethical {
+    padding: 18px 16px;
+  }
+
+  .pipeline-ethical > p {
+    min-width: 0;
   }
 }
 

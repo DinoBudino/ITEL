@@ -813,16 +813,89 @@
 @media (max-width: 640px) {
   .workspace,
   .workspace--analysis {
-    padding-inline: 16px;
+    padding-inline: 14px;
+    gap: 18px;
   }
 
   .landing-hero__content,
-  .panel {
-    padding: 18px;
+  .panel,
+  .analysis-card {
+    padding: 16px;
+  }
+
+  .sidebar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'brand status'
+      'cta cta';
+    align-items: start;
+    padding: 12px 14px;
+    gap: 10px 12px;
+  }
+
+  .brand-block--sidebar {
+    grid-area: brand;
+    min-width: 0;
+    align-items: flex-start;
+  }
+
+  .sidebar-card,
+  .sidebar-nav a {
+    border-radius: 12px;
+  }
+
+  .sidebar-card {
+    grid-area: status;
+    width: min(132px, 100%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px;
+    justify-self: end;
+    border-radius: 10px;
+    align-content: center;
+  }
+
+  .sidebar-card span {
+    font-size: 0.55rem;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .sidebar-card strong {
+    font-size: 0.55rem;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .sidebar-card small {
+    display: none;
+  }
+
+  .sidebar-card span::after {
+    content: ':';
+    margin-left: 2px;
+  }
+
+  .sidebar-cta {
+    grid-area: cta;
+    width: 100%;
   }
 
   .landing-hero {
     gap: 16px;
+  }
+
+  .workspace--home > .landing-hero,
+  .workspace--home > .home-section,
+  .landing-hero__content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .landing-hero__content h2 {
@@ -837,10 +910,203 @@
     flex-direction: column;
   }
 
+  .hero-action,
+  .sidebar-nav {
+    display: none;
+  }
+
   .button,
   .hero-actions a,
   .action-row button {
     width: 100%;
+  }
+
+  .analysis-workspace,
+  .analysis-side-column,
+  .analysis-main-column,
+  .analysis-results-stack,
+  .analysis-results-layout {
+    gap: 12px;
+  }
+
+  .analysis-card__header h3 {
+    font-size: 1rem;
+  }
+
+  .upload-zone {
+    min-height: 88px;
+    padding: 18px 14px;
+  }
+
+  .upload-zone__text,
+  .result-metadata__grid strong {
+    overflow-wrap: anywhere;
+  }
+
+  .analysis-actions {
+    flex-direction: column;
+  }
+
+  .analysis-actions .button {
+    width: 100%;
+  }
+
+  .analysis-status {
+    flex-wrap: wrap;
+    line-height: 1.4;
+  }
+
+  .waveform-controls {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .result-main {
+    padding: 16px;
+  }
+
+  .result-main__value {
+    font-size: 1.45rem;
+    line-height: 1.1;
+  }
+
+  .result-main__description {
+    line-height: 1.5;
+  }
+
+  .result-metrics {
+    gap: 10px;
+  }
+
+  .result-metrics__item {
+    padding: 14px 12px;
+  }
+
+  .result-distribution__header {
+    gap: 10px;
+    font-size: 0.8rem;
+  }
+
+  .result-empty {
+    padding: 18px 4px 4px;
+    gap: 14px;
+  }
+
+  .result-step {
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .result-step__icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+  }
+
+  .chart-container {
+    height: 180px;
+  }
+
+  .chart-legend {
+    text-align: left;
+  }
+
+  .export-panel {
+    padding: 16px;
+  }
+
+  .export-options {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .export-button {
+    width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .workspace,
+  .workspace--analysis {
+    padding: 12px 14px 24px;
+  }
+
+  .workspace--home > .landing-hero,
+  .workspace--home > .home-section,
+  .landing-hero__content {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .sidebar {
+    grid-template-columns: minmax(0, 1fr) 124px;
+    padding: 10px 12px 12px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 28px;
+    font-size: 0.68rem;
+  }
+
+  .brand-block--sidebar h1 {
+    font-size: 0.5rem;
+    line-height: 1.2;
+    max-width: 88px;
+  }
+
+  .sidebar-card {
+    width: auto;
+    min-width: 104px;
+    padding: 6px 8px;
+  }
+
+  .sidebar-card span {
+    font-size: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .sidebar-card strong {
+    font-size: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .analysis-card {
+    border-radius: 14px;
+    padding: 14px;
+  }
+
+  .landing-hero__content,
+  .panel {
+    padding: 14px;
+  }
+
+  .upload-zone__icon {
+    font-size: 1.3rem;
+  }
+
+  .upload-zone__text {
+    font-size: 0.8rem;
+  }
+
+  .result-main__value {
+    font-size: 1.3rem;
+  }
+
+  .result-metrics__label,
+  .result-metadata__grid span {
+    font-size: 0.66rem;
+  }
+
+  .chart-container {
+    height: 168px;
+  }
+
+  .export-button {
+    padding: 12px 14px;
   }
 }
 
