@@ -54,6 +54,12 @@ La ruta oficial de inferencia se mantiene sin reescribir la logica principal:
 
 Se recomienda usar `Python 3.12` en un entorno virtual.
 
+Importante para el modo LANNA:
+
+- el repositorio no incluye los audios del dataset en `data/Healthy` y `data/Patients`
+- si quieres que funcione la tabla "Elegir de LANNA", debes copiar esos WAV manualmente dentro de `data/`
+- el archivo `data/.sample_audio_catalog.json` solo sirve como catalogo rapido; no reemplaza los audios
+
 Instalar dependencias:
 
 ```bash
@@ -105,6 +111,12 @@ Servicios esperados:
 - frontend: `http://localhost:5173`
 - backend: `http://localhost:8000`
 - docs: `http://localhost:8000/docs`
+
+Nota sobre LANNA en Docker:
+
+- antes de levantar los contenedores, coloca el dataset de audios en `data/Healthy` y `data/Patients`
+- el volumen de Docker monta `./data` dentro del backend, por eso esa carpeta debe existir localmente
+- si no copias los audios, la app seguira funcionando para subir WAV manualmente, pero la biblioteca LANNA no tendra muestras reales para analizar
 
 ## Stack productivo local
 
