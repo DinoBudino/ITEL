@@ -126,11 +126,9 @@ export function ExportPanel({ prediction, probabilityEntries, selectedFile }) {
 
   return (
     <div className="analysis-card export-panel">
-      <div className="analysis-card__header">
+      <div className="export-toolbar__header">
         <span className="eyebrow">Exportar</span>
-        <h3>Descargar informe</h3>
       </div>
-      <p className="export-panel__copy">Genera un informe listo para compartir o descarga los datos crudos del analisis.</p>
       <div className="export-options">
         <button className="export-button" onClick={handleExportPDF}>
           <FaFilePdf size={20} />

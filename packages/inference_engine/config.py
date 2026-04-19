@@ -16,6 +16,7 @@ class Settings:
     model_version: str = field(default_factory=lambda: os.getenv("ITEL_MODEL_VERSION", "itelv5-final-onnx"))
     hubert_bundle: str = field(default_factory=lambda: os.getenv("ITEL_HUBERT_BUNDLE", "HUBERT_BASE"))
     log_level: str = field(default_factory=lambda: os.getenv("ITEL_LOG_LEVEL", "INFO"))
+    sample_audio_dir_name: str = field(default_factory=lambda: os.getenv("ITEL_SAMPLE_AUDIO_DIR", "data"))
     cors_origins_raw: str = field(
         default_factory=lambda: os.getenv(
             "ITEL_CORS_ORIGINS",
@@ -38,6 +39,10 @@ class Settings:
     @property
     def hparams_path(self) -> Path:
         return self.model_dir / "mlp_hparams_v5.json"
+
+    @property
+    def sample_audio_dir(self) -> Path:
+        return self.base_dir / self.sample_audio_dir_name
 
     @property
     def max_upload_size_bytes(self) -> int:

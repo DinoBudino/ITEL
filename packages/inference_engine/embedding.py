@@ -38,6 +38,9 @@ class HubertEmbeddingExtractor:
         LOGGER.info("HuBERT cargado en %s", self.device)
         return self._model
 
+    def preload(self) -> None:
+        self._load_model()
+
     def extract_embedding(self, processed_audio: ProcessedAudio) -> np.ndarray:
         import torch
 

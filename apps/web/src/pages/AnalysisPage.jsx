@@ -1,6 +1,6 @@
 import React from 'react'
 import { AnalysisHeader } from '../components/analysis/AnalysisHeader'
-import { PredictionForm } from '../components/analysis/PredictionForm'
+import { PredictionForm, SampleBrowserPanel } from '../components/analysis/PredictionForm'
 import { ResultsPanel } from '../components/analysis/ResultsPanel'
 import { AudioVisualizer } from '../components/analysis/AudioVisualizer'
 import { ProbabilityChart } from '../components/analysis/ProbabilityChart'
@@ -12,9 +12,31 @@ import { usePrediction } from '../hooks/usePrediction'
 
 export function AnalysisPage() {
   const health = useHealthCheck()
-  const { selectedFile, predictionState, prediction, errorMessage, probabilityEntries, handleFileChange, handlePredict, clearState } =
+  const {
+    inputMode,
+    selectedFile,
+    selectedSample,
+    selectedSampleAudioUrl,
+    predictionState,
+    prediction,
+    errorMessage,
+    probabilityEntries,
+    sampleAudios,
+    sampleFilters,
+    samplePagination,
+    sampleState,
+    handleInputModeChange,
+    handleFileChange,
+    handlePredict,
+    handleSampleSelect,
+    handleSampleFilterChange,
+    handleSamplePageChange,
+    handleSamplePageSizeChange,
+    clearState,
+  } =
     usePrediction()
-  const audioUrl = useAudioPreview(selectedFile)
+  const uploadedAudioUrl = useAudioPreview(selectedFile)
+  const audioUrl = inputMode === 'samples' ? selectedSampleAudioUrl : uploadedAudioUrl
 
   return (
     <div className="app-shell app-shell--analysis">
@@ -23,25 +45,41 @@ export function AnalysisPage() {
         <AnalysisHeader />
 
         <section className="analysis-workspace" id="dashboard">
-          <div className="analysis-side-column">
-            <PredictionForm
-              selectedFile={selectedFile}
-              audioUrl={audioUrl}
-              predictionState={predictionState}
-              errorMessage={errorMessage}
-              onFileChange={handleFileChange}
-              onPredict={handlePredict}
-              onClear={clearState}
-            />
-            <AudioVisualizer audioUrl={audioUrl} />
-          </div>
+          <div className="analysis-columns">
+            <div className="analysis-left-column">
+              <PredictionForm
+                inputMode={inputMode}
+                selectedFile={selectedFile}
+                selectedSample={selectedSample}
+                audioUrl={audioUrl}
+                predictionState={predictionState}
+                errorMessage={errorMessage}
+                onInputModeChange={handleInputModeChange}
+                onFileChange={handleFileChange}
+                onPredict={handlePredict}
+                onClear={clearState}
+              />
 
-          <div className="analysis-main-column">
-            <div className="analysis-results-layout">
-              <div className="analysis-results-stack">
-                <ResultsPanel prediction={prediction} probabilityEntries={probabilityEntries} />
-                <ExportPanel prediction={prediction} probabilityEntries={probabilityEntries} selectedFile={selectedFile} />
-              </div>
+              <AudioVisualizer audioUrl={audioUrl} />
+
+              {inputMode === 'samples' && (
+                <SampleBrowserPanel
+                  selectedSample={selectedSample}
+                  sampleAudios={sampleAudios}
+                  sampleFilters={sampleFilters}
+                  samplePagination={samplePagination}
+                  sampleState={sampleState}
+                  onSampleSelect={handleSampleSelect}
+                  onSampleFilterChange={handleSampleFilterChange}
+                  onSamplePageChange={handleSamplePageChange}
+                  onSamplePageSizeChange={handleSamplePageSizeChange}
+                />
+              )}
+            </div>
+
+            <div className="analysis-right-column">
+              <ExportPanel prediction={prediction} probabilityEntries={probabilityEntries} selectedFile={selectedFile} />
+              <ResultsPanel prediction={prediction} probabilityEntries={probabilityEntries} />
               <ProbabilityChart probabilityEntries={probabilityEntries} prediction={prediction} />
             </div>
           </div>

@@ -45,6 +45,7 @@ class ITELInferenceService:
         self.scaler = load_scaler(self.settings.final_scaler_path)
         self.classifier.load()
         self.hparams = load_hparams(self.settings.hparams_path)
+        self.embedding_extractor.preload()
         LOGGER.info("Serving cargado con modelo %s", self.settings.model_version)
 
     def predict_from_bytes(self, audio_bytes: bytes, filename: str = "audio.wav") -> InferenceResult:

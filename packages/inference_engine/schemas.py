@@ -28,3 +28,20 @@ class PredictResponse(BaseModel):
     model_version: str
     timings_ms: dict[str, float]
     metadata: dict[str, object]
+
+
+class SampleAudioItem(BaseModel):
+    id: str
+    class_label: str
+    subject_id: str
+    task_code: str
+    filename: str
+    relative_path: str
+
+
+class SampleAudioListResponse(BaseModel):
+    items: list[SampleAudioItem]
+    page: int = Field(..., ge=1)
+    page_size: int = Field(..., ge=1)
+    total: int = Field(..., ge=0)
+    total_pages: int = Field(..., ge=0)
