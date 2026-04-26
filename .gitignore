@@ -38,8 +38,11 @@ Thumbs.db
 *.log
 
 # Large raw data not tracked
+pyannote_cache/
+sepformer_cache/
+separated_voices/
 Datos_Brutos/
-Datos_Brutos_Nuevos/
+Datos_Extra/
 Test/
 data/Healthy/
 data/Patients/
