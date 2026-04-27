@@ -38,6 +38,9 @@ Thumbs.db
 *.log
 
 # Large raw data not tracked
+.locks
+models--facebook--wav2vec2-large-xlsr-53/
+xlsr53_cache/
 pyannote_cache/
 sepformer_cache/
 separated_voices/
