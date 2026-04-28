@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Research embedding manifest",
+  "type": "object",
+  "required": [
+    "sample_id",
+    "source_sample_id",
+    "dataset_id",
+    "eval_mode",
+    "embedding_model_id",
+    "embedding_dim",
+    "preproc_version",
+    "pooling_recipe",
+    "chunk_policy",
+    "embedding_path"
+  ],
+  "properties": {
+    "sample_id": {"type": "string"},
+    "source_sample_id": {"type": "string"},
+    "dataset_id": {"type": "string"},
+    "eval_mode": {"type": "string", "enum": ["train_default", "seg_2s", "seg_5s", "full_audio"]},
+    "embedding_model_id": {"type": "string"},
+    "embedding_dim": {"type": "integer", "minimum": 1},
+    "preproc_version": {"type": "string"},
+    "pooling_recipe": {"type": "string"},
+    "chunk_policy": {"type": "string"},
+    "embedding_path": {"type": "string"},
+    "segment_start_s": {"type": ["number", "null"]},
+    "segment_end_s": {"type": ["number", "null"]},
+    "segment_qc_status": {"type": ["string", "null"]},
+    "segment_qc_reason": {"type": ["string", "null"]},
+    "segment_rms_mean": {"type": ["number", "null"], "minimum": 0},
+    "segment_silence_ratio": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "created_at": {"type": ["string", "null"]},
+    "notes": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

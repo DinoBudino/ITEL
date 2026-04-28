@@ -1,5 +1,0 @@
-,duracion_s,duracion_s,duracion_s,duracion_s,duracion_s,duracion_s,duracion_s,duracion_s,amplitud_max,amplitud_max,amplitud_max,amplitud_max,amplitud_max,amplitud_max,amplitud_max,amplitud_max,rms,rms,rms,rms,rms,rms,rms,rms
-,count,mean,std,min,25%,50%,75%,max,count,mean,std,min,25%,50%,75%,max,count,mean,std,min,25%,50%,75%,max
-categoria,,,,,,,,,,,,,,,,,,,,,,,,
-Healthy,1680.0,0.5353,0.2611,0.049,0.343,0.456,0.69,1.834,1680.0,0.361,0.224,0.0536,0.1862,0.3036,0.4837,1.0,1680.0,0.0865,0.0601,0.0121,0.0437,0.0682,0.1145,0.4614
-Patients,2173.0,0.6606,0.4211,0.045,0.409,0.551,0.808,4.587,2173.0,0.0692,0.0418,0.0088,0.0424,0.0618,0.0854,0.642,2173.0,0.0164,0.0103,0.0015,0.0096,0.0144,0.021,0.1601

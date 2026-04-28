@@ -44,9 +44,44 @@ xlsr53_cache/
 pyannote_cache/
 sepformer_cache/
 separated_voices/
-Datos_Brutos/
-Datos_Extra/
+LANNA_Czech_Data/
+English_Data/
 Test/
 data/Healthy/
 data/Patients/
 !data/.sample_audio_catalog.json
+
+# Research pipeline artifacts
+research/logs/
+research/LANNA_Czech_Data/
+research/English_Data/**
+!research/English_Data/
+!research/English_Data/Healthy/
+!research/English_Data/Healthy/.gitkeep
+!research/English_Data/Patients/
+research/processed_data/**
+!research/processed_data/.gitkeep
+research/reports/Figuras/**
+!research/reports/Figuras/.gitkeep
+research/reports/CSV/**
+!research/reports/CSV/.gitkeep
+assets/models/**
+!assets/models/.gitkeep
+
+# Large generated binaries
+*.npy
+*.npz
+*.pt
+*.pth
+*.onnx
+*.joblib
+*.bin
+*.ckpt
+*.safetensors
+
+# Research manifests stay versioned
+!research/manifests/
+!research/manifests/**
+
+# Generated embedding manifests are not versioned
+research/manifests/*_embeddings_*.csv
