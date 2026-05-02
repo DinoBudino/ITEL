@@ -1,0 +1,326 @@
+{
+  "config": {
+    "n_splits": 5,
+    "random_state": 42,
+    "grouping": "subject_id",
+    "cv_strategy": "StratifiedGroupKFold",
+    "feature_cache": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\processed_data\\manifests\\cz_main_recording_proxy_features.csv",
+    "preproc_profile": "anti_confound"
+  },
+  "dataset": {
+    "n_rows": 3853,
+    "n_subjects": 98,
+    "subjects_by_label": {
+      "Patients": 54,
+      "Healthy": 44
+    },
+    "samples_by_label": {
+      "Patients": 2173,
+      "Healthy": 1680
+    }
+  },
+  "feature_summary": {
+    "duration_s": {
+      "by_label": {
+        "Healthy": {
+          "mean": 0.534093,
+          "std": 0.26055,
+          "median": 0.451906,
+          "min": 0.049438,
+          "max": 1.833812
+        },
+        "Patients": {
+          "mean": 0.635393,
+          "std": 0.387345,
+          "median": 0.521938,
+          "min": 0.04525,
+          "max": 3.734562
+        }
+      },
+      "single_feature_auc": 0.5844390298687353,
+      "single_feature_auc_abs_distance_from_half": 0.0844390298687353
+    },
+    "peak_abs": {
+      "by_label": {
+        "Healthy": {
+          "mean": 0.349887,
+          "std": 0.088072,
+          "median": 0.337093,
+          "min": 0.173684,
+          "max": 0.968463
+        },
+        "Patients": {
+          "mean": 0.348942,
+          "std": 0.097519,
+          "median": 0.332514,
+          "min": 0.14604,
+          "max": 0.99
+        }
+      },
+      "single_feature_auc": 0.48772379637543006,
+      "single_feature_auc_abs_distance_from_half": 0.012276203624569937
+    },
+    "rms_mean": {
+      "by_label": {
+        "Healthy": {
+          "mean": 0.070539,
+          "std": 0.004223,
+          "median": 0.071236,
+          "min": 0.049718,
+          "max": 0.078129
+        },
+        "Patients": {
+          "mean": 0.067693,
+          "std": 0.005486,
+          "median": 0.06864,
+          "min": 0.044576,
+          "max": 0.077656
+        }
+      },
+      "single_feature_auc": 0.3407446365568777,
+      "single_feature_auc_abs_distance_from_half": 0.1592553634431223
+    },
+    "rms_std": {
+      "by_label": {
+        "Healthy": {
+          "mean": 0.032096,
+          "std": 0.009,
+          "median": 0.031939,
+          "min": 0.0,
+          "max": 0.059287
+        },
+        "Patients": {
+          "mean": 0.03683,
+          "std": 0.010837,
+          "median": 0.037523,
+          "min": 0.0,
+          "max": 0.065076
+        }
+      },
+      "single_feature_auc": 0.6521508557403634,
+      "single_feature_auc_abs_distance_from_half": 0.15215085574036336
+    },
+    "zcr_mean": {
+      "by_label": {
+        "Healthy": {
+          "mean": 0.08419,
+          "std": 0.03949,
+          "median": 0.073703,
+          "min": 0.014486,
+          "max": 0.326195
+        },
+        "Patients": {
+          "mean": 0.080061,
+          "std": 0.038793,
+          "median": 0.070913,
+          "min": 0.015137,
+          "max": 0.399284
+        }
+      },
+      "single_feature_auc": 0.4627970711984748,
+      "single_feature_auc_abs_distance_from_half": 0.037202928801525204
+    },
+    "zcr_std": {
+      "by_label": {
+        "Healthy": {
+          "mean": 0.033395,
+          "std": 0.036602,
+          "median": 0.019707,
+          "min": 0.0,
+          "max": 0.253094
+        },
+        "Patients": {
+          "mean": 0.032011,
+          "std": 0.037897,
+          "median": 0.01802,
+          "min": 0.0,
+          "max": 0.265968
+        }
+      },
+      "single_feature_auc": 0.46627084565993904,
+      "single_feature_auc_abs_distance_from_half": 0.03372915434006096
+    },
+    "spectral_centroid_mean": {
+      "by_label": {
+        "Healthy": {
+          "mean": 1371.782563,
+          "std": 422.219744,
+          "median": 1266.607454,
+          "min": 516.407899,
+          "max": 3597.745242
+        },
+        "Patients": {
+          "mean": 1194.208517,
+          "std": 356.218242,
+          "median": 1126.910602,
+          "min": 507.218677,
+          "max": 3595.598588
+        }
+      },
+      "single_feature_auc": 0.35922358819275524,
+      "single_feature_auc_abs_distance_from_half": 0.14077641180724476
+    },
+    "spectral_bandwidth_mean": {
+      "by_label": {
+        "Healthy": {
+          "mean": 1429.978334,
+          "std": 282.486753,
+          "median": 1403.5297,
+          "min": 626.964067,
+          "max": 2481.010169
+        },
+        "Patients": {
+          "mean": 1264.248,
+          "std": 246.310805,
+          "median": 1246.533517,
+          "min": 617.966901,
+          "max": 2240.116387
+        }
+      },
+      "single_feature_auc": 0.3296471303661824,
+      "single_feature_auc_abs_distance_from_half": 0.17035286963381763
+    },
+    "spectral_rolloff_mean": {
+      "by_label": {
+        "Healthy": {
+          "mean": 2587.984345,
+          "std": 939.808616,
+          "median": 2435.255029,
+          "min": 608.506944,
+          "max": 5953.645833
+        },
+        "Patients": {
+          "mean": 2034.847933,
+          "std": 777.412165,
+          "median": 1898.4375,
+          "min": 575.520833,
+          "max": 5833.007812
+        }
+      },
+      "single_feature_auc": 0.31827980847193915,
+      "single_feature_auc_abs_distance_from_half": 0.18172019152806085
+    },
+    "spectral_flatness_mean": {
+      "by_label": {
+        "Healthy": {
+          "mean": 0.010567,
+          "std": 0.01469,
+          "median": 0.004643,
+          "min": 1.8e-05,
+          "max": 0.15005
+        },
+        "Patients": {
+          "mean": 0.009215,
+          "std": 0.014444,
+          "median": 0.004081,
+          "min": 1.3e-05,
+          "max": 0.133488
+        }
+      },
+      "single_feature_auc": 0.46295279731773054,
+      "single_feature_auc_abs_distance_from_half": 0.037047202682269464
+    },
+    "silence_ratio": {
+      "by_label": {
+        "Healthy": {
+          "mean": 0.20586,
+          "std": 0.075827,
+          "median": 0.187955,
+          "min": 0.064546,
+          "max": 0.676683
+        },
+        "Patients": {
+          "mean": 0.296159,
+          "std": 0.108535,
+          "median": 0.28753,
+          "min": 0.051118,
+          "max": 0.691504
+        }
+      },
+      "single_feature_auc": 0.7614673043630706,
+      "single_feature_auc_abs_distance_from_half": 0.26146730436307064
+    }
+  },
+  "proxy_model_metrics": {
+    "task_type_only": {
+      "sample_level": {
+        "n_rows": 3853,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.510197800933535,
+        "auc": 0.49383546446650456,
+        "f1": 0.5202352448741363,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.45      0.40      0.42      1680\n    Patients       0.57      0.62      0.60      2173\n\n    accuracy                           0.52      3853\n   macro avg       0.51      0.51      0.51      3853\nweighted avg       0.52      0.52      0.52      3853\n"
+      },
+      "subject_level": {
+        "n_rows": 98,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.5492424242424242,
+        "auc": 0.6092171717171717,
+        "f1": 0.43348080490937635,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.48      0.93      0.63        44\n    Patients       0.75      0.17      0.27        54\n\n    accuracy                           0.51        98\n   macro avg       0.61      0.55      0.45        98\nweighted avg       0.63      0.51      0.43        98\n"
+      },
+      "n_numeric_features": 0,
+      "n_categorical_features": 1
+    },
+    "duration_only": {
+      "sample_level": {
+        "n_rows": 3853,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.5420309863475993,
+        "auc": 0.5733730250038349,
+        "f1": 0.5212683381980748,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.47      0.67      0.55      1680\n    Patients       0.62      0.42      0.50      2173\n\n    accuracy                           0.53      3853\n   macro avg       0.54      0.54      0.52      3853\nweighted avg       0.55      0.53      0.52      3853\n"
+      },
+      "subject_level": {
+        "n_rows": 98,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.7836700336700337,
+        "auc": 0.8114478114478114,
+        "f1": 0.7755102040816326,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.70      0.86      0.78        44\n    Patients       0.86      0.70      0.78        54\n\n    accuracy                           0.78        98\n   macro avg       0.78      0.78      0.78        98\nweighted avg       0.79      0.78      0.78        98\n"
+      },
+      "n_numeric_features": 1,
+      "n_categorical_features": 0
+    },
+    "recording_proxy_only": {
+      "sample_level": {
+        "n_rows": 3853,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.7897213913176868,
+        "auc": 0.8650702342602941,
+        "f1": 0.7914579485622487,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.75      0.78      0.76      1680\n    Patients       0.82      0.80      0.81      2173\n\n    accuracy                           0.79      3853\n   macro avg       0.79      0.79      0.79      3853\nweighted avg       0.79      0.79      0.79      3853\n"
+      },
+      "subject_level": {
+        "n_rows": 98,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.9132996632996633,
+        "auc": 0.9621212121212122,
+        "f1": 0.9178814382896017,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.95      0.86      0.90        44\n    Patients       0.90      0.96      0.93        54\n\n    accuracy                           0.92        98\n   macro avg       0.92      0.91      0.92        98\nweighted avg       0.92      0.92      0.92        98\n"
+      },
+      "n_numeric_features": 11,
+      "n_categorical_features": 0
+    },
+    "recording_proxy_plus_task": {
+      "sample_level": {
+        "n_rows": 3853,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.7888809907303924,
+        "auc": 0.8640095983170074,
+        "f1": 0.7900119429602233,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.75      0.78      0.76      1680\n    Patients       0.83      0.79      0.81      2173\n\n    accuracy                           0.79      3853\n   macro avg       0.79      0.79      0.79      3853\nweighted avg       0.79      0.79      0.79      3853\n"
+      },
+      "subject_level": {
+        "n_rows": 98,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.9132996632996633,
+        "auc": 0.9621212121212122,
+        "f1": 0.9178814382896017,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.95      0.86      0.90        44\n    Patients       0.90      0.96      0.93        54\n\n    accuracy                           0.92        98\n   macro avg       0.92      0.91      0.92        98\nweighted avg       0.92      0.92      0.92        98\n"
+      },
+      "n_numeric_features": 11,
+      "n_categorical_features": 1
+    }
+  }
+}

@@ -1,0 +1,12 @@
+sample_id,subject_id,label,review_status,review_reason,auto_qc_flag,qc_flag,score_patients,aggregation_method,decision_threshold,pred_label
+english_external_401_401,401.0,Healthy,approved,speaker_selection_used_loudness_fallback,,,3.895771170394323e-14,mean,0.5,Healthy
+english_external_402_402,402.0,Healthy,approved,speaker_selection_used_loudness_fallback,,,2.0956073681910325e-11,mean,0.5,Healthy
+english_external_410_410,410.0,Healthy,approved,speaker_selection_used_loudness_fallback,,,3.857801300632957e-10,mean,0.5,Healthy
+english_external_413_413,413.0,Patients,approved,speaker_selection_used_loudness_fallback,,,6.379908512599286e-08,mean,0.5,Healthy
+english_external_418_418,418.0,Healthy,approved,speaker_selection_used_loudness_fallback,,,8.06412547849078e-10,mean,0.5,Healthy
+english_external_444_444,444.0,Patients,approved,speaker_selection_used_loudness_fallback,,,3.5817616678749623e-16,mean,0.5,Healthy
+english_external_479_479,479.0,Patients,approved,speaker_selection_used_loudness_fallback,,,4.6025395300519634e-11,mean,0.5,Healthy
+english_external_480_480,480.0,Patients,approved,speaker_selection_used_loudness_fallback,,,1.1837569147132854e-08,mean,0.5,Healthy
+english_external_527_527,527.0,Patients,approved,speaker_selection_used_loudness_fallback,,,1.6118803514153512e-10,mean,0.5,Healthy
+english_external_529_529,529.0,Patients,approved,speaker_selection_used_loudness_fallback,,,1.755542000832222e-12,mean,0.5,Healthy
+english_external_535_535,535.0,Patients,approved,speaker_selection_used_loudness_fallback,,,2.0435844128030567e-09,mean,0.5,Healthy

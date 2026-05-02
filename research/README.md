@@ -8,9 +8,27 @@ Clean structure for the multilingual TEL workflow.
 - `English_Data/`: raw English corpus with `Patients/` and `Healthy/`
 - `manifests/`: small versioned manifests and schemas
 - `processed_data/`: generated embeddings and processed audio
-- `reports/`: generated metrics and predictions
+- `research_results/`: active final metrics and predictions
+- `research_history/`: older exploratory reports and per-run prediction dumps
 - `scripts/`: command-line entrypoints for the new workflow
 - `src/`: reusable Python modules
+
+## Current baseline
+
+- Final cross-lingual baseline: `assets/models/xlsr_logreg_speech_sounds_only.joblib`
+- Source training subset: `controlled_vowel + controlled_consonant`
+- Recommended English setting: `approved-only + seg_5s`
+
+## Key outputs to keep visible
+
+- `research/research_results/CSV/metrics_cz_internal_cv.json`
+- `research/research_results/CSV/audit_cz_recording_confounds.json`
+- `research/research_results/CSV/metrics_english_external.json`
+
+## Archived outputs
+
+- Exploratory comparisons, per-sample prediction dumps, and secondary model-family outputs are moved under `research/research_history/reports/CSV/`.
+- These files are still useful for traceability, but they are no longer part of the main active surface of the project.
 
 ## Primary commands
 
@@ -25,10 +43,13 @@ python research/scripts/build_embeddings.py --dataset cz_main --eval-mode train_
 python research/scripts/evaluate_internal_cz.py
 python research/scripts/audit_cz_recording_confounds.py
 python research/scripts/compare_cz_task_variants.py --approved-only
-python research/scripts/report_crosslingual_baselines.py
+python research/scripts/compare_cz_model_families.py --approved-only
 python research/scripts/train_baseline.py
 python research/scripts/train_baseline.py --task-variant speech_sounds_only --output-model assets/models/xlsr_logreg_speech_sounds_only.joblib
-python research/scripts/train_baseline.py --task-variant speech_sounds_only --model-type mlp --output-model assets/models/xlsr_mlp_speech_sounds_only.joblib
+python research/scripts/train_baseline.py --task-variant speech_sounds_only --model-type logreg_tuned --output-model assets/models/xlsr_logreg_tuned_speech_sounds_only.joblib
+python research/scripts/train_baseline.py --task-variant speech_sounds_only --model-type linear_svm --output-model assets/models/xlsr_linearsvm_speech_sounds_only.joblib
+python research/scripts/train_baseline.py --task-variant speech_sounds_only --model-type xgboost --output-model assets/models/xlsr_xgboost_speech_sounds_only.joblib
+python research/scripts/train_baseline.py --task-variant speech_sounds_only --model-type mlp_small --output-model assets/models/xlsr_mlp_small_speech_sounds_only.joblib
 python research/scripts/build_embeddings.py --dataset english_external --eval-mode seg_2s
 python research/scripts/build_embeddings.py --dataset english_external --eval-mode seg_5s
 python research/scripts/build_embeddings.py --dataset english_external --eval-mode full_audio
@@ -79,8 +100,8 @@ python research/scripts/evaluate_external.py
 - `evaluate_internal_cz.py` runs subject-disjoint internal cross-validation on Czech embeddings so you can separate baseline quality from cross-lingual transfer quality.
 - `audit_cz_recording_confounds.py` measures how well simple low-level recording proxies alone can separate Czech controls vs patients, to detect possible recording-condition confounds in the source corpus.
 - `compare_cz_task_variants.py` compares Czech training subsets by `task_type` against both internal Czech CV and the English external test, so you can see which source-task configuration transfers best.
-- `train_baseline.py` supports `--task-variant`, so you can export a dedicated cross-lingual baseline such as `speech_sounds_only` after comparing variants.
-- `report_crosslingual_baselines.py` generates figures that make the `all_tasks` vs `speech_sounds_only` comparison easier to read visually.
+- `compare_cz_model_families.py` compares classifier families on top of the same XLSR embeddings so you can see whether a more expressive head helps or hurts transfer.
+- `train_baseline.py` supports `--task-variant` and `--model-type`, so you can export dedicated cross-lingual baselines such as `speech_sounds_only + linear_svm` or `speech_sounds_only + xgboost`.
 - Czech embedding generation now uses an `anti_confound` preprocessing profile by default: silence trimming, voiced-region retention, and RMS normalization before XLSR encoding.
 
 ## Removed from the new flow

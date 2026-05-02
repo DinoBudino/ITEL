@@ -15,7 +15,7 @@ from sklearn.model_selection import StratifiedGroupKFold
 
 from research.src.config import CONFIG
 from research.src.evaluate import binary_metrics
-from research.src.train import fit_logreg_classifier, load_embeddings
+from research.src.train import MODEL_TRAINERS, fit_logreg_classifier, load_embeddings
 
 
 REPORT_CSV_DIR = CONFIG.paths.reports_dir / "CSV"
@@ -96,7 +96,13 @@ def _subject_level_predictions(sample_predictions: pd.DataFrame) -> pd.DataFrame
     return subject_frame
 
 
-def run_cv(sample_manifest: pd.DataFrame, embedding_manifest: pd.DataFrame, n_splits: int, random_state: int) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, object]]:
+def run_cv(
+    sample_manifest: pd.DataFrame,
+    embedding_manifest: pd.DataFrame,
+    n_splits: int,
+    random_state: int,
+    fit_fn=fit_logreg_classifier,
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, object]]:
     merged = embedding_manifest.merge(
         sample_manifest[["sample_id", "subject_id", "label", "task_type"]],
         left_on="source_sample_id",
@@ -119,7 +125,7 @@ def run_cv(sample_manifest: pd.DataFrame, embedding_manifest: pd.DataFrame, n_sp
     subject_fold_metrics: list[dict[str, float | int | None]] = []
 
     for fold_idx, (train_idx, test_idx) in enumerate(splitter.split(X, y, groups=groups), start=1):
-        model = fit_logreg_classifier(X[train_idx], y.iloc[train_idx])
+        model = fit_fn(X[train_idx], y.iloc[train_idx])
         positive_index = _positive_class_index(model)
 
         fold_scores = model.predict_proba(X[test_idx])[:, positive_index]

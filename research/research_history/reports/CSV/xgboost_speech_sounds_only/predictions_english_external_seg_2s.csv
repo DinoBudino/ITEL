@@ -1,0 +1,12 @@
+sample_id,subject_id,label,review_status,review_reason,auto_qc_flag,qc_flag,score_patients,aggregation_method,n_segments_used,decision_threshold,pred_label
+english_external_401_401,401,Healthy,approved,speaker_selection_used_loudness_fallback,,,0.6939790844917297,median,159,0.5,Patients
+english_external_402_402,402,Healthy,approved,speaker_selection_used_loudness_fallback,,,0.6540219187736511,median,76,0.5,Patients
+english_external_410_410,410,Healthy,approved,speaker_selection_used_loudness_fallback,,,0.6463386416435242,median,79,0.5,Patients
+english_external_413_413,413,Patients,approved,speaker_selection_used_loudness_fallback,,,0.7606056928634644,median,46,0.5,Patients
+english_external_418_418,418,Healthy,approved,speaker_selection_used_loudness_fallback,,,0.6382017135620117,median,106,0.5,Patients
+english_external_444_444,444,Patients,approved,speaker_selection_used_loudness_fallback,,,0.657058596611023,median,68,0.5,Patients
+english_external_479_479,479,Patients,approved,speaker_selection_used_loudness_fallback,,,0.5002912878990173,median,19,0.5,Patients
+english_external_480_480,480,Patients,approved,speaker_selection_used_loudness_fallback,,,0.6566581130027771,median,102,0.5,Patients
+english_external_527_527,527,Patients,approved,speaker_selection_used_loudness_fallback,,,0.6411030888557434,median,108,0.5,Patients
+english_external_529_529,529,Patients,approved,speaker_selection_used_loudness_fallback,,,0.7019424438476562,median,178,0.5,Patients
+english_external_535_535,535,Patients,approved,speaker_selection_used_loudness_fallback,,,0.7003228664398193,median,109,0.5,Patients

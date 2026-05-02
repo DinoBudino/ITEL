@@ -1,0 +1,183 @@
+{
+  "config": {
+    "n_splits": 5,
+    "random_state": 42,
+    "dataset_id": "cz_main",
+    "eval_mode": "train_default",
+    "grouping": "subject_id",
+    "cv_strategy": "StratifiedGroupKFold"
+  },
+  "dataset": {
+    "n_embedding_rows": 3853,
+    "n_sample_ids": 3853,
+    "n_subjects": 98,
+    "subjects_by_label": {
+      "Patients": 54,
+      "Healthy": 44
+    },
+    "samples_by_label": {
+      "Patients": 2173,
+      "Healthy": 1680
+    }
+  },
+  "sample_level": {
+    "n_rows": 3853,
+    "n_unique_labels": 2,
+    "balanced_accuracy": 0.8728506508447833,
+    "auc": 0.933549733745316,
+    "f1": 0.876249455845762,
+    "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.87      0.84      0.86      1680\n    Patients       0.88      0.90      0.89      2173\n\n    accuracy                           0.88      3853\n   macro avg       0.88      0.87      0.87      3853\nweighted avg       0.88      0.88      0.88      3853\n",
+    "folds": [
+      {
+        "n_rows": 791,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.8205043464327204,
+        "auc": 0.9015876831043279,
+        "f1": 0.8397529554411756,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.87      0.71      0.78       314\n    Patients       0.83      0.93      0.88       477\n\n    accuracy                           0.84       791\n   macro avg       0.85      0.82      0.83       791\nweighted avg       0.85      0.84      0.84       791\n",
+        "fold": 1,
+        "n_subjects": 19
+      },
+      {
+        "n_rows": 780,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.8169934640522876,
+        "auc": 0.8999491648511256,
+        "f1": 0.818361532647247,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.70      0.82      0.76       270\n    Patients       0.90      0.81      0.85       510\n\n    accuracy                           0.82       780\n   macro avg       0.80      0.82      0.80       780\nweighted avg       0.83      0.82      0.82       780\n",
+        "fold": 2,
+        "n_subjects": 19
+      },
+      {
+        "n_rows": 720,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.9123817772656618,
+        "auc": 0.9670407003271183,
+        "f1": 0.9137084759177782,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.90      0.94      0.92       377\n    Patients       0.93      0.88      0.91       343\n\n    accuracy                           0.91       720\n   macro avg       0.92      0.91      0.91       720\nweighted avg       0.91      0.91      0.91       720\n",
+        "fold": 3,
+        "n_subjects": 19
+      },
+      {
+        "n_rows": 801,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.9103624901497243,
+        "auc": 0.9630755375436227,
+        "f1": 0.9123284988993471,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.94      0.87      0.90       378\n    Patients       0.89      0.95      0.92       423\n\n    accuracy                           0.91       801\n   macro avg       0.92      0.91      0.91       801\nweighted avg       0.91      0.91      0.91       801\n",
+        "fold": 4,
+        "n_subjects": 21
+      },
+      {
+        "n_rows": 761,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.8951822371177209,
+        "auc": 0.9482614160033516,
+        "f1": 0.8996043300087099,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.92      0.85      0.88       341\n    Patients       0.88      0.94      0.91       420\n\n    accuracy                           0.90       761\n   macro avg       0.90      0.90      0.90       761\nweighted avg       0.90      0.90      0.90       761\n",
+        "fold": 5,
+        "n_subjects": 20
+      }
+    ],
+    "fold_summary": {
+      "balanced_accuracy": {
+        "mean": 0.871084863003623,
+        "std": 0.043158124746288544,
+        "min": 0.8169934640522876,
+        "max": 0.9123817772656618
+      },
+      "auc": {
+        "mean": 0.9359829003659093,
+        "std": 0.02943066747307433,
+        "min": 0.8999491648511256,
+        "max": 0.9670407003271183
+      },
+      "f1": {
+        "mean": 0.8767511585828516,
+        "std": 0.03982982135391124,
+        "min": 0.818361532647247,
+        "max": 0.9137084759177782
+      }
+    }
+  },
+  "subject_level": {
+    "n_rows": 98,
+    "n_unique_labels": 2,
+    "balanced_accuracy": 0.9545454545454546,
+    "auc": 0.9819023569023568,
+    "f1": 0.9589407191448008,
+    "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       1.00      0.91      0.95        44\n    Patients       0.93      1.00      0.96        54\n\n    accuracy                           0.96        98\n   macro avg       0.97      0.95      0.96        98\nweighted avg       0.96      0.96      0.96        98\n",
+    "folds": [
+      {
+        "n_rows": 19,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.875,
+        "auc": 0.9772727272727273,
+        "f1": 0.8916040100250626,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       1.00      0.75      0.86         8\n    Patients       0.85      1.00      0.92        11\n\n    accuracy                           0.89        19\n   macro avg       0.92      0.88      0.89        19\nweighted avg       0.91      0.89      0.89        19\n",
+        "fold": 1,
+        "n_subjects": 19
+      },
+      {
+        "n_rows": 19,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.9285714285714286,
+        "auc": 0.9523809523809524,
+        "f1": 0.9463967611336033,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       1.00      0.86      0.92         7\n    Patients       0.92      1.00      0.96        12\n\n    accuracy                           0.95        19\n   macro avg       0.96      0.93      0.94        19\nweighted avg       0.95      0.95      0.95        19\n",
+        "fold": 2,
+        "n_subjects": 19
+      },
+      {
+        "n_rows": 19,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 1.0,
+        "auc": 1.0,
+        "f1": 1.0,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       1.00      1.00      1.00        10\n    Patients       1.00      1.00      1.00         9\n\n    accuracy                           1.00        19\n   macro avg       1.00      1.00      1.00        19\nweighted avg       1.00      1.00      1.00        19\n",
+        "fold": 3,
+        "n_subjects": 19
+      },
+      {
+        "n_rows": 21,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 1.0,
+        "auc": 1.0,
+        "f1": 1.0,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       1.00      1.00      1.00        10\n    Patients       1.00      1.00      1.00        11\n\n    accuracy                           1.00        21\n   macro avg       1.00      1.00      1.00        21\nweighted avg       1.00      1.00      1.00        21\n",
+        "fold": 4,
+        "n_subjects": 21
+      },
+      {
+        "n_rows": 20,
+        "n_unique_labels": 2,
+        "balanced_accuracy": 0.9444444444444444,
+        "auc": 0.9797979797979798,
+        "f1": 0.949616368286445,
+        "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       1.00      0.89      0.94         9\n    Patients       0.92      1.00      0.96        11\n\n    accuracy                           0.95        20\n   macro avg       0.96      0.94      0.95        20\nweighted avg       0.95      0.95      0.95        20\n",
+        "fold": 5,
+        "n_subjects": 20
+      }
+    ],
+    "fold_summary": {
+      "balanced_accuracy": {
+        "mean": 0.9496031746031747,
+        "std": 0.04714713250882268,
+        "min": 0.875,
+        "max": 1.0
+      },
+      "auc": {
+        "mean": 0.9818903318903318,
+        "std": 0.017620578008658728,
+        "min": 0.9523809523809524,
+        "max": 1.0
+      },
+      "f1": {
+        "mean": 0.9575234278890221,
+        "std": 0.04034900819788848,
+        "min": 0.8916040100250626,
+        "max": 1.0
+      }
+    }
+  }
+}

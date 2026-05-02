@@ -57,7 +57,7 @@ class PathConfig:
     english_child_dir: Path = RESEARCH_DIR / "processed_data" / "audio" / "english_external" / "child_only"
     english_interviewer_dir: Path = RESEARCH_DIR / "processed_data" / "audio" / "english_external" / "interviewer_only"
     diarization_dir: Path = RESEARCH_DIR / "processed_data" / "diarization"
-    reports_dir: Path = RESEARCH_DIR / "reports"
+    reports_dir: Path = RESEARCH_DIR / "research_results"
     logs_dir: Path = RESEARCH_DIR / "logs"
     model_dir: Path = ROOT_DIR / "assets" / "models"
 

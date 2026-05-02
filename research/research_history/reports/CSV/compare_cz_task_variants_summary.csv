@@ -1,0 +1,6 @@
+variant,task_types,mode,cz_subject_balanced_accuracy,cz_subject_auc,en_balanced_accuracy,en_auc,best_threshold,best_threshold_balanced_accuracy
+all_tasks,"controlled_vowel,controlled_consonant,controlled_word",seg_5s,0.9545454545454546,0.9819023569023568,0.5,0.6428571428571428,0.05,0.5
+word_only,controlled_word,seg_5s,0.9452861952861953,0.9877946127946128,0.42857142857142855,0.6428571428571428,0.05,0.5
+vowel_only,controlled_vowel,seg_5s,0.8720538720538721,0.9520202020202021,0.5,0.5714285714285714,0.05,0.5
+consonant_only,controlled_consonant,seg_5s,0.936026936026936,0.9591750841750841,0.5,0.7142857142857143,0.05,0.5714285714285714
+speech_sounds_only,"controlled_vowel,controlled_consonant",seg_5s,0.9452861952861953,0.9537037037037037,0.7857142857142857,1.0,0.05,0.8571428571428572

@@ -12,7 +12,7 @@ import joblib
 import pandas as pd
 
 from research.src.config import CONFIG
-from research.src.train import fit_logreg_classifier, fit_mlp_classifier, load_embeddings
+from research.src.train import MODEL_TRAINERS, load_embeddings
 
 
 TASK_VARIANTS: dict[str, tuple[str, ...]] = {
@@ -23,7 +23,7 @@ TASK_VARIANTS: dict[str, tuple[str, ...]] = {
     "speech_sounds_only": ("controlled_vowel", "controlled_consonant"),
 }
 
-MODEL_TYPES = ("logreg", "mlp")
+MODEL_TYPES = tuple(MODEL_TRAINERS.keys())
 
 
 def parse_args() -> argparse.Namespace:
@@ -75,10 +75,7 @@ def main() -> None:
 
     X, _ = load_embeddings(merged)
     y = merged["label"]
-    if args.model_type == "logreg":
-        model = fit_logreg_classifier(X, y)
-    else:
-        model = fit_mlp_classifier(X, y)
+    model = MODEL_TRAINERS[args.model_type](X, y)
 
     output_model = Path(args.output_model)
     output_model.parent.mkdir(parents=True, exist_ok=True)
