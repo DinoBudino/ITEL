@@ -1,0 +1,7 @@
+task_variant,model_type,setup,mode,aggregation_method,segment_selection,balanced_accuracy,auc,f1,best_threshold,best_threshold_balanced_accuracy,best_threshold_accuracy
+speech_sounds_only,logreg_tuned,xlsr_only,seg_5s_balanced40_seed42,mean,all,0.55,0.6525,0.4871794871794871,0.3,0.625,0.625
+speech_sounds_only,logreg_tuned,hybrid_xlsr_markers,seg_5s_balanced40_seed42,mean,all,0.625,0.6525,0.6050032916392363,0.35,0.65,0.65
+speech_sounds_only,logreg_tuned,xlsr_only,seg_5s_balanced40_seed42,median,all,0.55,0.6825,0.4871794871794871,0.1,0.65,0.65
+speech_sounds_only,logreg_tuned,hybrid_xlsr_markers,seg_5s_balanced40_seed42,median,all,0.625,0.69,0.6050032916392363,0.05,0.65,0.65
+speech_sounds_only,logreg_tuned,xlsr_only,seg_5s_balanced40_seed42,trimmed_mean,all,0.55,0.6525000000000001,0.4871794871794871,0.3,0.625,0.625
+speech_sounds_only,logreg_tuned,hybrid_xlsr_markers,seg_5s_balanced40_seed42,trimmed_mean,all,0.625,0.6575,0.6050032916392363,0.3,0.65,0.65

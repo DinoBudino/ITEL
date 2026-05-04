@@ -22,7 +22,7 @@ def _is_excluded_flag(value: object) -> bool:
 
 
 def _preprocessing_profile_for_dataset(dataset_id: str) -> str:
-    if dataset_id == CONFIG.datasets.cz_dataset_id:
+    if dataset_id in {CONFIG.datasets.cz_dataset_id, CONFIG.datasets.en_dataset_id}:
         return "anti_confound"
     return "standard"
 
@@ -54,8 +54,6 @@ def build_embedding_records(
         sample_id = str(getattr(row, "sample_id"))
         dataset_id = str(getattr(row, "dataset_id"))
         raw_audio_path = str(getattr(row, "raw_audio_path"))
-        diarization_status = str(getattr(row, "diarization_status", "not_required"))
-        processed_audio_path = str(getattr(row, "processed_audio_path", "") or "")
         created_at = datetime.now(timezone.utc).isoformat()
         input_audio_path = raw_audio_path
         preprocessing_profile = _preprocessing_profile_for_dataset(dataset_id)
@@ -63,19 +61,12 @@ def build_embedding_records(
 
         if dataset_id == CONFIG.datasets.en_dataset_id:
             qc_flag = getattr(row, "qc_flag", None)
-            auto_qc_flag = getattr(row, "auto_qc_flag", None)
-            if _is_excluded_flag(qc_flag) or _is_excluded_flag(auto_qc_flag):
+            if _is_excluded_flag(qc_flag):
                 continue
-            if diarization_status != "completed":
-                raise ValueError(
-                    f"English sample '{sample_id}' has diarization_status={diarization_status}. "
-                    "Run diarization first and rebuild the English manifest."
-                )
-            if not processed_audio_path or not Path(processed_audio_path).exists():
+            if not Path(input_audio_path).exists():
                 raise FileNotFoundError(
-                    f"Processed CHI audio not found for English sample '{sample_id}': {processed_audio_path}"
+                    f"Raw English audio not found for sample '{sample_id}': {input_audio_path}"
                 )
-            input_audio_path = processed_audio_path
 
         if eval_mode == "train_default":
             samples, sr = load_and_preprocess_audio(

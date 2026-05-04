@@ -1,0 +1,3 @@
+task_variant,model_type,setup,mode,balanced_accuracy,auc,f1,best_threshold,best_threshold_balanced_accuracy,best_threshold_accuracy
+speech_sounds_only,logreg_tuned,xlsr_only,seg_5s,0.55134074558535,0.5668192718552431,0.6275674895780775,0.25,0.5608240680183126,0.6634146341463415
+speech_sounds_only,logreg_tuned,hybrid_xlsr_markers,seg_5s,0.5615870939611947,0.5693263570961413,0.6330589991247468,0.4,0.5619686069326357,0.6487804878048781

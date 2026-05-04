@@ -1,0 +1,5 @@
+task_variant,model_type,mode,aggregation_method,n_rows,balanced_accuracy,auc,f1,accuracy_line,best_threshold,best_threshold_balanced_accuracy,best_threshold_accuracy
+speech_sounds_only,logreg_tuned,seg_5s,mean,205,0.5437649880095924,0.5764115979943318,0.6195576427813967,macro avg       0.60      0.54      0.52       205,0.2,0.5529758011772401,0.4585365853658537
+speech_sounds_only,logreg_tuned,seg_5s,median,205,0.55134074558535,0.5668192718552431,0.6275674895780775,macro avg       0.61      0.55      0.53       205,0.25,0.5608240680183126,0.6634146341463415
+speech_sounds_only,mlp_small,seg_5s,mean,205,0.5418029212993242,0.5494876825812077,0.4327297726107864,macro avg       0.55      0.54      0.45       205,0.55,0.5571179420100284,0.5073170731707317
+speech_sounds_only,mlp_small,seg_5s,median,205,0.5454000436014824,0.5634401569653369,0.43906541358991574,macro avg       0.55      0.55      0.45       205,0.75,0.5874209723130587,0.526829268292683

@@ -59,13 +59,7 @@ def _filter_sample_manifest(sample_manifest: pd.DataFrame, approved_only: bool) 
 
 
 def _filter_segment_rows(merged: pd.DataFrame, mode_name: str) -> pd.DataFrame:
-    if mode_name not in {"seg_2s", "seg_5s"}:
-        return merged
-    if "segment_qc_status" not in merged.columns:
-        return merged
-    status_values = merged["segment_qc_status"].fillna("").astype(str).str.strip().str.lower()
-    keep_mask = status_values.isin(["", "passed"])
-    return merged.loc[keep_mask].copy()
+    return merged
 
 
 def _default_aggregation_method(mode_name: str) -> str:

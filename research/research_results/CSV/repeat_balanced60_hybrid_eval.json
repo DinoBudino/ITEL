@@ -1,0 +1,45 @@
+{
+  "config": {
+    "seeds": [
+      11,
+      21,
+      42,
+      84,
+      123
+    ],
+    "per_label": 30,
+    "marker_report": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\research_results\\CSV\\compare_cz_english_markers_top3.json",
+    "summary_csv": "research/research_results/CSV/repeat_balanced60_hybrid_eval_summary.csv",
+    "aggregate_json": "research/research_results/CSV/repeat_balanced60_hybrid_eval.json"
+  },
+  "aggregate": [
+    {
+      "model_type": "logreg_tuned",
+      "setup": "hybrid_xlsr_markers",
+      "normalized_mode": "seg_5s_balanced40",
+      "n_runs": 5,
+      "mean_balanced_accuracy": 0.6033333333333333,
+      "std_balanced_accuracy": 0.024720661623652215,
+      "mean_auc": 0.6166666666666666,
+      "std_auc": 0.04608098078517274,
+      "mean_f1": 0.5714840008202385,
+      "std_f1": 0.029665037484680256,
+      "mean_best_threshold_balanced_accuracy": 0.62,
+      "std_best_threshold_balanced_accuracy": 0.03205897343611895
+    },
+    {
+      "model_type": "logreg_tuned",
+      "setup": "xlsr_only",
+      "normalized_mode": "seg_5s_balanced40",
+      "n_runs": 5,
+      "mean_balanced_accuracy": 0.5766666666666667,
+      "std_balanced_accuracy": 0.014907119849998571,
+      "mean_auc": 0.6271111111111111,
+      "std_auc": 0.04202145248722133,
+      "mean_f1": 0.5033175670745205,
+      "std_f1": 0.02030712076016849,
+      "mean_best_threshold_balanced_accuracy": 0.62,
+      "std_best_threshold_balanced_accuracy": 0.018257418583505543
+    }
+  ]
+}

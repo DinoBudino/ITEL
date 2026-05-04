@@ -67,6 +67,14 @@ def aggregate_probabilities(probabilities: list[float], method: str = "mean") ->
         return float(values.mean())
     if method == "median":
         return float(np.median(values))
+    if method == "trimmed_mean":
+        if len(values) <= 2:
+            return float(values.mean())
+        sorted_values = np.sort(values)
+        trim = max(1, int(round(len(sorted_values) * 0.1)))
+        if len(sorted_values) <= trim * 2:
+            return float(sorted_values.mean())
+        return float(sorted_values[trim:-trim].mean())
     raise ValueError(f"Unsupported aggregation method: {method}")
 
 

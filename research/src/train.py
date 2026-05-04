@@ -7,6 +7,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
 from sklearn.linear_model import LogisticRegression
+from sklearn.decomposition import PCA
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -147,10 +148,99 @@ def fit_mlp_small_classifier(X: np.ndarray, labels: pd.Series) -> Pipeline:
     return pipeline
 
 
+def fit_logreg_pca_classifier(X: np.ndarray, labels: pd.Series) -> Pipeline:
+    pipeline = Pipeline(
+        steps=[
+            ("scaler", StandardScaler()),
+            ("pca", PCA(n_components=256, random_state=42)),
+            (
+                "clf",
+                LogisticRegression(
+                    C=0.5,
+                    class_weight="balanced",
+                    max_iter=4000,
+                    solver="lbfgs",
+                ),
+            ),
+        ]
+    )
+    pipeline.fit(X, labels)
+    return pipeline
+
+
+def fit_linear_svm_pca_classifier(X: np.ndarray, labels: pd.Series) -> Pipeline:
+    pipeline = Pipeline(
+        steps=[
+            ("scaler", StandardScaler()),
+            ("pca", PCA(n_components=256, random_state=42)),
+            ("clf", SVC(kernel="linear", C=0.5, class_weight="balanced", probability=True, random_state=42)),
+        ]
+    )
+    pipeline.fit(X, labels)
+    return pipeline
+
+
+def fit_mlp_medium_classifier(X: np.ndarray, labels: pd.Series) -> Pipeline:
+    pipeline = Pipeline(
+        steps=[
+            ("scaler", StandardScaler()),
+            (
+                "clf",
+                MLPClassifier(
+                    hidden_layer_sizes=(128, 32),
+                    activation="relu",
+                    solver="adam",
+                    alpha=5e-3,
+                    learning_rate="adaptive",
+                    learning_rate_init=7.5e-4,
+                    max_iter=800,
+                    early_stopping=False,
+                    batch_size=64,
+                    n_iter_no_change=30,
+                    random_state=42,
+                ),
+            ),
+        ]
+    )
+    pipeline.fit(X, labels)
+    return pipeline
+
+
+def fit_mlp_pca_classifier(X: np.ndarray, labels: pd.Series) -> Pipeline:
+    pipeline = Pipeline(
+        steps=[
+            ("scaler", StandardScaler()),
+            ("pca", PCA(n_components=256, random_state=42)),
+            (
+                "clf",
+                MLPClassifier(
+                    hidden_layer_sizes=(128, 32),
+                    activation="relu",
+                    solver="adam",
+                    alpha=1e-2,
+                    learning_rate="adaptive",
+                    learning_rate_init=1e-3,
+                    max_iter=800,
+                    early_stopping=False,
+                    batch_size=64,
+                    n_iter_no_change=30,
+                    random_state=42,
+                ),
+            ),
+        ]
+    )
+    pipeline.fit(X, labels)
+    return pipeline
+
+
 MODEL_TRAINERS = {
     "logreg": fit_logreg_classifier,
     "logreg_tuned": fit_logreg_tuned_classifier,
     "linear_svm": fit_linear_svm_classifier,
     "xgboost": fit_xgboost_classifier,
     "mlp_small": fit_mlp_small_classifier,
+    "logreg_pca": fit_logreg_pca_classifier,
+    "linear_svm_pca": fit_linear_svm_pca_classifier,
+    "mlp_medium": fit_mlp_medium_classifier,
+    "mlp_pca": fit_mlp_pca_classifier,
 }

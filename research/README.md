@@ -17,7 +17,7 @@ Clean structure for the multilingual TEL workflow.
 
 - Final cross-lingual baseline: `assets/models/xlsr_logreg_speech_sounds_only.joblib`
 - Source training subset: `controlled_vowel + controlled_consonant`
-- Recommended English setting: `approved-only + seg_5s`
+- Recommended English setting: `full cleaned corpus + seg_5s`
 
 ## Key outputs to keep visible
 
@@ -35,10 +35,7 @@ Clean structure for the multilingual TEL workflow.
 ```bash
 python research/scripts/build_cz_manifest.py
 python research/scripts/bootstrap_en_metadata.py
-python research/scripts/sync_en_diarization_qc.py
-set PYANNOTE_HF_TOKEN=hf_xxx
-python research/scripts/run_diarization.py
-python research/scripts/build_en_manifest.py --completed-only
+python research/scripts/build_en_manifest.py
 python research/scripts/build_embeddings.py --dataset cz_main --eval-mode train_default
 python research/scripts/evaluate_internal_cz.py
 python research/scripts/audit_cz_recording_confounds.py
@@ -58,30 +55,13 @@ python research/scripts/evaluate_external.py
 
 ## Notes
 
-- English diarization reads `PYANNOTE_HF_TOKEN` first, then falls back to `HF_TOKEN`.
-- `run_diarization.py` processes a pilot subset by default: `10 Healthy + 10 Patients`.
-- If automatic CHI/EXA assignment is wrong, set `chi_speaker_override` in
-  `research/manifests/english_external_metadata.csv` and rerun only those
-  files with `python research/scripts/run_diarization.py --only-overrides`.
-- `run_diarization.py` now writes English QC hints back into
-  `research/manifests/english_external_metadata.csv`, including
-  `auto_qc_flag`, `review_status`, `review_reason`, and CHI speech-share
-  metrics for manual triage.
-- If you already have an older diarization summary and do not want to rerun
-  pyannote yet, use `python research/scripts/sync_en_diarization_qc.py` to
-  backfill those QC hints into metadata.
-- You can also target a single file with repeated `--file-name` arguments.
-- If the child is consistently louder than the interviewer, try
-  `--chi-strategy loudest` or `--chi-strategy duration_x_rms`.
-- If the child voice is recognizably younger/higher, try
-  `--chi-strategy highest_pitch` or `--chi-strategy child_voice`.
 - Labels are inferred automatically from `research/English_Data/Healthy` and
   `research/English_Data/Patients`.
-- To exclude contaminated English files from the pilot, set `qc_flag` to a
+- The current English external flow consumes the cleaned full audio directly;
+  diarization is no longer required for routine embedding generation.
+- To exclude contaminated English files, set `qc_flag` to a
   value starting with `exclude_` (for example `exclude_interviewer_bleed`).
   `build_en_manifest.py` will drop them by default.
-- Severe auto-QC failures from diarization are also dropped automatically when
-  `auto_qc_flag` starts with `exclude_`.
 - Use `build_en_manifest.py --approved-only` after manual review if you want a
   stricter external-test subset.
 - `evaluate_external.py` now uses `median` aggregation by default for `seg_2s`
@@ -95,7 +75,8 @@ python research/scripts/evaluate_external.py
 - `evaluate_external.py` also reports a simple threshold sweep so you can see
   whether `score_patients` contains usable ranking signal even when the default
   `0.5` threshold still collapses to one class.
-- `build_en_manifest.py --completed-only` keeps only rows whose `CHI` audio already exists.
+- `build_en_manifest.py --completed-only` is now only a legacy option for old
+  diarized corpora and is not needed for the cleaned raw-audio path.
 - For quicker experiments, `build_embeddings.py` supports `--limit` and skips existing `.npy` files by default.
 - `evaluate_internal_cz.py` runs subject-disjoint internal cross-validation on Czech embeddings so you can separate baseline quality from cross-lingual transfer quality.
 - `audit_cz_recording_confounds.py` measures how well simple low-level recording proxies alone can separate Czech controls vs patients, to detect possible recording-condition confounds in the source corpus.

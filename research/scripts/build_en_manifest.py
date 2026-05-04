@@ -34,14 +34,8 @@ def infer_label_from_path(audio_path: Path) -> str | None:
     return None
 
 
-def _build_processed_path(subject_id: str, file_name: str) -> Path:
-    path = Path(file_name)
-    return CONFIG.paths.english_child_dir / path.parent / f"{path.stem}_CHI.wav"
-
-
-def _build_interviewer_path(file_name: str) -> Path:
-    path = Path(file_name)
-    return CONFIG.paths.english_interviewer_dir / path.parent / f"{path.stem}_EXA.wav"
+def _default_processed_audio_path(raw_path: Path) -> str:
+    return str(raw_path)
 
 
 def _optional_text(value: object) -> str | None:
@@ -179,7 +173,7 @@ def build_manifest(audio_dir: Path, metadata_csv: Path, output_csv: Path, diariz
                 f"Update {metadata_csv.name} or place the file inside a Healthy/Patients subfolder."
             )
         speaker_role = str(row.get("speaker_role", "CHI") or "CHI")
-        diarization_status = str(row.get("diarization_status", "pending") or "pending")
+        diarization_status = "not_required"
         review_status = _optional_text(row.get("review_status")) or "pending"
         review_reason = _optional_text(row.get("review_reason"))
         auto_qc_flag = _optional_text(row.get("auto_qc_flag"))
@@ -187,10 +181,8 @@ def build_manifest(audio_dir: Path, metadata_csv: Path, output_csv: Path, diariz
         total_speech_s = _optional_float(row.get("total_speech_s"))
         chi_speech_share = _optional_float(row.get("chi_speech_share"))
         n_detected_speakers = _optional_int(row.get("n_detected_speakers"))
-        processed_audio_path = _build_processed_path(subject_id, file_name)
-        interviewer_audio_path = _build_interviewer_path(file_name)
-        if processed_audio_path.exists():
-            diarization_status = "completed"
+        processed_audio_path = _default_processed_audio_path(raw_path)
+        interviewer_audio_path = None
         records.append(
             SampleRecord(
                 sample_id=f"{CONFIG.datasets.en_dataset_id}_{subject_id.lower()}_{stem}",
@@ -204,8 +196,8 @@ def build_manifest(audio_dir: Path, metadata_csv: Path, output_csv: Path, diariz
                 split_role="eval_only",
                 eval_mode="base_manifest",
                 raw_audio_path=str(raw_path),
-                processed_audio_path=str(processed_audio_path),
-                interviewer_audio_path=str(interviewer_audio_path),
+                processed_audio_path=processed_audio_path,
+                interviewer_audio_path=interviewer_audio_path,
                 duration_s=None,
                 sr_original=None,
                 sr_final=CONFIG.audio.target_sr,
@@ -246,10 +238,6 @@ def filter_manifest_rows(
         qc_values = filtered["qc_flag"].fillna("").astype(str).str.strip().str.lower()
         exclude_mask = qc_values.str.startswith("exclude_")
         filtered = filtered.loc[~exclude_mask].copy()
-    if not include_excluded and "auto_qc_flag" in filtered.columns:
-        auto_qc_values = filtered["auto_qc_flag"].fillna("").astype(str).str.strip().str.lower()
-        exclude_mask = auto_qc_values.str.startswith("exclude_")
-        filtered = filtered.loc[~exclude_mask].copy()
     return filtered
 
 
@@ -273,12 +261,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--diarization-summary",
         default=str(CONFIG.paths.diarization_dir / "english_external_diarization_summary.csv"),
-        help="Optional diarization summary CSV used to backfill English QC metrics into the manifest.",
+        help="Optional legacy diarization summary CSV used only to backfill older QC metrics.",
     )
     parser.add_argument(
         "--completed-only",
         action="store_true",
-        help="Keep only English rows whose CHI processed audio already exists.",
+        help="Legacy filter for old diarized corpora. Usually not needed for the cleaned raw-audio flow.",
     )
     parser.add_argument(
         "--approved-only",

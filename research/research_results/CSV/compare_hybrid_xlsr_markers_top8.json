@@ -1,0 +1,1581 @@
+{
+  "config": {
+    "cz_sample_manifest": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\manifests\\cz_main_samples.csv",
+    "cz_embedding_manifest": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\processed_data\\manifests\\cz_main_embeddings_train_default.csv",
+    "en_sample_manifest": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\manifests\\english_external_samples.csv",
+    "en_embedding_manifests": [
+      "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\processed_data\\manifests\\english_external_embeddings_seg_5s.csv"
+    ],
+    "cz_feature_cache": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\processed_data\\manifests\\cz_main_recording_proxy_features.csv",
+    "en_feature_cache": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\processed_data\\manifests\\english_external_recording_proxy_features.csv",
+    "marker_report": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\research_results\\CSV\\compare_cz_english_markers_top8.json",
+    "task_variant": "speech_sounds_only",
+    "model_types": [
+      "logreg_tuned"
+    ],
+    "approved_only": false,
+    "decision_threshold": 0.5,
+    "report_json": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\research_results\\CSV\\compare_hybrid_xlsr_markers_top8.json",
+    "summary_csv": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\research_results\\CSV\\compare_hybrid_xlsr_markers_top8_summary.csv",
+    "selected_marker_features": [
+      "silence_ratio",
+      "spectral_rolloff_mean",
+      "spectral_bandwidth_mean",
+      "rms_mean",
+      "rms_std",
+      "spectral_centroid_mean",
+      "duration_s",
+      "zcr_mean"
+    ]
+  },
+  "results": {
+    "logreg_tuned": {
+      "seg_5s": {
+        "xlsr_only": {
+          "n_rows": 205,
+          "n_unique_labels": 2,
+          "balanced_accuracy": 0.55134074558535,
+          "auc": 0.5668192718552431,
+          "f1": 0.6275674895780775,
+          "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.70      0.92      0.80       139\n    Patients       0.52      0.18      0.27        66\n\n    accuracy                           0.68       205\n   macro avg       0.61      0.55      0.53       205\nweighted avg       0.64      0.68      0.63       205\n",
+          "aggregation_method": "median",
+          "decision_threshold": 0.5,
+          "threshold_sweep": {
+            "grid": [
+              {
+                "threshold": 0.05,
+                "balanced_accuracy": 0.5318835840418574,
+                "accuracy": 0.5756097560975609,
+                "n_pred_patients": 75,
+                "n_pred_healthy": 130
+              },
+              {
+                "threshold": 0.1,
+                "balanced_accuracy": 0.5479616306954437,
+                "accuracy": 0.624390243902439,
+                "n_pred_patients": 55,
+                "n_pred_healthy": 150
+              },
+              {
+                "threshold": 0.15,
+                "balanced_accuracy": 0.5507957270547199,
+                "accuracy": 0.6390243902439025,
+                "n_pred_patients": 48,
+                "n_pred_healthy": 157
+              },
+              {
+                "threshold": 0.2,
+                "balanced_accuracy": 0.5576084586875953,
+                "accuracy": 0.6536585365853659,
+                "n_pred_patients": 43,
+                "n_pred_healthy": 162
+              },
+              {
+                "threshold": 0.25,
+                "balanced_accuracy": 0.5608240680183126,
+                "accuracy": 0.6634146341463415,
+                "n_pred_patients": 39,
+                "n_pred_healthy": 166
+              },
+              {
+                "threshold": 0.3,
+                "balanced_accuracy": 0.552866797471114,
+                "accuracy": 0.6634146341463415,
+                "n_pred_patients": 35,
+                "n_pred_healthy": 170
+              },
+              {
+                "threshold": 0.35,
+                "balanced_accuracy": 0.552866797471114,
+                "accuracy": 0.6634146341463415,
+                "n_pred_patients": 35,
+                "n_pred_healthy": 170
+              },
+              {
+                "threshold": 0.4,
+                "balanced_accuracy": 0.5377152823195989,
+                "accuracy": 0.6536585365853659,
+                "n_pred_patients": 33,
+                "n_pred_healthy": 172
+              },
+              {
+                "threshold": 0.45,
+                "balanced_accuracy": 0.5373337693481578,
+                "accuracy": 0.6585365853658537,
+                "n_pred_patients": 30,
+                "n_pred_healthy": 175
+              },
+              {
+                "threshold": 0.5,
+                "balanced_accuracy": 0.55134074558535,
+                "accuracy": 0.6829268292682927,
+                "n_pred_patients": 23,
+                "n_pred_healthy": 182
+              },
+              {
+                "threshold": 0.55,
+                "balanced_accuracy": 0.5437649880095924,
+                "accuracy": 0.6780487804878049,
+                "n_pred_patients": 22,
+                "n_pred_healthy": 183
+              },
+              {
+                "threshold": 0.6,
+                "balanced_accuracy": 0.5361892304338348,
+                "accuracy": 0.6731707317073171,
+                "n_pred_patients": 21,
+                "n_pred_healthy": 184
+              },
+              {
+                "threshold": 0.65,
+                "balanced_accuracy": 0.5286134728580771,
+                "accuracy": 0.6682926829268293,
+                "n_pred_patients": 20,
+                "n_pred_healthy": 185
+              },
+              {
+                "threshold": 0.7,
+                "balanced_accuracy": 0.5322105951602354,
+                "accuracy": 0.6731707317073171,
+                "n_pred_patients": 19,
+                "n_pred_healthy": 186
+              },
+              {
+                "threshold": 0.75,
+                "balanced_accuracy": 0.5318290821887944,
+                "accuracy": 0.6780487804878049,
+                "n_pred_patients": 16,
+                "n_pred_healthy": 189
+              },
+              {
+                "threshold": 0.8,
+                "balanced_accuracy": 0.5318290821887944,
+                "accuracy": 0.6780487804878049,
+                "n_pred_patients": 16,
+                "n_pred_healthy": 189
+              },
+              {
+                "threshold": 0.85,
+                "balanced_accuracy": 0.5238718116415958,
+                "accuracy": 0.6780487804878049,
+                "n_pred_patients": 12,
+                "n_pred_healthy": 193
+              },
+              {
+                "threshold": 0.9,
+                "balanced_accuracy": 0.527468933943754,
+                "accuracy": 0.6829268292682927,
+                "n_pred_patients": 11,
+                "n_pred_healthy": 194
+              },
+              {
+                "threshold": 0.95,
+                "balanced_accuracy": 0.5382603008502289,
+                "accuracy": 0.697560975609756,
+                "n_pred_patients": 8,
+                "n_pred_healthy": 197
+              }
+            ],
+            "best_by_balanced_accuracy": {
+              "threshold": 0.25,
+              "balanced_accuracy": 0.5608240680183126,
+              "accuracy": 0.6634146341463415,
+              "n_pred_patients": 39,
+              "n_pred_healthy": 166
+            }
+          },
+          "subsets": {
+            "all": {
+              "n_rows": 205,
+              "n_unique_labels": 2,
+              "balanced_accuracy": 0.55134074558535,
+              "auc": 0.5668192718552431,
+              "f1": 0.6275674895780775,
+              "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.70      0.92      0.80       139\n    Patients       0.52      0.18      0.27        66\n\n    accuracy                           0.68       205\n   macro avg       0.61      0.55      0.53       205\nweighted avg       0.64      0.68      0.63       205\n",
+              "aggregation_method": "median",
+              "decision_threshold": 0.5,
+              "threshold_sweep": {
+                "grid": [
+                  {
+                    "threshold": 0.05,
+                    "balanced_accuracy": 0.5318835840418574,
+                    "accuracy": 0.5756097560975609,
+                    "n_pred_patients": 75,
+                    "n_pred_healthy": 130
+                  },
+                  {
+                    "threshold": 0.1,
+                    "balanced_accuracy": 0.5479616306954437,
+                    "accuracy": 0.624390243902439,
+                    "n_pred_patients": 55,
+                    "n_pred_healthy": 150
+                  },
+                  {
+                    "threshold": 0.15,
+                    "balanced_accuracy": 0.5507957270547199,
+                    "accuracy": 0.6390243902439025,
+                    "n_pred_patients": 48,
+                    "n_pred_healthy": 157
+                  },
+                  {
+                    "threshold": 0.2,
+                    "balanced_accuracy": 0.5576084586875953,
+                    "accuracy": 0.6536585365853659,
+                    "n_pred_patients": 43,
+                    "n_pred_healthy": 162
+                  },
+                  {
+                    "threshold": 0.25,
+                    "balanced_accuracy": 0.5608240680183126,
+                    "accuracy": 0.6634146341463415,
+                    "n_pred_patients": 39,
+                    "n_pred_healthy": 166
+                  },
+                  {
+                    "threshold": 0.3,
+                    "balanced_accuracy": 0.552866797471114,
+                    "accuracy": 0.6634146341463415,
+                    "n_pred_patients": 35,
+                    "n_pred_healthy": 170
+                  },
+                  {
+                    "threshold": 0.35,
+                    "balanced_accuracy": 0.552866797471114,
+                    "accuracy": 0.6634146341463415,
+                    "n_pred_patients": 35,
+                    "n_pred_healthy": 170
+                  },
+                  {
+                    "threshold": 0.4,
+                    "balanced_accuracy": 0.5377152823195989,
+                    "accuracy": 0.6536585365853659,
+                    "n_pred_patients": 33,
+                    "n_pred_healthy": 172
+                  },
+                  {
+                    "threshold": 0.45,
+                    "balanced_accuracy": 0.5373337693481578,
+                    "accuracy": 0.6585365853658537,
+                    "n_pred_patients": 30,
+                    "n_pred_healthy": 175
+                  },
+                  {
+                    "threshold": 0.5,
+                    "balanced_accuracy": 0.55134074558535,
+                    "accuracy": 0.6829268292682927,
+                    "n_pred_patients": 23,
+                    "n_pred_healthy": 182
+                  },
+                  {
+                    "threshold": 0.55,
+                    "balanced_accuracy": 0.5437649880095924,
+                    "accuracy": 0.6780487804878049,
+                    "n_pred_patients": 22,
+                    "n_pred_healthy": 183
+                  },
+                  {
+                    "threshold": 0.6,
+                    "balanced_accuracy": 0.5361892304338348,
+                    "accuracy": 0.6731707317073171,
+                    "n_pred_patients": 21,
+                    "n_pred_healthy": 184
+                  },
+                  {
+                    "threshold": 0.65,
+                    "balanced_accuracy": 0.5286134728580771,
+                    "accuracy": 0.6682926829268293,
+                    "n_pred_patients": 20,
+                    "n_pred_healthy": 185
+                  },
+                  {
+                    "threshold": 0.7,
+                    "balanced_accuracy": 0.5322105951602354,
+                    "accuracy": 0.6731707317073171,
+                    "n_pred_patients": 19,
+                    "n_pred_healthy": 186
+                  },
+                  {
+                    "threshold": 0.75,
+                    "balanced_accuracy": 0.5318290821887944,
+                    "accuracy": 0.6780487804878049,
+                    "n_pred_patients": 16,
+                    "n_pred_healthy": 189
+                  },
+                  {
+                    "threshold": 0.8,
+                    "balanced_accuracy": 0.5318290821887944,
+                    "accuracy": 0.6780487804878049,
+                    "n_pred_patients": 16,
+                    "n_pred_healthy": 189
+                  },
+                  {
+                    "threshold": 0.85,
+                    "balanced_accuracy": 0.5238718116415958,
+                    "accuracy": 0.6780487804878049,
+                    "n_pred_patients": 12,
+                    "n_pred_healthy": 193
+                  },
+                  {
+                    "threshold": 0.9,
+                    "balanced_accuracy": 0.527468933943754,
+                    "accuracy": 0.6829268292682927,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 194
+                  },
+                  {
+                    "threshold": 0.95,
+                    "balanced_accuracy": 0.5382603008502289,
+                    "accuracy": 0.697560975609756,
+                    "n_pred_patients": 8,
+                    "n_pred_healthy": 197
+                  }
+                ],
+                "best_by_balanced_accuracy": {
+                  "threshold": 0.25,
+                  "balanced_accuracy": 0.5608240680183126,
+                  "accuracy": 0.6634146341463415,
+                  "n_pred_patients": 39,
+                  "n_pred_healthy": 166
+                }
+              }
+            },
+            "approved_only": {
+              "n_rows": 11,
+              "n_unique_labels": 2,
+              "balanced_accuracy": 0.7142857142857143,
+              "auc": 0.8928571428571428,
+              "f1": 0.6242424242424243,
+              "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.50      1.00      0.67         4\n    Patients       1.00      0.43      0.60         7\n\n    accuracy                           0.64        11\n   macro avg       0.75      0.71      0.63        11\nweighted avg       0.82      0.64      0.62        11\n",
+              "aggregation_method": "median",
+              "decision_threshold": 0.5,
+              "threshold_sweep": {
+                "grid": [
+                  {
+                    "threshold": 0.05,
+                    "balanced_accuracy": 0.8571428571428572,
+                    "accuracy": 0.8181818181818182,
+                    "n_pred_patients": 5,
+                    "n_pred_healthy": 6
+                  },
+                  {
+                    "threshold": 0.1,
+                    "balanced_accuracy": 0.8571428571428572,
+                    "accuracy": 0.8181818181818182,
+                    "n_pred_patients": 5,
+                    "n_pred_healthy": 6
+                  },
+                  {
+                    "threshold": 0.15,
+                    "balanced_accuracy": 0.8571428571428572,
+                    "accuracy": 0.8181818181818182,
+                    "n_pred_patients": 5,
+                    "n_pred_healthy": 6
+                  },
+                  {
+                    "threshold": 0.2,
+                    "balanced_accuracy": 0.7857142857142857,
+                    "accuracy": 0.7272727272727273,
+                    "n_pred_patients": 4,
+                    "n_pred_healthy": 7
+                  },
+                  {
+                    "threshold": 0.25,
+                    "balanced_accuracy": 0.7857142857142857,
+                    "accuracy": 0.7272727272727273,
+                    "n_pred_patients": 4,
+                    "n_pred_healthy": 7
+                  },
+                  {
+                    "threshold": 0.3,
+                    "balanced_accuracy": 0.7857142857142857,
+                    "accuracy": 0.7272727272727273,
+                    "n_pred_patients": 4,
+                    "n_pred_healthy": 7
+                  },
+                  {
+                    "threshold": 0.35,
+                    "balanced_accuracy": 0.7857142857142857,
+                    "accuracy": 0.7272727272727273,
+                    "n_pred_patients": 4,
+                    "n_pred_healthy": 7
+                  },
+                  {
+                    "threshold": 0.4,
+                    "balanced_accuracy": 0.7857142857142857,
+                    "accuracy": 0.7272727272727273,
+                    "n_pred_patients": 4,
+                    "n_pred_healthy": 7
+                  },
+                  {
+                    "threshold": 0.45,
+                    "balanced_accuracy": 0.7142857142857143,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 8
+                  },
+                  {
+                    "threshold": 0.5,
+                    "balanced_accuracy": 0.7142857142857143,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 8
+                  },
+                  {
+                    "threshold": 0.55,
+                    "balanced_accuracy": 0.7142857142857143,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 8
+                  },
+                  {
+                    "threshold": 0.6,
+                    "balanced_accuracy": 0.6428571428571428,
+                    "accuracy": 0.5454545454545454,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 9
+                  },
+                  {
+                    "threshold": 0.65,
+                    "balanced_accuracy": 0.6428571428571428,
+                    "accuracy": 0.5454545454545454,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 9
+                  },
+                  {
+                    "threshold": 0.7,
+                    "balanced_accuracy": 0.6428571428571428,
+                    "accuracy": 0.5454545454545454,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 9
+                  },
+                  {
+                    "threshold": 0.75,
+                    "balanced_accuracy": 0.6428571428571428,
+                    "accuracy": 0.5454545454545454,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 9
+                  },
+                  {
+                    "threshold": 0.8,
+                    "balanced_accuracy": 0.6428571428571428,
+                    "accuracy": 0.5454545454545454,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 9
+                  },
+                  {
+                    "threshold": 0.85,
+                    "balanced_accuracy": 0.6428571428571428,
+                    "accuracy": 0.5454545454545454,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 9
+                  },
+                  {
+                    "threshold": 0.9,
+                    "balanced_accuracy": 0.6428571428571428,
+                    "accuracy": 0.5454545454545454,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 9
+                  },
+                  {
+                    "threshold": 0.95,
+                    "balanced_accuracy": 0.6428571428571428,
+                    "accuracy": 0.5454545454545454,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 9
+                  }
+                ],
+                "best_by_balanced_accuracy": {
+                  "threshold": 0.05,
+                  "balanced_accuracy": 0.8571428571428572,
+                  "accuracy": 0.8181818181818182,
+                  "n_pred_patients": 5,
+                  "n_pred_healthy": 6
+                }
+              }
+            },
+            "auto_qc_clean": {
+              "n_rows": 202,
+              "n_unique_labels": 2,
+              "balanced_accuracy": 0.5481190342504211,
+              "auc": 0.5656372824256036,
+              "f1": 0.6240375244194012,
+              "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.70      0.93      0.80       137\n    Patients       0.52      0.17      0.26        65\n\n    accuracy                           0.68       202\n   macro avg       0.61      0.55      0.53       202\nweighted avg       0.64      0.68      0.62       202\n",
+              "aggregation_method": "median",
+              "decision_threshold": 0.5,
+              "threshold_sweep": {
+                "grid": [
+                  {
+                    "threshold": 0.05,
+                    "balanced_accuracy": 0.5321167883211679,
+                    "accuracy": 0.5792079207920792,
+                    "n_pred_patients": 72,
+                    "n_pred_healthy": 130
+                  },
+                  {
+                    "threshold": 0.1,
+                    "balanced_accuracy": 0.5447501403705783,
+                    "accuracy": 0.6237623762376238,
+                    "n_pred_patients": 53,
+                    "n_pred_healthy": 149
+                  },
+                  {
+                    "threshold": 0.15,
+                    "balanced_accuracy": 0.5476137001684447,
+                    "accuracy": 0.6386138613861386,
+                    "n_pred_patients": 46,
+                    "n_pred_healthy": 156
+                  },
+                  {
+                    "threshold": 0.2,
+                    "balanced_accuracy": 0.5545199326221224,
+                    "accuracy": 0.6534653465346535,
+                    "n_pred_patients": 41,
+                    "n_pred_healthy": 161
+                  },
+                  {
+                    "threshold": 0.25,
+                    "balanced_accuracy": 0.5577765300393037,
+                    "accuracy": 0.6633663366336634,
+                    "n_pred_patients": 37,
+                    "n_pred_healthy": 165
+                  },
+                  {
+                    "threshold": 0.3,
+                    "balanced_accuracy": 0.5496911847276811,
+                    "accuracy": 0.6633663366336634,
+                    "n_pred_patients": 33,
+                    "n_pred_healthy": 169
+                  },
+                  {
+                    "threshold": 0.35,
+                    "balanced_accuracy": 0.5496911847276811,
+                    "accuracy": 0.6633663366336634,
+                    "n_pred_patients": 33,
+                    "n_pred_healthy": 169
+                  },
+                  {
+                    "threshold": 0.4,
+                    "balanced_accuracy": 0.5343065693430658,
+                    "accuracy": 0.6534653465346535,
+                    "n_pred_patients": 31,
+                    "n_pred_healthy": 171
+                  },
+                  {
+                    "threshold": 0.45,
+                    "balanced_accuracy": 0.5339135317237507,
+                    "accuracy": 0.6584158415841584,
+                    "n_pred_patients": 28,
+                    "n_pred_healthy": 174
+                  },
+                  {
+                    "threshold": 0.5,
+                    "balanced_accuracy": 0.5481190342504211,
+                    "accuracy": 0.6831683168316832,
+                    "n_pred_patients": 21,
+                    "n_pred_healthy": 181
+                  },
+                  {
+                    "threshold": 0.55,
+                    "balanced_accuracy": 0.5404267265581134,
+                    "accuracy": 0.6782178217821783,
+                    "n_pred_patients": 20,
+                    "n_pred_healthy": 182
+                  },
+                  {
+                    "threshold": 0.6,
+                    "balanced_accuracy": 0.5327344188658057,
+                    "accuracy": 0.6732673267326733,
+                    "n_pred_patients": 19,
+                    "n_pred_healthy": 183
+                  },
+                  {
+                    "threshold": 0.65,
+                    "balanced_accuracy": 0.525042111173498,
+                    "accuracy": 0.6683168316831684,
+                    "n_pred_patients": 18,
+                    "n_pred_healthy": 184
+                  },
+                  {
+                    "threshold": 0.7,
+                    "balanced_accuracy": 0.5286917462099944,
+                    "accuracy": 0.6732673267326733,
+                    "n_pred_patients": 17,
+                    "n_pred_healthy": 185
+                  },
+                  {
+                    "threshold": 0.75,
+                    "balanced_accuracy": 0.524649073554183,
+                    "accuracy": 0.6732673267326733,
+                    "n_pred_patients": 15,
+                    "n_pred_healthy": 187
+                  },
+                  {
+                    "threshold": 0.8,
+                    "balanced_accuracy": 0.524649073554183,
+                    "accuracy": 0.6732673267326733,
+                    "n_pred_patients": 15,
+                    "n_pred_healthy": 187
+                  },
+                  {
+                    "threshold": 0.85,
+                    "balanced_accuracy": 0.524256035934868,
+                    "accuracy": 0.6782178217821783,
+                    "n_pred_patients": 12,
+                    "n_pred_healthy": 190
+                  },
+                  {
+                    "threshold": 0.9,
+                    "balanced_accuracy": 0.5279056709713644,
+                    "accuracy": 0.6831683168316832,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 191
+                  },
+                  {
+                    "threshold": 0.95,
+                    "balanced_accuracy": 0.5388545760808534,
+                    "accuracy": 0.698019801980198,
+                    "n_pred_patients": 8,
+                    "n_pred_healthy": 194
+                  }
+                ],
+                "best_by_balanced_accuracy": {
+                  "threshold": 0.25,
+                  "balanced_accuracy": 0.5577765300393037,
+                  "accuracy": 0.6633663366336634,
+                  "n_pred_patients": 37,
+                  "n_pred_healthy": 165
+                }
+              }
+            },
+            "flagged_auto_qc": {
+              "n_rows": 3,
+              "n_unique_labels": 2,
+              "balanced_accuracy": 0.75,
+              "auc": 1.0,
+              "f1": 0.6666666666666666,
+              "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       1.00      0.50      0.67         2\n    Patients       0.50      1.00      0.67         1\n\n    accuracy                           0.67         3\n   macro avg       0.75      0.75      0.67         3\nweighted avg       0.83      0.67      0.67         3\n",
+              "aggregation_method": "median",
+              "decision_threshold": 0.5,
+              "threshold_sweep": {
+                "grid": [
+                  {
+                    "threshold": 0.05,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.1,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.15,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.2,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.25,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.3,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.35,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.4,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.45,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.5,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.55,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.6,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.65,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.7,
+                    "balanced_accuracy": 0.75,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 2,
+                    "n_pred_healthy": 1
+                  },
+                  {
+                    "threshold": 0.75,
+                    "balanced_accuracy": 1.0,
+                    "accuracy": 1.0,
+                    "n_pred_patients": 1,
+                    "n_pred_healthy": 2
+                  },
+                  {
+                    "threshold": 0.8,
+                    "balanced_accuracy": 1.0,
+                    "accuracy": 1.0,
+                    "n_pred_patients": 1,
+                    "n_pred_healthy": 2
+                  },
+                  {
+                    "threshold": 0.85,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 0,
+                    "n_pred_healthy": 3
+                  },
+                  {
+                    "threshold": 0.9,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 0,
+                    "n_pred_healthy": 3
+                  },
+                  {
+                    "threshold": 0.95,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6666666666666666,
+                    "n_pred_patients": 0,
+                    "n_pred_healthy": 3
+                  }
+                ],
+                "best_by_balanced_accuracy": {
+                  "threshold": 0.75,
+                  "balanced_accuracy": 1.0,
+                  "accuracy": 1.0,
+                  "n_pred_patients": 1,
+                  "n_pred_healthy": 2
+                }
+              }
+            }
+          }
+        },
+        "hybrid_xlsr_markers": {
+          "n_rows": 205,
+          "n_unique_labels": 2,
+          "balanced_accuracy": 0.5,
+          "auc": 0.5,
+          "f1": 0.15681756817568177,
+          "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.00      0.00      0.00       139\n    Patients       0.32      1.00      0.49        66\n\n    accuracy                           0.32       205\n   macro avg       0.16      0.50      0.24       205\nweighted avg       0.10      0.32      0.16       205\n",
+          "aggregation_method": "median",
+          "decision_threshold": 0.5,
+          "threshold_sweep": {
+            "grid": [
+              {
+                "threshold": 0.05,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.1,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.15,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.2,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.25,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.3,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.35,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.4,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.45,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.5,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.55,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.6,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.65,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.7,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.75,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.8,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.85,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.9,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              },
+              {
+                "threshold": 0.95,
+                "balanced_accuracy": 0.5,
+                "accuracy": 0.32195121951219513,
+                "n_pred_patients": 205,
+                "n_pred_healthy": 0
+              }
+            ],
+            "best_by_balanced_accuracy": {
+              "threshold": 0.05,
+              "balanced_accuracy": 0.5,
+              "accuracy": 0.32195121951219513,
+              "n_pred_patients": 205,
+              "n_pred_healthy": 0
+            }
+          },
+          "subsets": {
+            "all": {
+              "n_rows": 205,
+              "n_unique_labels": 2,
+              "balanced_accuracy": 0.5,
+              "auc": 0.5,
+              "f1": 0.15681756817568177,
+              "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.00      0.00      0.00       139\n    Patients       0.32      1.00      0.49        66\n\n    accuracy                           0.32       205\n   macro avg       0.16      0.50      0.24       205\nweighted avg       0.10      0.32      0.16       205\n",
+              "aggregation_method": "median",
+              "decision_threshold": 0.5,
+              "threshold_sweep": {
+                "grid": [
+                  {
+                    "threshold": 0.05,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.1,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.15,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.2,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.25,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.3,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.35,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.4,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.45,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.5,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.55,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.6,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.65,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.7,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.75,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.8,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.85,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.9,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.95,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.32195121951219513,
+                    "n_pred_patients": 205,
+                    "n_pred_healthy": 0
+                  }
+                ],
+                "best_by_balanced_accuracy": {
+                  "threshold": 0.05,
+                  "balanced_accuracy": 0.5,
+                  "accuracy": 0.32195121951219513,
+                  "n_pred_patients": 205,
+                  "n_pred_healthy": 0
+                }
+              }
+            },
+            "approved_only": {
+              "n_rows": 11,
+              "n_unique_labels": 2,
+              "balanced_accuracy": 0.5,
+              "auc": 0.5,
+              "f1": 0.494949494949495,
+              "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.00      0.00      0.00         4\n    Patients       0.64      1.00      0.78         7\n\n    accuracy                           0.64        11\n   macro avg       0.32      0.50      0.39        11\nweighted avg       0.40      0.64      0.49        11\n",
+              "aggregation_method": "median",
+              "decision_threshold": 0.5,
+              "threshold_sweep": {
+                "grid": [
+                  {
+                    "threshold": 0.05,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.1,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.15,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.2,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.25,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.3,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.35,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.4,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.45,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.5,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.55,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.6,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.65,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.7,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.75,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.8,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.85,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.9,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.95,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.6363636363636364,
+                    "n_pred_patients": 11,
+                    "n_pred_healthy": 0
+                  }
+                ],
+                "best_by_balanced_accuracy": {
+                  "threshold": 0.05,
+                  "balanced_accuracy": 0.5,
+                  "accuracy": 0.6363636363636364,
+                  "n_pred_patients": 11,
+                  "n_pred_healthy": 0
+                }
+              }
+            },
+            "auto_qc_clean": {
+              "n_rows": 202,
+              "n_unique_labels": 2,
+              "balanced_accuracy": 0.5,
+              "auc": 0.5,
+              "f1": 0.15667297066785332,
+              "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.00      0.00      0.00       137\n    Patients       0.32      1.00      0.49        65\n\n    accuracy                           0.32       202\n   macro avg       0.16      0.50      0.24       202\nweighted avg       0.10      0.32      0.16       202\n",
+              "aggregation_method": "median",
+              "decision_threshold": 0.5,
+              "threshold_sweep": {
+                "grid": [
+                  {
+                    "threshold": 0.05,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.1,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.15,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.2,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.25,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.3,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.35,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.4,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.45,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.5,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.55,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.6,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.65,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.7,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.75,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.8,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.85,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.9,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.95,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3217821782178218,
+                    "n_pred_patients": 202,
+                    "n_pred_healthy": 0
+                  }
+                ],
+                "best_by_balanced_accuracy": {
+                  "threshold": 0.05,
+                  "balanced_accuracy": 0.5,
+                  "accuracy": 0.3217821782178218,
+                  "n_pred_patients": 202,
+                  "n_pred_healthy": 0
+                }
+              }
+            },
+            "flagged_auto_qc": {
+              "n_rows": 3,
+              "n_unique_labels": 2,
+              "balanced_accuracy": 0.5,
+              "auc": 0.5,
+              "f1": 0.16666666666666666,
+              "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.00      0.00      0.00         2\n    Patients       0.33      1.00      0.50         1\n\n    accuracy                           0.33         3\n   macro avg       0.17      0.50      0.25         3\nweighted avg       0.11      0.33      0.17         3\n",
+              "aggregation_method": "median",
+              "decision_threshold": 0.5,
+              "threshold_sweep": {
+                "grid": [
+                  {
+                    "threshold": 0.05,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.1,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.15,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.2,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.25,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.3,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.35,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.4,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.45,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.5,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.55,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.6,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.65,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.7,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.75,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.8,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.85,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.9,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  },
+                  {
+                    "threshold": 0.95,
+                    "balanced_accuracy": 0.5,
+                    "accuracy": 0.3333333333333333,
+                    "n_pred_patients": 3,
+                    "n_pred_healthy": 0
+                  }
+                ],
+                "best_by_balanced_accuracy": {
+                  "threshold": 0.05,
+                  "balanced_accuracy": 0.5,
+                  "accuracy": 0.3333333333333333,
+                  "n_pred_patients": 3,
+                  "n_pred_healthy": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
