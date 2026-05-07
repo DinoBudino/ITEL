@@ -91,23 +91,25 @@ def extract_speaker_embeddings_from_segments(
 def identify_interviewer_by_reference(
     speaker_embeddings: dict[str, np.ndarray],
     reference_embedding: np.ndarray,
-    threshold: float = 0.65,
-) -> tuple[str | None, dict[str, float]]:
+    threshold: float = 0.12,
+) -> tuple[str | None, dict[str, float], bool]:
     """Return the speaker label most similar to *reference_embedding*.
 
-    Returns ``(interviewer_speaker_id, {speaker: similarity_score})``.
-    If no speaker exceeds *threshold*, returns the closest one anyway but
-    logs the low confidence.
+    Returns ``(interviewer_speaker_id, {speaker: similarity_score}, confident)``.
+
+    *confident* is True when the best similarity exceeds *threshold*.
+    When confidence is low the caller should apply a fallback strategy.
     """
     similarities = {
         speaker: cosine_similarity(embedding, reference_embedding)
         for speaker, embedding in speaker_embeddings.items()
     }
     if not similarities:
-        return None, {}
+        return None, {}, False
 
     best_speaker = max(similarities, key=lambda k: similarities[k])
-    return best_speaker, similarities
+    confident = similarities[best_speaker] >= threshold
+    return best_speaker, similarities, confident
 
 
 @dataclass(frozen=True)
@@ -129,6 +131,9 @@ class DiarizationResult:
     suspect_reasons: list[str]
     auto_qc_flag: str | None
     n_segments: int
+    # Reference-strategy similarity scores: {speaker_id: cosine_similarity_to_interviewer_reference}
+    # Empty dict when using non-reference strategies.
+    speaker_similarities: dict[str, float] | None = None
     error_message: str | None = None
 
 
@@ -188,16 +193,82 @@ def _get_tracks(diarization_output: Any):
 
 
 def load_audio_mono_16k(audio_path: str | Path) -> tuple[torch.Tensor, int]:
-    waveform, sr = torchaudio.load(str(audio_path))
-    if waveform.shape[0] > 1:
-        waveform = waveform.mean(dim=0, keepdim=True)
+    """Load audio as mono 16 kHz float32 tensor.
+
+    Uses PyAV (``pip install av``) as the primary loader.  PyAV bundles its
+    own FFmpeg codecs so MP3 files work on Windows without needing system
+    FFmpeg DLLs or torchcodec.  Falls back to torchaudio for WAV/FLAC when
+    PyAV is unavailable.
+    """
+    audio_path = Path(audio_path)
+
+    # --- Primary: PyAV (self-contained FFmpeg, reliable on Windows for MP3) ---
+    try:
+        import av as _av  # noqa: PLC0415
+
+        container = _av.open(str(audio_path))
+        try:
+            if not container.streams.audio:
+                raise ValueError(f"No audio stream in {audio_path.name}")
+            stream = container.streams.audio[0]
+            sr_native: int = stream.codec_context.sample_rate
+            samples: list[np.ndarray] = []
+
+            for frame in container.decode(stream):
+                arr = frame.to_ndarray()  # shape varies by format
+                fmt = frame.format.name
+                # Normalise to float32 in [-1, 1]
+                if "s16" in fmt:
+                    arr = arr.astype(np.float32) / 32_768.0
+                elif "s32" in fmt:
+                    arr = arr.astype(np.float32) / 2_147_483_648.0
+                elif "u8" in fmt:
+                    arr = (arr.astype(np.float32) - 128.0) / 128.0
+                else:  # fltp, flt, dblp — already float-like
+                    arr = arr.astype(np.float32)
+                # Planar multi-channel: shape (channels, samples) → mono
+                if arr.ndim > 1:
+                    arr = arr.mean(axis=0)
+                samples.append(arr)
+        finally:
+            container.close()
+
+        if not samples:
+            raise ValueError(f"No audio decoded from {audio_path.name}")
+
+        audio_np = np.concatenate(samples, axis=0)
+        waveform = torch.tensor(audio_np, dtype=torch.float32).unsqueeze(0)
+        sr = sr_native
+
+    except ImportError:
+        # PyAV not installed — fall back to torchaudio (works for WAV/FLAC;
+        # MP3 on Windows requires system FFmpeg DLLs via torchcodec).
+        print(
+            f"  [warn] PyAV not installed — falling back to torchaudio for {audio_path.name}.\n"
+            "         Install it with:  pip install av"
+        )
+        waveform, sr = torchaudio.load(str(audio_path))
+        if waveform.shape[0] > 1:
+            waveform = waveform.mean(dim=0, keepdim=True)
+
     if sr != CONFIG.audio.target_sr:
         waveform = torchaudio.transforms.Resample(sr, CONFIG.audio.target_sr)(waveform)
         sr = CONFIG.audio.target_sr
     return waveform, sr
 
 
-def diarize_segments(audio_path: str | Path, pipeline) -> tuple[list[dict[str, float | str]], torch.Tensor, int]:
+def diarize_segments(
+    audio_path: str | Path,
+    pipeline,
+) -> tuple[list[dict[str, float | str]], torch.Tensor, int, dict[str, np.ndarray] | None]:
+    """Run pyannote diarization and return segments, waveform, sample-rate, and speaker embeddings.
+
+    The fourth return value is a dict ``{speaker_label: centroid_embedding}`` taken directly
+    from pyannote's internal clustering step — the same wespeaker model that our reference
+    embedding was extracted with.  Using these avoids a second embedding-model pass when
+    applying the ``reference`` CHI-speaker strategy.  Returns ``None`` when the pipeline does
+    not expose embeddings (e.g. legacy mode).
+    """
     waveform, sr = load_audio_mono_16k(audio_path)
     with torch.inference_mode():
         diarization_output = pipeline({"waveform": waveform, "sample_rate": sr})
@@ -207,7 +278,22 @@ def diarize_segments(audio_path: str | Path, pipeline) -> tuple[list[dict[str, f
         {"speaker": str(speaker), "start": float(segment.start), "end": float(segment.end)}
         for segment, _, speaker in tracks
     ]
-    return segments, waveform, sr
+
+    # Extract pyannote's internally computed per-speaker centroid embeddings.
+    # These are (num_speakers, dim) numpy arrays in speaker_diarization.labels() order.
+    speaker_embeddings: dict[str, np.ndarray] | None = None
+    annotation = getattr(diarization_output, "speaker_diarization", None)
+    raw_embeddings = getattr(diarization_output, "speaker_embeddings", None)
+    if annotation is not None and raw_embeddings is not None:
+        labels = annotation.labels()
+        if len(raw_embeddings) == len(labels):
+            speaker_embeddings = {}
+            for i, label in enumerate(labels):
+                vec = np.array(raw_embeddings[i], dtype=np.float32)
+                norm = np.linalg.norm(vec)
+                speaker_embeddings[label] = vec / norm if norm > 1e-8 else vec
+
+    return segments, waveform, sr, speaker_embeddings
 
 
 def _speaker_rms_levels(
@@ -333,7 +419,20 @@ def identify_child_speaker(
     override_speaker: str | None = None,
     reference_embedding: np.ndarray | None = None,
     embedding_model=None,
-) -> tuple[str | None, dict[str, float], dict[str, float], dict[str, float], str]:
+    precomputed_speaker_embeddings: dict[str, np.ndarray] | None = None,
+) -> tuple[str | None, dict[str, float], dict[str, float], dict[str, float], str, dict[str, float]]:
+    """Identify the child speaker in *segments*.
+
+    Returns ``(chi_speaker, totals, rms_levels, pitch_levels, resolved_strategy, speaker_similarities)``.
+
+    *speaker_similarities* maps each detected speaker to its cosine similarity against the
+    interviewer reference embedding.  It is populated only when ``strategy="reference"``; for
+    all other strategies it is an empty dict.
+
+    When *precomputed_speaker_embeddings* is provided (extracted from pyannote's internal
+    clustering step), it is used directly and no second embedding-model pass is performed.
+    *embedding_model* is only used as a fallback when precomputed embeddings are unavailable.
+    """
     totals: dict[str, float] = {}
     for segment in segments:
         speaker = str(segment["speaker"])
@@ -341,63 +440,84 @@ def identify_child_speaker(
     rms_levels = _speaker_rms_levels(waveform, sr, segments)
     pitch_levels = _speaker_pitch_levels(waveform, sr, segments)
     if not totals:
-        return None, {}, {}, {}, strategy
+        return None, {}, {}, {}, strategy, {}
 
     if override_speaker:
         if override_speaker not in totals:
             raise ValueError(f"Manual chi_speaker_override '{override_speaker}' not found in diarization speakers {sorted(totals)}")
-        return override_speaker, totals, rms_levels, pitch_levels, "manual"
+        return override_speaker, totals, rms_levels, pitch_levels, "manual", {}
 
     if strategy == "reference":
-        if reference_embedding is None or embedding_model is None:
+        if reference_embedding is None:
             raise ValueError(
-                "strategy='reference' requires both reference_embedding and embedding_model. "
+                "strategy='reference' requires reference_embedding. "
                 "Run extract_interviewer_reference.py first and pass --reference-embedding."
             )
-        speaker_embeddings = extract_speaker_embeddings_from_segments(waveform, sr, segments, embedding_model)
-        interviewer_speaker, similarities = identify_interviewer_by_reference(speaker_embeddings, reference_embedding)
-        if interviewer_speaker is None:
-            # fallback: use longest heuristic
+        # Prefer pyannote's internally computed centroid embeddings (already done during
+        # diarization — no extra model pass needed).  Fall back to computing them from
+        # the raw waveform only when the pipeline didn't expose them.
+        if precomputed_speaker_embeddings is not None:
+            speaker_embeddings = precomputed_speaker_embeddings
+            print(f"    [reference] using pyannote internal embeddings for {len(speaker_embeddings)} speakers")
+        elif embedding_model is not None:
+            speaker_embeddings = extract_speaker_embeddings_from_segments(waveform, sr, segments, embedding_model)
+            print(f"    [reference] computed embeddings via fallback model for {len(speaker_embeddings)} speakers")
+        else:
+            raise ValueError(
+                "strategy='reference' needs either precomputed_speaker_embeddings (from pyannote output) "
+                "or embedding_model as fallback. Pass --reference-embedding."
+            )
+        interviewer_speaker, similarities, confident = identify_interviewer_by_reference(
+            speaker_embeddings, reference_embedding
+        )
+
+        if interviewer_speaker is None or not confident:
+            # Low confidence — fall back to longest (child always speaks more in clinical assessments)
             chi_speaker = _max_key(totals)
-            return chi_speaker, totals, rms_levels, pitch_levels, "reference->longest_fallback"
+            best_sim = similarities.get(interviewer_speaker, 0.0) if similarities else 0.0
+            print(
+                f"    [low-confidence sim={best_sim:.3f}] falling back to 'longest' → CHI={chi_speaker}"
+            )
+            return chi_speaker, totals, rms_levels, pitch_levels, f"reference->longest_fallback(sim={best_sim:.2f})", similarities
+
         # child is whichever speaker is NOT the interviewer (lowest similarity)
         chi_speaker = min(similarities, key=lambda k: similarities[k])
         best_sim = similarities[interviewer_speaker]
         resolved = f"reference(sim={best_sim:.2f})"
-        return chi_speaker, totals, rms_levels, pitch_levels, resolved
+        return chi_speaker, totals, rms_levels, pitch_levels, resolved, similarities
 
     if strategy == "shortest":
         chi_speaker = _min_key(totals)
-        return chi_speaker, totals, rms_levels, pitch_levels, strategy
+        return chi_speaker, totals, rms_levels, pitch_levels, strategy, {}
 
     if strategy == "longest":
         chi_speaker = _max_key(totals)
-        return chi_speaker, totals, rms_levels, pitch_levels, strategy
+        return chi_speaker, totals, rms_levels, pitch_levels, strategy, {}
 
     if strategy == "loudest":
         if not rms_levels:
             raise ValueError("Could not compute per-speaker RMS levels for loudest strategy.")
         chi_speaker = _max_key(rms_levels)
-        return chi_speaker, totals, rms_levels, pitch_levels, strategy
+        return chi_speaker, totals, rms_levels, pitch_levels, strategy, {}
 
     if strategy == "highest_pitch":
         if not pitch_levels:
             chi_speaker, resolved = _fallback_child_speaker(totals, rms_levels, strategy)
-            return chi_speaker, totals, rms_levels, pitch_levels, resolved
+            return chi_speaker, totals, rms_levels, pitch_levels, resolved, {}
         chi_speaker = _max_key(pitch_levels)
-        return chi_speaker, totals, rms_levels, pitch_levels, strategy
+        return chi_speaker, totals, rms_levels, pitch_levels, strategy, {}
 
     if strategy == "child_voice":
         if not pitch_levels:
             chi_speaker, resolved = _fallback_child_speaker(totals, rms_levels, strategy)
-            return chi_speaker, totals, rms_levels, pitch_levels, resolved
+            return chi_speaker, totals, rms_levels, pitch_levels, resolved, {}
         scores: dict[str, float] = {}
         for speaker in totals:
             pitch_score = pitch_levels.get(speaker, 0.0)
             rms_score = rms_levels.get(speaker, 0.0)
             scores[speaker] = (0.7 * pitch_score) + (0.3 * (rms_score * 1000.0))
         chi_speaker = _max_key(scores)
-        return chi_speaker, totals, rms_levels, pitch_levels, strategy
+        return chi_speaker, totals, rms_levels, pitch_levels, strategy, {}
 
     if strategy == "duration_x_rms":
         scores = {
@@ -405,7 +525,7 @@ def identify_child_speaker(
             for speaker in totals
         }
         chi_speaker = _max_key(scores)
-        return chi_speaker, totals, rms_levels, pitch_levels, strategy
+        return chi_speaker, totals, rms_levels, pitch_levels, strategy, {}
 
     raise ValueError(f"Unsupported CHI speaker strategy: {strategy}")
 
@@ -462,8 +582,8 @@ def diarize_audio(
         pipeline, _ = build_diarization_pipeline(device=device)
 
     try:
-        segments, waveform, sr = diarize_segments(audio_path, pipeline)
-        chi_speaker, totals, rms_levels, pitch_levels, resolved_strategy = identify_child_speaker(
+        segments, waveform, sr, precomputed_embeddings = diarize_segments(audio_path, pipeline)
+        chi_speaker, totals, rms_levels, pitch_levels, resolved_strategy, speaker_similarities = identify_child_speaker(
             segments,
             waveform,
             sr,
@@ -471,6 +591,7 @@ def diarize_audio(
             override_speaker=chi_speaker_override,
             reference_embedding=reference_embedding,
             embedding_model=embedding_model,
+            precomputed_speaker_embeddings=precomputed_embeddings,
         )
         if chi_speaker is None:
             raise RuntimeError("No speakers detected during diarization.")
@@ -515,6 +636,7 @@ def diarize_audio(
                     "speaker_totals": totals,
                     "speaker_rms": rms_levels,
                     "speaker_pitch_hz": pitch_levels,
+                    "speaker_similarities": {k: round(v, 4) for k, v in speaker_similarities.items()},
                     "chi_duration_s": chi_duration_s,
                     "total_speech_s": total_speech_s,
                     "chi_speech_share": chi_speech_share,
@@ -545,6 +667,7 @@ def diarize_audio(
             suspect_reasons=suspect_reasons,
             auto_qc_flag=auto_qc_flag,
             n_segments=len(segments),
+            speaker_similarities=speaker_similarities,
         )
     except Exception as exc:
         return DiarizationResult(

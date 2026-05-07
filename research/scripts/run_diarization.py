@@ -205,7 +205,10 @@ def main() -> None:
         print("All files already diarized. Nothing to do.")
         return
 
-    # Load reference embedding and embedding model when using reference strategy
+    # Load reference embedding when using reference strategy.
+    # NOTE: we no longer need to load a separate embedding model — pyannote already computes
+    # speaker embeddings internally during diarization and exposes them in its output.
+    # The fallback embedding model is only loaded if pyannote doesn't expose them.
     reference_embedding = None
     embedding_model = None
     if args.chi_strategy == "reference":
@@ -217,8 +220,7 @@ def main() -> None:
         import numpy as np
         reference_embedding = np.load(args.reference_embedding)
         print(f"Loaded interviewer reference embedding from: {args.reference_embedding}")
-        embedding_model = load_embedding_model()
-        print("Loaded ECAPA-TDNN embedding model.")
+        print("  Embeddings will be reused from pyannote's internal diarization pass (no extra model load).")
 
     pipeline, device = build_diarization_pipeline(device=args.device)
     results = []
@@ -244,6 +246,12 @@ def main() -> None:
             reference_embedding=reference_embedding,
             embedding_model=embedding_model,
         )
+        # Derive per-speaker similarity columns for easy analysis
+        similarities = result.speaker_similarities or {}
+        interviewer_speaker = max(similarities, key=lambda k: similarities[k]) if similarities else None
+        interviewer_sim = round(similarities[interviewer_speaker], 4) if interviewer_speaker else None
+        chi_sim = round(similarities.get(result.chi_speaker, float("nan")), 4) if (similarities and result.chi_speaker) else None
+
         results.append(
             {
                 "file_name": row["file_name"],
@@ -259,6 +267,11 @@ def main() -> None:
                 "speaker_totals": result.speaker_totals,
                 "speaker_rms": result.speaker_rms,
                 "speaker_pitch_hz": result.speaker_pitch_hz,
+                # Reference-strategy similarity analysis
+                "speaker_similarities": similarities if similarities else None,
+                "interviewer_speaker": interviewer_speaker,
+                "interviewer_sim": interviewer_sim,
+                "chi_sim": chi_sim,
                 "chi_duration_s": result.chi_duration_s,
                 "total_speech_s": result.total_speech_s,
                 "chi_speech_share": result.chi_speech_share,

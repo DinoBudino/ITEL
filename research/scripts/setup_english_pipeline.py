@@ -212,15 +212,18 @@ def main() -> None:
         print(f"\n{'=' * 60}")
         print("STEP 3/6  Running diarization (reference strategy)")
         print(f"{'=' * 60}")
+        # Auto-detect GPU if user didn't specify a device
+        import torch as _torch
+        effective_device = args.device or ("cuda" if _torch.cuda.is_available() else "cpu")
         diar_cmd = [
             python, "research/scripts/run_diarization.py",
             "--all",
             "--skip-completed",
             "--chi-strategy", "reference",
             "--reference-embedding", str(ref_embedding),
+            "--device", effective_device,
         ]
-        if args.device:
-            diar_cmd += ["--device", args.device]
+        print(f"  Using device: {effective_device}")
         run(diar_cmd, "run_diarization")
     else:
         print("\nSTEP 3 skipped (--skip-diarization)")
