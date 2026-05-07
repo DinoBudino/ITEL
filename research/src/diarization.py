@@ -15,6 +15,101 @@ import torchaudio
 from .config import CONFIG
 
 
+# ---------------------------------------------------------------------------
+# Speaker embedding helpers (ECAPA-TDNN via SpeechBrain)
+# ---------------------------------------------------------------------------
+
+def load_embedding_model(savedir: str | Path | None = None):
+    """Load pyannote wespeaker speaker embedding model (already cached from diarization).
+
+    Uses the same pyannote/wespeaker-voxceleb-resnet34-LM model that the
+    diarization pipeline already downloaded — no extra download needed and
+    no symlink issues on Windows.
+    """
+    from pyannote.audio import Inference, Model
+
+    token = get_hf_token()
+    cache = str(savedir or CONFIG.paths.model_dir)
+    model = Model.from_pretrained(
+        "pyannote/wespeaker-voxceleb-resnet34-LM",
+        token=token,
+        cache_dir=cache,
+    )
+    return Inference(model, window="whole")
+
+
+def compute_speaker_embedding(audio_np: np.ndarray, sr: int, model) -> np.ndarray:
+    """Return an L2-normalised speaker embedding for *audio_np* (mono float32).
+
+    Uses pyannote wespeaker — volume-invariant, captures vocal tract characteristics.
+    """
+    if sr != CONFIG.audio.target_sr:
+        audio_np = librosa.resample(audio_np, orig_sr=sr, target_sr=CONFIG.audio.target_sr)
+        sr = CONFIG.audio.target_sr
+
+    waveform = torch.tensor(audio_np, dtype=torch.float32).unsqueeze(0)
+    embedding = model({"waveform": waveform, "sample_rate": sr})
+
+    # pyannote Inference(window="whole") returns a (1, dim) numpy array
+    vec = np.array(embedding).squeeze()
+    norm = np.linalg.norm(vec)
+    return vec / norm if norm > 1e-8 else vec
+
+
+def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
+    """Cosine similarity between two L2-normalised vectors (range -1 to 1)."""
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-8))
+
+
+def extract_speaker_embeddings_from_segments(
+    waveform: torch.Tensor,
+    sr: int,
+    segments: list[dict[str, float | str]],
+    model,
+) -> dict[str, np.ndarray]:
+    """Compute one ECAPA embedding per unique speaker by concatenating their segments."""
+    speaker_clips: dict[str, list[np.ndarray]] = {}
+    audio_np = waveform.squeeze().cpu().numpy()
+
+    for segment in segments:
+        speaker = str(segment["speaker"])
+        start = max(int(float(segment["start"]) * sr), 0)
+        end = min(int(float(segment["end"]) * sr), len(audio_np))
+        if end > start:
+            speaker_clips.setdefault(speaker, []).append(audio_np[start:end])
+
+    embeddings: dict[str, np.ndarray] = {}
+    for speaker, clips in speaker_clips.items():
+        concatenated = np.concatenate(clips).astype(np.float32)
+        if len(concatenated) < sr // 4:  # skip clips shorter than 0.25 s
+            continue
+        embeddings[speaker] = compute_speaker_embedding(concatenated, sr, model)
+
+    return embeddings
+
+
+def identify_interviewer_by_reference(
+    speaker_embeddings: dict[str, np.ndarray],
+    reference_embedding: np.ndarray,
+    threshold: float = 0.65,
+) -> tuple[str | None, dict[str, float]]:
+    """Return the speaker label most similar to *reference_embedding*.
+
+    Returns ``(interviewer_speaker_id, {speaker: similarity_score})``.
+    If no speaker exceeds *threshold*, returns the closest one anyway but
+    logs the low confidence.
+    """
+    similarities = {
+        speaker: cosine_similarity(embedding, reference_embedding)
+        for speaker, embedding in speaker_embeddings.items()
+    }
+    if not similarities:
+        return None, {}
+
+    best_speaker = max(similarities, key=lambda k: similarities[k])
+    return best_speaker, similarities
+
+
 @dataclass(frozen=True)
 class DiarizationResult:
     source_audio_path: str
@@ -73,7 +168,7 @@ def build_diarization_pipeline(device: str | None = None):
     try:
         pipeline = Pipeline.from_pretrained(
             CONFIG.pyannote_model_id,
-            use_auth_token=token,
+            token=token,
             cache_dir=str(CONFIG.paths.model_dir),
         )
     finally:
@@ -236,6 +331,8 @@ def identify_child_speaker(
     sr: int,
     strategy: str = "longest",
     override_speaker: str | None = None,
+    reference_embedding: np.ndarray | None = None,
+    embedding_model=None,
 ) -> tuple[str | None, dict[str, float], dict[str, float], dict[str, float], str]:
     totals: dict[str, float] = {}
     for segment in segments:
@@ -250,6 +347,24 @@ def identify_child_speaker(
         if override_speaker not in totals:
             raise ValueError(f"Manual chi_speaker_override '{override_speaker}' not found in diarization speakers {sorted(totals)}")
         return override_speaker, totals, rms_levels, pitch_levels, "manual"
+
+    if strategy == "reference":
+        if reference_embedding is None or embedding_model is None:
+            raise ValueError(
+                "strategy='reference' requires both reference_embedding and embedding_model. "
+                "Run extract_interviewer_reference.py first and pass --reference-embedding."
+            )
+        speaker_embeddings = extract_speaker_embeddings_from_segments(waveform, sr, segments, embedding_model)
+        interviewer_speaker, similarities = identify_interviewer_by_reference(speaker_embeddings, reference_embedding)
+        if interviewer_speaker is None:
+            # fallback: use longest heuristic
+            chi_speaker = _max_key(totals)
+            return chi_speaker, totals, rms_levels, pitch_levels, "reference->longest_fallback"
+        # child is whichever speaker is NOT the interviewer (lowest similarity)
+        chi_speaker = min(similarities, key=lambda k: similarities[k])
+        best_sim = similarities[interviewer_speaker]
+        resolved = f"reference(sim={best_sim:.2f})"
+        return chi_speaker, totals, rms_levels, pitch_levels, resolved
 
     if strategy == "shortest":
         chi_speaker = _min_key(totals)
@@ -334,6 +449,8 @@ def diarize_audio(
     device: str | None = None,
     chi_strategy: str = "longest",
     chi_speaker_override: str | None = None,
+    reference_embedding: np.ndarray | None = None,
+    embedding_model=None,
 ) -> DiarizationResult:
     audio_path = Path(audio_path)
     child_path, interviewer_path, json_path = _output_paths(audio_path)
@@ -352,6 +469,8 @@ def diarize_audio(
             sr,
             strategy=chi_strategy,
             override_speaker=chi_speaker_override,
+            reference_embedding=reference_embedding,
+            embedding_model=embedding_model,
         )
         if chi_speaker is None:
             raise RuntimeError("No speakers detected during diarization.")

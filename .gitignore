@@ -49,6 +49,8 @@ English_Data/
 Test/
 data/Healthy/
 data/Patients/
+Datos_Brutos/
+Datos_Extra/
 !data/.sample_audio_catalog.json
 
 # Research pipeline artifacts
@@ -67,6 +69,15 @@ research/reports/CSV/**
 !research/reports/CSV/.gitkeep
 assets/models/**
 !assets/models/.gitkeep
+
+# Audio files (raw recordings, never track large audio data)
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+*.aac
+*.opus
 
 # Large generated binaries
 *.npy

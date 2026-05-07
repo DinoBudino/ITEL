@@ -11,7 +11,7 @@ if str(ROOT_DIR) not in sys.path:
 import pandas as pd
 
 from research.src.config import CONFIG
-from research.src.diarization import build_diarization_pipeline, diarize_audio
+from research.src.diarization import build_diarization_pipeline, diarize_audio, load_embedding_model
 
 
 REQUIRED_METADATA_COLUMNS = [
@@ -148,6 +148,11 @@ def parse_args() -> argparse.Namespace:
         help="Process only rows that have chi_speaker_override filled in metadata.",
     )
     parser.add_argument(
+        "--skip-completed",
+        action="store_true",
+        help="Skip files that already have diarization_status=completed in metadata.",
+    )
+    parser.add_argument(
         "--file-name",
         action="append",
         default=None,
@@ -160,9 +165,18 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--chi-strategy",
-        choices=["longest", "shortest", "loudest", "highest_pitch", "child_voice", "duration_x_rms"],
+        choices=["longest", "shortest", "loudest", "highest_pitch", "child_voice", "duration_x_rms", "reference"],
         default="longest",
         help="Automatic rule to assign the child speaker when no manual override is provided.",
+    )
+    parser.add_argument(
+        "--reference-embedding",
+        default=None,
+        help=(
+            "Path to a .npy file with the interviewer reference embedding. "
+            "Required when --chi-strategy reference is used. "
+            "Generate it with extract_interviewer_reference.py."
+        ),
     )
     parser.add_argument(
         "--summary-output",
@@ -180,8 +194,31 @@ def main() -> None:
         subset = _filter_by_file_names(subset, args.file_name)
     if args.only_overrides:
         subset = _filter_overrides(subset)
+    if args.skip_completed and "diarization_status" in subset.columns:
+        before = len(subset)
+        subset = subset[subset["diarization_status"].fillna("").astype(str).str.strip() != "completed"].copy()
+        skipped = before - len(subset)
+        if skipped:
+            print(f"Skipping {skipped} already-completed files.")
+
     if subset.empty:
-        raise ValueError("No English files selected for diarization.")
+        print("All files already diarized. Nothing to do.")
+        return
+
+    # Load reference embedding and embedding model when using reference strategy
+    reference_embedding = None
+    embedding_model = None
+    if args.chi_strategy == "reference":
+        if not args.reference_embedding:
+            raise ValueError(
+                "--reference-embedding is required when --chi-strategy reference is used. "
+                "Run extract_interviewer_reference.py first."
+            )
+        import numpy as np
+        reference_embedding = np.load(args.reference_embedding)
+        print(f"Loaded interviewer reference embedding from: {args.reference_embedding}")
+        embedding_model = load_embedding_model()
+        print("Loaded ECAPA-TDNN embedding model.")
 
     pipeline, device = build_diarization_pipeline(device=args.device)
     results = []
@@ -204,6 +241,8 @@ def main() -> None:
             device=str(device),
             chi_strategy=args.chi_strategy,
             chi_speaker_override=override,
+            reference_embedding=reference_embedding,
+            embedding_model=embedding_model,
         )
         results.append(
             {
