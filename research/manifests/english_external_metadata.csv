@@ -1,21 +1,21 @@
 file_name,subject_id,session_id,label,speaker_role,chi_speaker_override,diarization_status,review_status,review_reason,auto_qc_flag,chi_duration_s,total_speech_s,chi_speech_share,n_detected_speakers,qc_flag,notes
-Healthy\401.mp3,401,,Healthy,CHI,,pending,approved,speaker_selection_used_loudness_fallback,,377.0718750000008,413.488125000001,0.9119291515324652,2.0,,auto-generated
-Healthy\402.mp3,402,,Healthy,CHI,,pending,approved,speaker_selection_used_loudness_fallback,,271.4849999999981,295.16062499999794,0.9197873191927276,2.0,,auto-generated
-Healthy\403.mp3,403,,Healthy,CHI,,pending,pending,pitch_unavailable,,211.1400000000004,277.7118750000002,0.760284377468555,2.0,,auto-generated
-Healthy\404.mp3,404,,Healthy,CHI,,pending,pending,pitch_unavailable,,179.61749999999984,213.68812500000013,0.8405591092158243,2.0,,auto-generated
-Healthy\405.mp3,405,,Healthy,CHI,,pending,pending,multi_speaker_session; speaker_selection_used_loudness_fallback,,253.5806249999985,318.19499999999846,0.7969346627068298,3.0,,auto-generated
-Healthy\406.mp3,406,,Healthy,CHI,,pending,pending,child_duration_too_short; child_share_too_low; speaker_selection_used_loudness_fallback,exclude_suspect_child_assignment,2.6831249999999045,343.08562499999937,0.0078205695735573,2.0,,auto-generated
-Healthy\408.mp3,408,,Healthy,CHI,,pending,pending,pitch_unavailable,,180.4443750000001,181.15312500000016,0.99608756404285,2.0,,auto-generated
-Healthy\409.mp3,409,,Healthy,CHI,,pending,pending,speaker_selection_used_loudness_fallback,,192.42562499999983,247.37062499999968,0.7778838938536057,2.0,,auto-generated
-Healthy\410.mp3,410,,Healthy,CHI,,pending,approved,speaker_selection_used_loudness_fallback,,169.69499999999988,196.30687500000005,0.8644373764291232,2.0,,auto-generated
-Healthy\411.mp3,411,,Healthy,CHI,,pending,pending,pitch_unavailable,,375.3168750000005,425.1487500000002,0.8827895530681915,2.0,,auto-generated
-Patients\568.mp3,568,,Patients,CHI,,pending,pending,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,1.923750000000041,190.89000000000004,0.0100777934936352,2.0,,auto-generated
-Patients\569.mp3,569,,Patients,CHI,,pending,pending,pitch_unavailable,,225.6018749999997,225.7368749999998,0.999401958585632,2.0,,auto-generated
-Patients\570.mp3,570,,Patients,CHI,,pending,pending,pitch_unavailable,,408.8137499999996,408.8137499999996,1.0,1.0,,auto-generated
-Patients\572.mp3,572,,Patients,CHI,,pending,pending,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,4.488749999999754,418.0949999999998,0.0107361963190178,2.0,,auto-generated
-Patients\574.mp3,574,,Patients,CHI,,pending,pending,pitch_unavailable,,340.7400000000007,407.8687500000012,0.83541580471659,2.0,,auto-generated
-Patients\576.mp3,576,,Patients,CHI,,pending,pending,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,1.923750000000097,259.16625000000005,0.0074228415158227,2.0,,auto-generated
-Patients\607.mp3,607,,Patients,CHI,,pending,pending,pitch_unavailable,,387.4499999999996,428.77687499999934,0.9036168286827506,2.0,,auto-generated
-Patients\609.mp3,609,,Patients,CHI,,pending,pending,pitch_unavailable,,390.31874999999945,410.4506249999996,0.9509517740410308,2.0,,auto-generated
-Patients\611.mp3,611,,Patients,CHI,,pending,pending,pitch_unavailable,,181.6424999999998,243.4387499999999,0.746152779703313,2.0,,auto-generated
-Patients\617.mp3,617,,Patients,CHI,,pending,pending,pitch_unavailable,,424.4399999999996,424.4399999999996,1.0,1.0,,auto-generated
+Healthy\401.mp3,401,,Healthy,CHI,,completed,approved,speaker_selection_used_loudness_fallback,,379.28250000000094,413.4881250000011,0.9172754356609393,2,,auto-generated
+Healthy\402.mp3,402,,Healthy,CHI,,completed,approved,speaker_selection_used_loudness_fallback,exclude_suspect_child_assignment,3.425624999999968,295.1606249999983,0.01160596878394599,2,,auto-generated
+Healthy\403.mp3,403,,Healthy,CHI,,completed,pending,pitch_unavailable,,211.14000000000033,277.7118750000002,0.760284377468555,2,,auto-generated
+Healthy\404.mp3,404,,Healthy,CHI,,completed,pending,pitch_unavailable,,179.61749999999984,213.68812500000013,0.8405591092158243,2,,auto-generated
+Healthy\405.mp3,405,,Healthy,CHI,,completed,pending,multi_speaker_session; speaker_selection_used_loudness_fallback,,251.55562499999837,318.19499999999834,0.7905706406448866,2,,auto-generated
+Healthy\406.mp3,406,,Healthy,CHI,,completed,pending,child_duration_too_short; child_share_too_low; speaker_selection_used_loudness_fallback,exclude_suspect_child_assignment,2.6831249999999045,343.08562499999937,0.007820569573557357,2,,auto-generated
+Healthy\408.mp3,408,,Healthy,CHI,,failed,pending,pitch_unavailable,exclude_diarization_failed,0.0,0.0,0.0,0,,auto-generated
+Healthy\409.mp3,409,,Healthy,CHI,,completed,pending,speaker_selection_used_loudness_fallback,,192.56062499999985,247.37062499999968,0.7784296336721472,2,,auto-generated
+Healthy\410.mp3,410,,Healthy,CHI,,completed,approved,speaker_selection_used_loudness_fallback,,169.72874999999993,196.30687500000005,0.8646093011261062,2,,auto-generated
+Healthy\411.mp3,411,,Healthy,CHI,,completed,pending,pitch_unavailable,,375.31687500000044,425.1487500000002,0.8827895530681915,2,,auto-generated
+Patients\568.mp3,568,,Patients,CHI,,failed,pending,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_diarization_failed,0.0,0.0,0.0,0,,auto-generated
+Patients\569.mp3,569,,Patients,CHI,,failed,pending,pitch_unavailable,exclude_diarization_failed,0.0,0.0,0.0,0,,auto-generated
+Patients\570.mp3,570,,Patients,CHI,,completed,pending,pitch_unavailable,,408.8137499999996,408.8137499999996,1.0,1,,auto-generated
+Patients\572.mp3,572,,Patients,CHI,,completed,pending,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,4.488749999999754,418.0949999999998,0.010736196319017823,2,,auto-generated
+Patients\574.mp3,574,,Patients,CHI,,completed,pending,pitch_unavailable,,340.7400000000007,407.8687500000012,0.83541580471659,2,,auto-generated
+Patients\576.mp3,576,,Patients,CHI,,completed,pending,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,1.9237500000000978,259.16625000000005,0.0074228415158227486,2,,auto-generated
+Patients\607.mp3,607,,Patients,CHI,,completed,pending,pitch_unavailable,,387.43312499999956,428.7599999999993,0.9036130352644841,2,,auto-generated
+Patients\609.mp3,609,,Patients,CHI,,completed,pending,pitch_unavailable,,390.31874999999945,410.4506249999996,0.9509517740410307,2,,auto-generated
+Patients\611.mp3,611,,Patients,CHI,,completed,pending,pitch_unavailable,,181.6424999999998,243.4387499999999,0.746152779703313,2,,auto-generated
+Patients\617.mp3,617,,Patients,CHI,,completed,pending,pitch_unavailable,,424.4399999999996,424.4399999999996,1.0,1,,auto-generated

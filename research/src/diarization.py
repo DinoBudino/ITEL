@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
+import warnings
 from dataclasses import dataclass
 from functools import wraps
 from pathlib import Path
@@ -10,7 +12,15 @@ from typing import Any
 import librosa
 import numpy as np
 import torch
-import torchaudio
+
+# Suppress the noisy torchcodec "DLL not found" warning that torchaudio emits
+# on Windows when the torchcodec backend is unavailable.  We use PyAV for
+# audio loading so the missing backend has no effect on us.
+warnings.filterwarnings("ignore", message=".*[Tt]orchcodec.*")
+warnings.filterwarnings("ignore", message=".*libtorchcodec.*")
+logging.getLogger("torchaudio").setLevel(logging.ERROR)
+
+import torchaudio  # noqa: E402
 
 from .config import CONFIG
 
@@ -550,6 +560,82 @@ def _concat_speaker_audio(
     return torch.cat(clips, dim=-1)
 
 
+def _build_clean_chi_audio(
+    *,
+    waveform: torch.Tensor,
+    sr: int,
+    segments: list[dict[str, float | str]],
+    chi_speaker: str,
+    trim_s: float = 0.15,
+    min_seg_s: float = 0.5,
+    reference_embedding: np.ndarray | None = None,
+    embedding_model=None,
+    sim_threshold: float = 0.5,
+) -> torch.Tensor | None:
+    """Concatenate CHI segments applying three quality filters:
+
+    1. Boundary trim    — remove *trim_s* seconds from each segment edge to
+                          avoid cross-talk bleed at speaker transitions.
+    2. Min-duration     — discard segments shorter than *min_seg_s* after
+                          trimming; these are typically diarization errors.
+    3. Similarity check — if *reference_embedding* and *embedding_model* are
+                          provided, compute per-segment wespeaker embeddings and
+                          reject any CHI segment whose cosine similarity to the
+                          interviewer reference exceeds *sim_threshold* (likely
+                          a mis-labelled interviewer segment).
+    """
+    clips: list[torch.Tensor] = []
+    n_short = 0
+    n_similar = 0
+
+    for seg in segments:
+        if str(seg["speaker"]) != chi_speaker:
+            continue
+
+        # --- 1. Boundary trim ---
+        start_s = float(seg["start"]) + trim_s
+        end_s = float(seg["end"]) - trim_s
+
+        # --- 2. Min-duration filter ---
+        if end_s - start_s < min_seg_s:
+            n_short += 1
+            continue
+
+        start_i = max(int(start_s * sr), 0)
+        end_i = min(int(end_s * sr), waveform.shape[-1])
+        if end_i <= start_i:
+            n_short += 1
+            continue
+
+        clip = waveform[:, start_i:end_i]
+
+        # --- 3. Per-segment similarity check ---
+        if reference_embedding is not None and embedding_model is not None:
+            clip_np = clip.squeeze().cpu().numpy()
+            if len(clip_np) >= sr // 4:
+                try:
+                    seg_emb = compute_speaker_embedding(clip_np, sr, embedding_model)
+                    sim = cosine_similarity(seg_emb, reference_embedding)
+                    if sim > sim_threshold:
+                        n_similar += 1
+                        continue  # sounds too much like the interviewer — discard
+                except Exception:
+                    pass  # embedding failed; keep the clip to be safe
+
+        clips.append(clip)
+
+    rejected = n_short + n_similar
+    if rejected:
+        print(
+            f"    [clean_chi] rechazados {rejected} segmentos "
+            f"({n_short} cortos, {n_similar} similares al investigador)"
+        )
+
+    if not clips:
+        return None
+    return torch.cat(clips, dim=-1)
+
+
 def _relative_english_audio_path(audio_path: Path) -> Path:
     return audio_path.relative_to(CONFIG.paths.raw_en_dir)
 
@@ -602,7 +688,14 @@ def diarize_audio(
             pitch_levels=pitch_levels,
         )
 
-        child_audio = _concat_speaker_audio(waveform=waveform, sr=sr, segments=segments, speaker_id=chi_speaker)
+        child_audio = _build_clean_chi_audio(
+            waveform=waveform,
+            sr=sr,
+            segments=segments,
+            chi_speaker=chi_speaker,
+            reference_embedding=reference_embedding,
+            embedding_model=embedding_model,
+        )
         if child_audio is None:
             raise RuntimeError("Could not extract CHI audio from diarization output.")
 
@@ -623,9 +716,10 @@ def diarize_audio(
                 ]
                 interviewer_audio = torch.cat([tensor for tensor in [interviewer_audio, *extra] if tensor is not None], dim=-1)
 
-        torchaudio.save(str(child_path), child_audio.cpu(), sr)
+        import soundfile as _sf
+        _sf.write(str(child_path), child_audio.squeeze().cpu().numpy(), sr)
         if interviewer_audio is not None:
-            torchaudio.save(str(interviewer_path), interviewer_audio.cpu(), sr)
+            _sf.write(str(interviewer_path), interviewer_audio.squeeze().cpu().numpy(), sr)
 
         with json_path.open("w", encoding="utf-8") as handle:
             json.dump(

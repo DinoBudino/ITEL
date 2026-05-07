@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 from pathlib import Path
 import sys
 
@@ -124,6 +125,42 @@ def _update_metadata(metadata_csv: Path, metadata: pd.DataFrame, results: list[d
     updated.to_csv(metadata_csv, index=False)
 
 
+def _clean_diarization_outputs() -> None:
+    """Delete all previous diarization outputs (JSONs and CHI/EXA audio files).
+
+    Called automatically at the start of each run so stale files from a
+    previous corpus size (e.g. 80 files) do not mix with the current run.
+    Skipped when --skip-completed is active.
+    """
+    targets = [
+        ("segment JSONs", CONFIG.paths.diarization_dir, "**/*.json"),
+        ("CHI audio",     CONFIG.paths.english_child_dir, "**/*.wav"),
+        ("EXA audio",     CONFIG.paths.english_interviewer_dir, "**/*.wav"),
+    ]
+    total = 0
+    for label, base_dir, pattern in targets:
+        if not base_dir.exists():
+            continue
+        files = list(base_dir.glob(pattern))
+        for f in files:
+            try:
+                f.unlink()
+            except OSError:
+                pass
+        if files:
+            print(f"  [clean] Deleted {len(files)} {label} from {base_dir}")
+        total += len(files)
+
+    # Also remove the summary CSV so it reflects only the current run
+    summary_csv = CONFIG.paths.diarization_dir / "english_external_diarization_summary.csv"
+    if summary_csv.exists():
+        summary_csv.unlink()
+        print(f"  [clean] Deleted previous summary CSV")
+
+    if total == 0:
+        print("  [clean] Output dirs already empty — nothing to delete.")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run pyannote diarization and export CHI/EXA audio.")
     parser.add_argument(
@@ -183,6 +220,15 @@ def parse_args() -> argparse.Namespace:
         default=str(CONFIG.paths.diarization_dir / "english_external_diarization_summary.csv"),
         help="Where to save the diarization summary CSV.",
     )
+    parser.add_argument(
+        "--verify-segments",
+        action="store_true",
+        help=(
+            "Load the wespeaker embedding model to verify each CHI segment: "
+            "rejects segments too similar to the interviewer reference. "
+            "Only meaningful with --chi-strategy reference."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -205,6 +251,12 @@ def main() -> None:
         print("All files already diarized. Nothing to do.")
         return
 
+    # Clean previous outputs so stale files from an older run don't persist.
+    # Skipped when --skip-completed is active (incremental mode).
+    if not args.skip_completed:
+        print("Limpiando outputs anteriores…")
+        _clean_diarization_outputs()
+
     # Load reference embedding when using reference strategy.
     # NOTE: we no longer need to load a separate embedding model — pyannote already computes
     # speaker embeddings internally during diarization and exposes them in its output.
@@ -220,7 +272,12 @@ def main() -> None:
         import numpy as np
         reference_embedding = np.load(args.reference_embedding)
         print(f"Loaded interviewer reference embedding from: {args.reference_embedding}")
-        print("  Embeddings will be reused from pyannote's internal diarization pass (no extra model load).")
+        if args.verify_segments:
+            print("  --verify-segments enabled: loading wespeaker embedding model for per-segment CHI verification…")
+            embedding_model = load_embedding_model()
+            print("  Embedding model ready.")
+        else:
+            print("  Embeddings will be reused from pyannote's internal diarization pass (no extra model load).")
 
     pipeline, device = build_diarization_pipeline(device=args.device)
     results = []
