@@ -1,0 +1,27 @@
+{
+  "task_types": [
+    "controlled_vowel",
+    "controlled_consonant",
+    "controlled_word"
+  ],
+  "model": {
+    "model_class": "Pipeline",
+    "pipeline_steps": [
+      "scaler",
+      "clf"
+    ],
+    "classifier_class": "MLPClassifier",
+    "classes": [
+      "Healthy",
+      "Patients"
+    ]
+  },
+  "label_distribution": {
+    "Patients": 2173,
+    "Healthy": 1680
+  },
+  "feature_shape": {
+    "rows": 3853,
+    "cols": 6144
+  }
+}

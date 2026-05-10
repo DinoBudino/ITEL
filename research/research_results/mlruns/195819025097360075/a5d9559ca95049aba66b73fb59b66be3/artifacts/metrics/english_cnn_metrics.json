@@ -1,0 +1,18 @@
+{
+  "mean": {
+    "n_rows": 12,
+    "n_unique_labels": 2,
+    "balanced_accuracy": 0.5,
+    "auc": 0.4571428571428572,
+    "f1": 0.2450980392156863,
+    "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.00      0.00      0.00         7\n    Patients       0.42      1.00      0.59         5\n\n    accuracy                           0.42        12\n   macro avg       0.21      0.50      0.29        12\nweighted avg       0.17      0.42      0.25        12\n"
+  },
+  "min": {
+    "n_rows": 12,
+    "n_unique_labels": 2,
+    "balanced_accuracy": 0.5,
+    "auc": 0.5142857142857142,
+    "f1": 0.2450980392156863,
+    "classification_report": "              precision    recall  f1-score   support\n\n     Healthy       0.00      0.00      0.00         7\n    Patients       0.42      1.00      0.59         5\n\n    accuracy                           0.42        12\n   macro avg       0.21      0.50      0.29        12\nweighted avg       0.17      0.42      0.25        12\n"
+  }
+}

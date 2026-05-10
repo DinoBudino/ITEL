@@ -1,0 +1,32 @@
+{
+  "note": "English child-only test, CHIDESC excluded, 5s segment experiments",
+  "n_subjects": 12,
+  "n_healthy": 7,
+  "n_patients": 5,
+  "threshold_only": {
+    "baseline_mean_best_balanced_accuracy": 0.5714285714285714,
+    "baseline_mean_best_threshold": 0.9847618937492371,
+    "baseline_min_best_balanced_accuracy": 0.5714285714285714,
+    "baseline_min_best_threshold": 0.08633305132389069
+  },
+  "mixed_adaptation_cv": {
+    "logreg_mean_ba": 0.5,
+    "logreg_mean_auc": 0.7222222222222223,
+    "logreg_min_ba": 0.5,
+    "logreg_min_auc": 0.75,
+    "mlp_small_mean_ba": 0.5,
+    "mlp_small_mean_auc": 0.888888888888889,
+    "mlp_small_min_ba": 0.5,
+    "mlp_small_min_auc": 0.8333333333333334
+  },
+  "english_only_cv": {
+    "logreg_mean_ba": 0.5,
+    "logreg_mean_auc": 0.888888888888889,
+    "logreg_min_ba": 0.5,
+    "logreg_min_auc": 1.0,
+    "mlp_small_mean_ba": 0.5,
+    "mlp_small_mean_auc": 0.8055555555555557,
+    "mlp_small_min_ba": 0.5,
+    "mlp_small_min_auc": 0.5277777777777778
+  }
+}

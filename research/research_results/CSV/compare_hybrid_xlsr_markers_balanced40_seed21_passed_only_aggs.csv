@@ -1,7 +1,0 @@
-task_variant,model_type,setup,mode,aggregation_method,segment_selection,balanced_accuracy,auc,f1,best_threshold,best_threshold_balanced_accuracy,best_threshold_accuracy
-speech_sounds_only,logreg_tuned,xlsr_only,seg_5s_balanced40_seed21,mean,passed_only,0.5039473684210526,0.5447368421052631,0.4459022738268021,0.1,0.5736842105263158,0.5641025641025641
-speech_sounds_only,logreg_tuned,hybrid_xlsr_markers,seg_5s_balanced40_seed21,mean,passed_only,0.481578947368421,0.55,0.46153846153846156,0.35,0.5907894736842105,0.5897435897435898
-speech_sounds_only,logreg_tuned,xlsr_only,seg_5s_balanced40_seed21,median,passed_only,0.5039473684210526,0.5210526315789474,0.4459022738268021,0.05,0.5368421052631579,0.5384615384615384
-speech_sounds_only,logreg_tuned,hybrid_xlsr_markers,seg_5s_balanced40_seed21,median,passed_only,0.481578947368421,0.5184210526315789,0.46153846153846156,0.25,0.5868421052631578,0.5897435897435898
-speech_sounds_only,logreg_tuned,xlsr_only,seg_5s_balanced40_seed21,trimmed_mean,passed_only,0.5039473684210526,0.5368421052631579,0.4459022738268021,0.2,0.5907894736842105,0.5897435897435898
-speech_sounds_only,logreg_tuned,hybrid_xlsr_markers,seg_5s_balanced40_seed21,trimmed_mean,passed_only,0.481578947368421,0.5473684210526316,0.46153846153846156,0.3,0.6157894736842104,0.6153846153846154

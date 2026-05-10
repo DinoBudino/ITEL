@@ -4,12 +4,15 @@ import argparse
 from pathlib import Path
 import sys
 
+import mlflow
+
 ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from research.src.config import CONFIG
 from research.src.data_manifest import SAMPLE_MANIFEST_COLUMNS, SampleRecord, records_to_frame, save_manifest
+from research.src.tracking import configure_tracking, log_artifact, log_dict, log_params
 
 
 TASK_TYPE_MAP = {
@@ -98,13 +101,66 @@ def parse_args() -> argparse.Namespace:
         default=str(CONFIG.paths.manifests_dir / CONFIG.datasets.cz_manifest_name),
         help="Output path for the new Czech sample manifest.",
     )
+    parser.add_argument(
+        "--mlflow-experiment",
+        default="itel-data-prep",
+        help="MLflow experiment name.",
+    )
+    parser.add_argument(
+        "--mlflow-run-name",
+        default=None,
+        help="Optional MLflow run name.",
+    )
+    parser.add_argument(
+        "--mlflow-tracking-uri",
+        default=None,
+        help="Optional MLflow tracking URI. Defaults to a local file store under research_results/mlruns.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    output = build_manifest(Path(args.input_dir), Path(args.output))
-    print(f"Saved Czech manifest to: {output}")
+    tracking_uri = configure_tracking(args.mlflow_tracking_uri, args.mlflow_experiment)
+
+    with mlflow.start_run(run_name=args.mlflow_run_name):
+        output = build_manifest(Path(args.input_dir), Path(args.output))
+        frame = records_to_frame([])
+        try:
+            import pandas as pd
+
+            frame = pd.read_csv(output)
+        except Exception:
+            pass
+
+        mlflow.set_tags(
+            {
+                "stage": "research",
+                "script": "build_cz_manifest.py",
+                "dataset_id": CONFIG.datasets.cz_dataset_id,
+            }
+        )
+        log_params(
+            {
+                "input_dir": args.input_dir,
+                "output": str(output),
+                "tracking_uri": tracking_uri,
+            }
+        )
+        log_dict(
+            "metadata/build_cz_manifest_summary.json",
+            {
+                "n_rows": int(len(frame)),
+                "n_subjects": 0 if frame.empty else int(frame["subject_id"].nunique()),
+                "labels": {} if frame.empty else {str(k): int(v) for k, v in frame["label"].value_counts().to_dict().items()},
+                "task_types": {} if frame.empty else {str(k): int(v) for k, v in frame["task_type"].value_counts().to_dict().items()},
+            },
+        )
+        log_artifact(output, artifact_path="manifests")
+
+        print(f"Saved Czech manifest to: {output}")
+        print(f"MLflow experiment: {args.mlflow_experiment}")
+        print(f"MLflow tracking URI: {tracking_uri}")
 
 
 if __name__ == "__main__":

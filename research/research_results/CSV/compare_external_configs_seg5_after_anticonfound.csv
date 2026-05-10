@@ -1,7 +1,0 @@
-task_variant,model_type,mode,aggregation_method,n_rows,balanced_accuracy,auc,f1,accuracy_line,best_threshold,best_threshold_balanced_accuracy,best_threshold_accuracy
-speech_sounds_only,logreg_tuned,seg_5s,mean,208,0.534037558685446,0.5653008962868118,0.6144632290786137,macro avg       0.57      0.53      0.51       208,0.2,0.5499359795134443,0.4519230769230769
-speech_sounds_only,logreg_tuned,seg_5s,median,208,0.545134443021767,0.5561246265471617,0.6256382079459003,macro avg       0.59      0.55      0.53       208,0.25,0.5518565941101152,0.6538461538461539
-speech_sounds_only,mlp_small,seg_5s,mean,208,0.5388390951771234,0.5387323943661972,0.4259918125897508,macro avg       0.54      0.54      0.44       208,0.55,0.5527102005975246,0.5
-speech_sounds_only,mlp_small,seg_5s,median,208,0.5423602219376867,0.5534571062740077,0.4322717252581506,macro avg       0.55      0.54      0.44       208,0.75,0.5830132309005549,0.5192307692307693
-speech_sounds_only,logreg_pca,seg_5s,mean,208,0.5317968416559966,0.5263551002987622,0.4132755265567766,macro avg       0.54      0.53      0.43       208,0.65,0.5330772513871106,0.5673076923076923
-speech_sounds_only,logreg_pca,seg_5s,median,208,0.5353179684165599,0.5533504054630816,0.41966007574525427,macro avg       0.54      0.54      0.43       208,0.95,0.5528169014084507,0.5721153846153846

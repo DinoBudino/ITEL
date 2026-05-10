@@ -23,7 +23,7 @@ def _is_excluded_flag(value: object) -> bool:
 
 def _preprocessing_profile_for_dataset(dataset_id: str) -> str:
     if dataset_id in {CONFIG.datasets.cz_dataset_id, CONFIG.datasets.en_dataset_id}:
-        return "anti_confound"
+        return CONFIG.audio.default_profile
     return "standard"
 
 

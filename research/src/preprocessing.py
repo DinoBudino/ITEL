@@ -55,9 +55,11 @@ def keep_voiced_regions(samples: np.ndarray, top_db: float | None = None) -> np.
 
 
 def preprocess_samples(samples: np.ndarray, sr: int, profile: str = "standard") -> np.ndarray:
-    samples = highpass_filter(samples, sr=sr)
     if profile == "standard":
-        return normalize_peak(samples)
+        profile = CONFIG.audio.default_profile
+    samples = highpass_filter(samples, sr=sr)
+    if profile == "multilingual_light":
+        return normalize_rms(samples)
     if profile == "anti_confound":
         samples = trim_silence(samples)
         samples = keep_voiced_regions(samples)

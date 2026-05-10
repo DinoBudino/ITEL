@@ -14,7 +14,7 @@ import pandas as pd
 from research.scripts.evaluate_external import _evaluate_manifest, _filter_sample_manifest
 from research.scripts.evaluate_internal_cz import run_cv
 from research.src.config import CONFIG
-from research.src.train import fit_logreg_classifier, load_embeddings
+from research.src.train import MODEL_TRAINERS, RECOMMENDED_MODEL_TYPE, load_embeddings
 
 
 REPORT_CSV_DIR = CONFIG.paths.reports_dir / "CSV"
@@ -106,7 +106,7 @@ def _filter_embedding_rows(embedding_manifest: pd.DataFrame, sample_manifest: pd
 def _train_variant_model(sample_manifest: pd.DataFrame, embedding_manifest: pd.DataFrame):
     merged = embedding_manifest.merge(sample_manifest[["sample_id", "label"]], left_on="source_sample_id", right_on="sample_id", how="left")
     X, merged = load_embeddings(merged)
-    model = fit_logreg_classifier(X, merged["label"])
+    model = MODEL_TRAINERS[RECOMMENDED_MODEL_TYPE](X, merged["label"])
     return model
 
 

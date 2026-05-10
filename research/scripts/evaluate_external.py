@@ -5,6 +5,11 @@ import json
 from pathlib import Path
 import sys
 
+try:
+    import mlflow
+except ModuleNotFoundError:  # pragma: no cover - optional dependency for analysis-only runs
+    mlflow = None
+
 ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
@@ -17,6 +22,7 @@ from sklearn.metrics import balanced_accuracy_score
 from research.src.config import CONFIG
 from research.src.evaluate import binary_metrics
 from research.src.segmentation import aggregate_probabilities
+from research.src.tracking import configure_tracking, log_artifact, log_dict, log_metrics, log_params
 from research.src.train import load_embeddings
 
 
@@ -198,8 +204,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        default=str(CONFIG.paths.model_dir / "xlsr_logreg_baseline.joblib"),
-        help="Path to the trained baseline model.",
+        default=str(CONFIG.paths.model_dir / "xlsr300m_mlp_small_cz.joblib"),
+        help="Path to the trained Czech MLP model.",
     )
     parser.add_argument(
         "--embedding-manifests",
@@ -233,38 +239,77 @@ def parse_args() -> argparse.Namespace:
         default=0.5,
         help="Threshold used to convert score_patients into class predictions.",
     )
+    parser.add_argument("--mlflow-experiment", default="itel-evaluations", help="MLflow experiment name.")
+    parser.add_argument("--mlflow-run-name", default=None, help="Optional MLflow run name.")
+    parser.add_argument(
+        "--mlflow-tracking-uri",
+        default=None,
+        help="Optional MLflow tracking URI. Defaults to a local file store under research_results/mlruns.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    if mlflow is None:
+        raise ModuleNotFoundError("mlflow is required to run evaluate_external.py directly.")
+    tracking_uri = configure_tracking(args.mlflow_tracking_uri, args.mlflow_experiment)
     sample_manifest = _filter_sample_manifest(pd.read_csv(args.sample_manifest), approved_only=args.approved_only)
     model = joblib.load(args.model)
     reports_dir = Path(args.reports_dir)
     reports_dir.mkdir(parents=True, exist_ok=True)
 
-    summary: dict[str, dict] = {}
-    if sample_manifest.empty:
-        print("No English rows available after applying the current manifest filter.")
-    for manifest_str in args.embedding_manifests:
-        manifest_path = Path(manifest_str)
-        metrics, predictions = _evaluate_manifest(
-            model,
-            sample_manifest,
-            manifest_path,
-            aggregation_method=args.aggregation_method,
-            decision_threshold=args.decision_threshold,
+    with mlflow.start_run(run_name=args.mlflow_run_name):
+        summary: dict[str, dict] = {}
+        if sample_manifest.empty:
+            print("No English rows available after applying the current manifest filter.")
+        for manifest_str in args.embedding_manifests:
+            manifest_path = Path(manifest_str)
+            metrics, predictions = _evaluate_manifest(
+                model,
+                sample_manifest,
+                manifest_path,
+                aggregation_method=args.aggregation_method,
+                decision_threshold=args.decision_threshold,
+            )
+            mode_name = manifest_path.stem.replace(f"{CONFIG.datasets.en_dataset_id}_embeddings_", "")
+            summary[mode_name] = metrics
+
+            predictions_path = reports_dir / f"predictions_{CONFIG.datasets.en_dataset_id}_{mode_name}.csv"
+            predictions.to_csv(predictions_path, index=False)
+            log_artifact(predictions_path, artifact_path=f"predictions/{mode_name}")
+            print(f"Saved predictions to: {predictions_path}")
+
+        metrics_path = reports_dir / f"metrics_{CONFIG.datasets.en_dataset_id}.json"
+        metrics_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+        mlflow.set_tags(
+            {
+                "stage": "research",
+                "script": "evaluate_external.py",
+                "dataset_id": CONFIG.datasets.en_dataset_id,
+                "model_path": str(args.model),
+            }
         )
-        mode_name = manifest_path.stem.replace(f"{CONFIG.datasets.en_dataset_id}_embeddings_", "")
-        summary[mode_name] = metrics
+        log_params(
+            {
+                "sample_manifest": args.sample_manifest,
+                "model": args.model,
+                "embedding_manifests": args.embedding_manifests,
+                "reports_dir": str(reports_dir),
+                "approved_only": args.approved_only,
+                "aggregation_method": args.aggregation_method,
+                "decision_threshold": args.decision_threshold,
+                "tracking_uri": tracking_uri,
+            }
+        )
+        log_metrics(summary, prefix="external.")
+        log_dict("metrics/english_external_metrics.json", summary)
+        log_artifact(metrics_path, artifact_path="metrics")
 
-        predictions_path = reports_dir / f"predictions_{CONFIG.datasets.en_dataset_id}_{mode_name}.csv"
-        predictions.to_csv(predictions_path, index=False)
-        print(f"Saved predictions to: {predictions_path}")
-
-    metrics_path = reports_dir / f"metrics_{CONFIG.datasets.en_dataset_id}.json"
-    metrics_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
-    print(f"Saved metrics summary to: {metrics_path}")
+        print(f"Saved metrics summary to: {metrics_path}")
+        print(f"MLflow experiment: {args.mlflow_experiment}")
+        print(f"MLflow tracking URI: {tracking_uri}")
 
 
 if __name__ == "__main__":

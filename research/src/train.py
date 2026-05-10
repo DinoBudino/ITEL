@@ -6,13 +6,41 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
+from sklearn.base import clone
 from sklearn.linear_model import LogisticRegression
 from sklearn.decomposition import PCA
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
-from xgboost import XGBClassifier
+try:
+    from xgboost import XGBClassifier
+except ModuleNotFoundError:  # pragma: no cover - optional dependency for analysis-only runs
+    XGBClassifier = None
+
+
+RECOMMENDED_MODEL_TYPE = "mlp_small"
+
+
+class LabelEncodedClassifier(BaseEstimator, ClassifierMixin):
+    def __init__(self, estimator: BaseEstimator) -> None:
+        self.estimator = estimator
+
+    def fit(self, X: np.ndarray, y: pd.Series) -> "LabelEncodedClassifier":
+        self.label_encoder_ = LabelEncoder()
+        y_encoded = self.label_encoder_.fit_transform(pd.Series(y).astype(str))
+        self.estimator_ = clone(self.estimator)
+        self.estimator_.fit(X, y_encoded)
+        self.classes_ = self.label_encoder_.classes_
+        return self
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        indices = self.estimator_.predict(X)
+        return self.label_encoder_.inverse_transform(indices)
+
+    def predict_proba(self, X: np.ndarray) -> np.ndarray:
+        return self.estimator_.predict_proba(X)
 
 
 class XGBStringLabelClassifier(BaseEstimator, ClassifierMixin):
@@ -38,6 +66,8 @@ class XGBStringLabelClassifier(BaseEstimator, ClassifierMixin):
         self.random_state = random_state
 
     def fit(self, X: np.ndarray, y: pd.Series) -> "XGBStringLabelClassifier":
+        if XGBClassifier is None:
+            raise ModuleNotFoundError("xgboost is required for the xgboost model family.")
         self.classes_ = np.array(sorted(pd.Series(y).astype(str).unique().tolist()))
         class_to_index = {label: idx for idx, label in enumerate(self.classes_.tolist())}
         y_encoded = np.array([class_to_index[str(label)] for label in y], dtype=np.int64)
@@ -128,18 +158,20 @@ def fit_mlp_small_classifier(X: np.ndarray, labels: pd.Series) -> Pipeline:
             ("scaler", StandardScaler()),
             (
                 "clf",
-                MLPClassifier(
-                    hidden_layer_sizes=(64,),
-                    activation="relu",
-                    solver="adam",
-                    alpha=1e-3,
-                    learning_rate="adaptive",
-                    learning_rate_init=1e-3,
-                    max_iter=500,
-                    early_stopping=False,
-                    batch_size="auto",
-                    n_iter_no_change=25,
-                    random_state=42,
+                LabelEncodedClassifier(
+                    MLPClassifier(
+                        hidden_layer_sizes=(128, 32),
+                        activation="relu",
+                        solver="adam",
+                        alpha=5e-4,
+                        learning_rate="adaptive",
+                        learning_rate_init=1e-3,
+                        max_iter=600,
+                        early_stopping=False,
+                        batch_size="auto",
+                        n_iter_no_change=20,
+                        random_state=42,
+                    )
                 ),
             ),
         ]
@@ -186,18 +218,20 @@ def fit_mlp_medium_classifier(X: np.ndarray, labels: pd.Series) -> Pipeline:
             ("scaler", StandardScaler()),
             (
                 "clf",
-                MLPClassifier(
-                    hidden_layer_sizes=(128, 32),
-                    activation="relu",
-                    solver="adam",
-                    alpha=5e-3,
-                    learning_rate="adaptive",
-                    learning_rate_init=7.5e-4,
-                    max_iter=800,
-                    early_stopping=False,
-                    batch_size=64,
-                    n_iter_no_change=30,
-                    random_state=42,
+                LabelEncodedClassifier(
+                    MLPClassifier(
+                        hidden_layer_sizes=(256, 64),
+                        activation="relu",
+                        solver="adam",
+                        alpha=1e-3,
+                        learning_rate="adaptive",
+                        learning_rate_init=7.5e-4,
+                        max_iter=800,
+                        early_stopping=False,
+                        batch_size="auto",
+                        n_iter_no_change=30,
+                        random_state=42,
+                    )
                 ),
             ),
         ]
@@ -213,18 +247,20 @@ def fit_mlp_pca_classifier(X: np.ndarray, labels: pd.Series) -> Pipeline:
             ("pca", PCA(n_components=256, random_state=42)),
             (
                 "clf",
-                MLPClassifier(
-                    hidden_layer_sizes=(128, 32),
-                    activation="relu",
-                    solver="adam",
-                    alpha=1e-2,
-                    learning_rate="adaptive",
-                    learning_rate_init=1e-3,
-                    max_iter=800,
-                    early_stopping=False,
-                    batch_size=64,
-                    n_iter_no_change=30,
-                    random_state=42,
+                LabelEncodedClassifier(
+                    MLPClassifier(
+                        hidden_layer_sizes=(128, 32),
+                        activation="relu",
+                        solver="adam",
+                        alpha=1e-2,
+                        learning_rate="adaptive",
+                        learning_rate_init=1e-3,
+                        max_iter=800,
+                        early_stopping=False,
+                        batch_size="auto",
+                        n_iter_no_change=30,
+                        random_state=42,
+                    )
                 ),
             ),
         ]
@@ -234,13 +270,13 @@ def fit_mlp_pca_classifier(X: np.ndarray, labels: pd.Series) -> Pipeline:
 
 
 MODEL_TRAINERS = {
+    "mlp_small": fit_mlp_small_classifier,
+    "mlp_medium": fit_mlp_medium_classifier,
+    "mlp_pca": fit_mlp_pca_classifier,
     "logreg": fit_logreg_classifier,
     "logreg_tuned": fit_logreg_tuned_classifier,
     "linear_svm": fit_linear_svm_classifier,
     "xgboost": fit_xgboost_classifier,
-    "mlp_small": fit_mlp_small_classifier,
     "logreg_pca": fit_logreg_pca_classifier,
     "linear_svm_pca": fit_linear_svm_pca_classifier,
-    "mlp_medium": fit_mlp_medium_classifier,
-    "mlp_pca": fit_mlp_pca_classifier,
 }

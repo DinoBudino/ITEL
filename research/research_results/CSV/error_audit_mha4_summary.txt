@@ -1,0 +1,93 @@
+========================================================================
+ERROR AUDIT REPORT — AttentionBiLSTM (natural length)
+========================================================================
+
+Total samples:                    2975
+True  Healthy (label=H):          1266
+True  Patients (label=P):         1709
+
+False Positives (H->P):           680  (53.7% of Healthy)
+True Negatives  (H->H):           586
+
+------------------------------------------------------------------------
+DURATION COMPARISON: FP vs TN
+------------------------------------------------------------------------
+FP mean duration:  597.5 ms  (median: 515.5 ms, std: 255.7)
+TN mean duration:  620.8 ms  (median: 542.1 ms, std: 253.7)
+
+Mann-Whitney U: 187421.5, p=0.0685
+
+------------------------------------------------------------------------
+FP DISTRIBUTION BY DURATION BIN
+------------------------------------------------------------------------
+       <0.2s:    0 FP /     0 Healthy = 0.0% FP rate
+    0.2-0.5s:  323 FP /   575 Healthy = 56.2% FP rate
+       >0.5s:  357 FP /   691 Healthy = 51.7% FP rate
+
+------------------------------------------------------------------------
+FP DISTRIBUTION BY TASK TYPE
+------------------------------------------------------------------------
+            controlled_word:  508 FP /   961 Healthy = 52.9% FP rate
+       controlled_consonant:  172 FP /   305 Healthy = 56.4% FP rate
+
+------------------------------------------------------------------------
+TOP FALSE POSITIVES (by score)
+------------------------------------------------------------------------
+     H41 | cz_main_h41_6mk7mat                 |   1834ms | controlled_word        | score=0.9979 logit=+6.18 | frames= 91
+     H26 | cz_main_h26_4pk2b                   |    390ms | controlled_consonant   | score=0.9975 logit=+6.01 | frames= 19
+     H26 | cz_main_h26_4pk4sok                 |    714ms | controlled_word        | score=0.9975 logit=+5.98 | frames= 35
+     H26 | cz_main_h26_4pk6pop                 |    787ms | controlled_word        | score=0.9974 logit=+5.94 | frames= 39
+     H26 | cz_main_h26_4pk3prst                |    443ms | controlled_word        | score=0.9971 logit=+5.82 | frames= 21
+     H27 | cz_main_h27_4sa3pro                 |    400ms | controlled_word        | score=0.9963 logit=+5.60 | frames= 19
+     H69 | cz_main_h69_6dr4sok                 |    704ms | controlled_word        | score=0.9963 logit=+5.59 | frames= 34
+     H26 | cz_main_h26_4pk5kve                 |    714ms | controlled_word        | score=0.9963 logit=+5.58 | frames= 35
+     H26 | cz_main_h26_4pk4trd                 |    428ms | controlled_word        | score=0.9959 logit=+5.50 | frames= 21
+     H26 | cz_main_h26_4pk5pok                 |    676ms | controlled_word        | score=0.9953 logit=+5.35 | frames= 33
+
+------------------------------------------------------------------------
+SUBJECT-LEVEL FP BREAKDOWN
+------------------------------------------------------------------------
+     H37:  33 FP /  33 samples = 100% | mean_score=0.5632 | mean_dur=566ms
+     H53:  33 FP /  33 samples = 100% | mean_score=0.8261 | mean_dur=576ms
+     H43:  32 FP /  32 samples = 100% | mean_score=0.8580 | mean_dur=709ms
+     H28:  32 FP /  33 samples = 97% | mean_score=0.9411 | mean_dur=585ms
+     H34:  31 FP /  31 samples = 100% | mean_score=0.5013 | mean_dur=618ms
+     H51:  30 FP /  30 samples = 100% | mean_score=0.5998 | mean_dur=563ms
+     H29:  27 FP /  27 samples = 100% | mean_score=0.9034 | mean_dur=585ms
+     H27:  27 FP /  27 samples = 100% | mean_score=0.8584 | mean_dur=665ms
+     H61:  25 FP /  25 samples = 100% | mean_score=0.3877 | mean_dur=594ms
+     H35:  25 FP /  25 samples = 100% | mean_score=0.6835 | mean_dur=631ms
+     H41:  24 FP /  33 samples = 73% | mean_score=0.6918 | mean_dur=870ms
+     H26:  23 FP /  24 samples = 96% | mean_score=0.9822 | mean_dur=595ms
+     H55:  23 FP /  34 samples = 68% | mean_score=0.6144 | mean_dur=587ms
+     H67:  21 FP /  21 samples = 100% | mean_score=0.3671 | mean_dur=541ms
+     H30:  19 FP /  33 samples = 58% | mean_score=0.3317 | mean_dur=594ms
+     H44:  19 FP /  31 samples = 61% | mean_score=0.5588 | mean_dur=596ms
+     H49:  18 FP /  33 samples = 55% | mean_score=0.4023 | mean_dur=964ms
+     H47:  18 FP /  31 samples = 58% | mean_score=0.3219 | mean_dur=573ms
+     H36:  15 FP /  32 samples = 47% | mean_score=0.6212 | mean_dur=552ms
+     H33:  15 FP /  30 samples = 50% | mean_score=0.5651 | mean_dur=495ms
+     H69:  15 FP /  22 samples = 68% | mean_score=0.7963 | mean_dur=534ms
+     H38:  15 FP /  26 samples = 58% | mean_score=0.6185 | mean_dur=637ms
+     H66:  14 FP /  30 samples = 47% | mean_score=0.4965 | mean_dur=430ms
+     H32:  14 FP /  28 samples = 50% | mean_score=0.6861 | mean_dur=574ms
+     H54:  14 FP /  32 samples = 44% | mean_score=0.5192 | mean_dur=470ms
+     H50:  12 FP /  27 samples = 44% | mean_score=0.4978 | mean_dur=547ms
+     H62:  11 FP /  28 samples = 39% | mean_score=0.5630 | mean_dur=462ms
+     H52:  11 FP /  22 samples = 50% | mean_score=0.4533 | mean_dur=466ms
+     H42:  11 FP /  33 samples = 33% | mean_score=0.5005 | mean_dur=568ms
+     H46:   9 FP /  23 samples = 39% | mean_score=0.4391 | mean_dur=541ms
+     H40:   8 FP /  24 samples = 33% | mean_score=0.6110 | mean_dur=698ms
+     H63:   7 FP /  33 samples = 21% | mean_score=0.5638 | mean_dur=623ms
+     H58:   7 FP /  27 samples = 26% | mean_score=0.2830 | mean_dur=542ms
+     H68:   7 FP /  30 samples = 23% | mean_score=0.5242 | mean_dur=414ms
+     H60:   6 FP /  25 samples = 24% | mean_score=0.2775 | mean_dur=604ms
+     H48:   5 FP /  32 samples = 16% | mean_score=0.2322 | mean_dur=561ms
+     H39:   4 FP /  22 samples = 18% | mean_score=0.5943 | mean_dur=932ms
+     H45:   4 FP /  31 samples = 13% | mean_score=0.3084 | mean_dur=548ms
+     H59:   4 FP /  32 samples = 12% | mean_score=0.6425 | mean_dur=416ms
+     H31:   3 FP /  25 samples = 12% | mean_score=0.2284 | mean_dur=384ms
+     H65:   3 FP /  31 samples = 10% | mean_score=0.5400 | mean_dur=390ms
+     H57:   3 FP /  26 samples = 12% | mean_score=0.6209 | mean_dur=404ms
+     H64:   2 FP /  30 samples = 7% | mean_score=0.2305 | mean_dur=391ms
+     H56:   1 FP /  29 samples = 3% | mean_score=0.7259 | mean_dur=314ms

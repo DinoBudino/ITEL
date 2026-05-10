@@ -219,6 +219,24 @@ Valor por defecto importante:
 - `apps/api/requirements.txt`: dependencias para servir la API
 - `research/requirements.txt`: dependencias del entorno de investigacion y notebooks
 
+## Seguimiento de experimentos con MLflow
+
+- Los scripts de `research/` ya pueden registrar ejecuciones en `MLflow`.
+- Si no indicas `--mlflow-tracking-uri`, los runs se guardan localmente en `research/research_results/mlruns`.
+
+Ejemplos:
+
+```bash
+python research/scripts/train_baseline.py --model-type xgboost --task-variant speech_sounds_only
+python research/scripts/evaluate_internal_cz.py --model-type logreg --n-splits 5
+```
+
+Para abrir la interfaz local de MLflow:
+
+```bash
+mlflow ui --backend-store-uri research/research_results/mlruns
+```
+
 ## Convencion de nombres aplicada
 
 - carpetas de producto: `apps/api`, `apps/web`

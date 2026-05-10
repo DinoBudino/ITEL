@@ -1,0 +1,8 @@
+{
+  "n_samples": 3853,
+  "n_subjects": 98,
+  "label_distribution": {
+    "Patients": 2173,
+    "Healthy": 1680
+  }
+}

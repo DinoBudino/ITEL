@@ -15,7 +15,7 @@ from research.scripts.compare_cz_task_variants import VARIANT_SPECS
 from research.scripts.evaluate_external import _evaluate_manifest, _filter_sample_manifest
 from research.scripts.evaluate_internal_cz import run_cv
 from research.src.config import CONFIG
-from research.src.train import MODEL_TRAINERS, load_embeddings
+from research.src.train import MODEL_TRAINERS, RECOMMENDED_MODEL_TYPE, load_embeddings
 
 
 REPORT_CSV_DIR = CONFIG.paths.reports_dir / "CSV"
@@ -41,7 +41,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--model-types",
         nargs="+",
-        default=["logreg", "logreg_tuned", "linear_svm", "xgboost", "mlp_small"],
+        default=[RECOMMENDED_MODEL_TYPE, "mlp_medium"],
         choices=list(MODEL_TRAINERS.keys()),
     )
     parser.add_argument("--n-splits", type=int, default=5)

@@ -9,13 +9,18 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
+try:
+    import mlflow
+except ModuleNotFoundError:  # pragma: no cover - optional dependency for analysis-only runs
+    mlflow = None
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedGroupKFold
 
 from research.src.config import CONFIG
 from research.src.evaluate import binary_metrics
-from research.src.train import MODEL_TRAINERS, fit_logreg_classifier, load_embeddings
+from research.src.tracking import configure_tracking, log_artifact, log_dict, log_metrics, log_params, log_text
+from research.src.train import MODEL_TRAINERS, RECOMMENDED_MODEL_TYPE, load_embeddings
 
 
 REPORT_CSV_DIR = CONFIG.paths.reports_dir / "CSV"
@@ -60,6 +65,27 @@ def parse_args() -> argparse.Namespace:
         default=str(REPORT_CSV_DIR / "predictions_cz_internal_cv_subjects.csv"),
         help="Where to save out-of-fold subject predictions.",
     )
+    parser.add_argument(
+        "--model-type",
+        choices=tuple(MODEL_TRAINERS.keys()),
+        default=RECOMMENDED_MODEL_TYPE,
+        help="Classifier head trained within each fold.",
+    )
+    parser.add_argument(
+        "--mlflow-experiment",
+        default="itel-evaluations",
+        help="MLflow experiment name.",
+    )
+    parser.add_argument(
+        "--mlflow-run-name",
+        default=None,
+        help="Optional MLflow run name.",
+    )
+    parser.add_argument(
+        "--mlflow-tracking-uri",
+        default=None,
+        help="Optional MLflow tracking URI. Defaults to a local file store under research_results/mlruns.",
+    )
     return parser.parse_args()
 
 
@@ -101,8 +127,10 @@ def run_cv(
     embedding_manifest: pd.DataFrame,
     n_splits: int,
     random_state: int,
-    fit_fn=fit_logreg_classifier,
+    fit_fn=None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, object]]:
+    if fit_fn is None:
+        fit_fn = MODEL_TRAINERS[RECOMMENDED_MODEL_TYPE]
     merged = embedding_manifest.merge(
         sample_manifest[["sample_id", "subject_id", "label", "task_type"]],
         left_on="source_sample_id",
@@ -195,35 +223,80 @@ def run_cv(
 
 def main() -> None:
     args = parse_args()
-    sample_manifest = pd.read_csv(args.sample_manifest)
-    embedding_manifest = pd.read_csv(args.embedding_manifest)
+    if mlflow is None:
+        raise ModuleNotFoundError("mlflow is required to run evaluate_internal_cz.py directly.")
+    tracking_uri = configure_tracking(args.mlflow_tracking_uri, args.mlflow_experiment)
 
-    sample_predictions, subject_predictions, metrics = run_cv(
-        sample_manifest=sample_manifest,
-        embedding_manifest=embedding_manifest,
-        n_splits=args.n_splits,
-        random_state=args.random_state,
-    )
+    with mlflow.start_run(run_name=args.mlflow_run_name):
+        sample_manifest = pd.read_csv(args.sample_manifest)
+        embedding_manifest = pd.read_csv(args.embedding_manifest)
 
-    sample_output = Path(args.sample_predictions_output)
-    subject_output = Path(args.subject_predictions_output)
-    metrics_output = Path(args.metrics_output)
-    sample_output.parent.mkdir(parents=True, exist_ok=True)
-    subject_output.parent.mkdir(parents=True, exist_ok=True)
-    metrics_output.parent.mkdir(parents=True, exist_ok=True)
+        fit_fn = MODEL_TRAINERS[args.model_type]
+        sample_predictions, subject_predictions, metrics = run_cv(
+            sample_manifest=sample_manifest,
+            embedding_manifest=embedding_manifest,
+            n_splits=args.n_splits,
+            random_state=args.random_state,
+            fit_fn=fit_fn,
+        )
 
-    sample_predictions.to_csv(sample_output, index=False)
-    subject_predictions.to_csv(subject_output, index=False)
-    metrics_output.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+        sample_output = Path(args.sample_predictions_output)
+        subject_output = Path(args.subject_predictions_output)
+        metrics_output = Path(args.metrics_output)
+        sample_output.parent.mkdir(parents=True, exist_ok=True)
+        subject_output.parent.mkdir(parents=True, exist_ok=True)
+        metrics_output.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"Saved sample-level predictions to: {sample_output}")
-    print(f"Saved subject-level predictions to: {subject_output}")
-    print(f"Saved internal Czech CV metrics to: {metrics_output}")
-    print(
-        "Subject-level balanced_accuracy="
-        f"{metrics['subject_level']['balanced_accuracy']:.4f} "
-        f"AUC={metrics['subject_level']['auc']:.4f}"
-    )
+        sample_predictions.to_csv(sample_output, index=False)
+        subject_predictions.to_csv(subject_output, index=False)
+        metrics_output.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+
+        mlflow.set_tags(
+            {
+                "stage": "research",
+                "script": "evaluate_internal_cz.py",
+                "dataset_id": CONFIG.datasets.cz_dataset_id,
+                "eval_mode": "train_default",
+                "model_type": args.model_type,
+            }
+        )
+        log_params(
+            {
+                "sample_manifest": args.sample_manifest,
+                "embedding_manifest": args.embedding_manifest,
+                "n_splits": args.n_splits,
+                "random_state": args.random_state,
+                "model_type": args.model_type,
+                "metrics_output": str(metrics_output),
+                "sample_predictions_output": str(sample_output),
+                "subject_predictions_output": str(subject_output),
+                "tracking_uri": tracking_uri,
+            }
+        )
+        log_metrics(metrics, prefix="cv.")
+        log_dict("metrics/internal_cz_metrics.json", metrics)
+        log_text(
+            "reports/sample_level_classification_report.txt",
+            str(metrics["sample_level"].get("classification_report", "")),
+        )
+        log_text(
+            "reports/subject_level_classification_report.txt",
+            str(metrics["subject_level"].get("classification_report", "")),
+        )
+        log_artifact(sample_output, artifact_path="predictions")
+        log_artifact(subject_output, artifact_path="predictions")
+        log_artifact(metrics_output, artifact_path="metrics")
+
+        print(f"Saved sample-level predictions to: {sample_output}")
+        print(f"Saved subject-level predictions to: {subject_output}")
+        print(f"Saved internal Czech CV metrics to: {metrics_output}")
+        print(f"MLflow experiment: {args.mlflow_experiment}")
+        print(f"MLflow tracking URI: {tracking_uri}")
+        print(
+            "Subject-level balanced_accuracy="
+            f"{metrics['subject_level']['balanced_accuracy']:.4f} "
+            f"AUC={metrics['subject_level']['auc']:.4f}"
+        )
 
 
 if __name__ == "__main__":

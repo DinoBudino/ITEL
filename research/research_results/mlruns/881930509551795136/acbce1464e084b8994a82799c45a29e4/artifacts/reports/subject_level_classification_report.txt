@@ -1,0 +1,8 @@
+              precision    recall  f1-score   support
+
+     Healthy       1.00      0.91      0.95        44
+    Patients       0.93      1.00      0.96        54
+
+    accuracy                           0.96        98
+   macro avg       0.97      0.95      0.96        98
+weighted avg       0.96      0.96      0.96        98

@@ -1,0 +1,11 @@
+{
+  "n_rows": 552,
+  "n_source_samples": 12,
+  "embedding_dim": 6144,
+  "preproc_versions": [
+    "v7_xlsr300m_multilingual_light_multilingual_light"
+  ],
+  "chunk_policies": [
+    "fixed_non_overlapping_5.0s"
+  ]
+}

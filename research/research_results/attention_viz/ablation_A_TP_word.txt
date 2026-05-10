@@ -1,0 +1,6 @@
+sample_id=cz_main_p37_4pmi3la
+original_prob=0.99962
+ablated_p90_prob=0.99962  delta=+0.00000
+ablated_random_prob=0.99953  delta=+0.00009
+n_key_frames=6/60
+p90=0.02692

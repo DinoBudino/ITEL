@@ -1,0 +1,12 @@
+{
+  "arch": "HuBERT_BASE -> AttentionBiLSTM",
+  "lstm_hidden": 256,
+  "lstm_layers": 2,
+  "dropout": 0.3,
+  "fc_hidden": 128,
+  "epochs": 30,
+  "lr": 0.001,
+  "pos_weight": 1.4,
+  "n_splits": 5,
+  "random_state": 42
+}
