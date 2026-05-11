@@ -393,25 +393,47 @@ def assess_diarization_quality(
     suspect_reasons: list[str] = []
 
     qc = CONFIG.diarization_qc
+
+    # --- 1. CHI duration ---
     if chi_duration_s < qc.auto_exclude_child_duration_s:
         suspect_reasons.append("child_duration_too_short")
     elif chi_duration_s < qc.review_child_duration_s:
         suspect_reasons.append("child_duration_low")
 
+    # --- 2. CHI speech share (fraction of total speech) ---
     if chi_speech_share < qc.auto_exclude_child_share:
         suspect_reasons.append("child_share_too_low")
     elif chi_speech_share < qc.review_child_share:
         suspect_reasons.append("child_share_low")
+    elif chi_speech_share > qc.review_child_share_high:
+        # Child speaking >90 % → likely the CHI/EXA labels are swapped
+        suspect_reasons.append("child_share_suspiciously_high")
 
+    # --- 3. Single speaker detected → cannot split CHI from EXA ---
+    if qc.auto_exclude_single_speaker and n_detected_speakers <= 1:
+        suspect_reasons.append("single_speaker_detected")
+
+    # --- 4. Too many speakers → noisy environment ---
+    if n_detected_speakers >= qc.review_many_speakers:
+        suspect_reasons.append("multi_speaker_session")
+
+    # --- 5. Strategy / audio quality signals ---
     if resolved_strategy.endswith("->loudest"):
         suspect_reasons.append("speaker_selection_used_loudness_fallback")
     if not pitch_levels:
         suspect_reasons.append("pitch_unavailable")
-    if n_detected_speakers >= qc.review_many_speakers:
-        suspect_reasons.append("multi_speaker_session")
 
-    severe_reasons = {"child_duration_too_short", "child_share_too_low"}
-    review_reasons = {"child_duration_low", "child_share_low"}
+    severe_reasons = {
+        "child_duration_too_short",
+        "child_share_too_low",
+        "single_speaker_detected",
+    }
+    review_reasons = {
+        "child_duration_low",
+        "child_share_low",
+        "child_share_suspiciously_high",
+        "multi_speaker_session",
+    }
     auto_qc_flag = None
     if any(reason in severe_reasons for reason in suspect_reasons):
         auto_qc_flag = "exclude_suspect_child_assignment"

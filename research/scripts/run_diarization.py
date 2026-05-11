@@ -125,6 +125,60 @@ def _update_metadata(metadata_csv: Path, metadata: pd.DataFrame, results: list[d
     updated.to_csv(metadata_csv, index=False)
 
 
+MIN_CHI_DURATION_S = 100.0  # files with less child speech are replaced automatically
+
+
+def _result_passes_qc(result: dict) -> bool:
+    """Return True if a diarization result has enough child speech to be usable."""
+    try:
+        return float(result.get("chi_duration_s") or 0) >= MIN_CHI_DURATION_S
+    except (TypeError, ValueError):
+        return False
+
+
+def _get_replacement_pool(metadata_csv: Path, already_used: set[str]) -> dict[str, list[str]]:
+    """Return files on disk that are NOT already in the metadata CSV, grouped by label."""
+    pool: dict[str, list[str]] = {"Healthy": [], "Patients": []}
+    for label in pool:
+        label_dir = CONFIG.paths.raw_en_dir / label
+        if not label_dir.exists():
+            continue
+        for f in sorted(label_dir.glob("*.mp3")):
+            rel = f"{label}/{f.name}"
+            if rel not in already_used:
+                pool[label].append(rel)
+    return pool
+
+
+def _add_replacements_to_metadata(
+    metadata_csv: Path,
+    metadata: pd.DataFrame,
+    failed_labels: dict[str, int],
+    pool: dict[str, list[str]],
+) -> list[dict]:
+    """Pick replacement files from pool, add them to metadata CSV, return new rows."""
+    new_rows = []
+    for label, needed in failed_labels.items():
+        candidates = pool.get(label, [])
+        chosen = candidates[:needed]
+        pool[label] = candidates[needed:]  # consume from pool
+        for rel in chosen:
+            row = {c: "" for c in REQUIRED_METADATA_COLUMNS}
+            row["file_name"] = rel
+            row["label"] = label
+            row["diarization_status"] = "pending"
+            new_rows.append(row)
+            print(f"  [fill] Adding replacement: {rel}")
+
+    if new_rows:
+        addition = pd.DataFrame(new_rows, columns=REQUIRED_METADATA_COLUMNS)
+        updated = pd.concat([metadata, addition], ignore_index=True)
+        updated = updated.reindex(columns=REQUIRED_METADATA_COLUMNS)
+        updated.to_csv(metadata_csv, index=False)
+
+    return new_rows
+
+
 def _clean_diarization_outputs() -> None:
     """Delete all previous diarization outputs (JSONs and CHI/EXA audio files).
 
@@ -280,37 +334,49 @@ def main() -> None:
             print("  Embeddings will be reused from pyannote's internal diarization pass (no extra model load).")
 
     pipeline, device = build_diarization_pipeline(device=args.device)
-    results = []
-    for row in subset.to_dict(orient="records"):
-        raw_audio_path = CONFIG.paths.raw_en_dir / str(row["file_name"])
-        override = row.get("chi_speaker_override")
-        if override is None:
-            override = None
-        else:
-            try:
-                if bool(pd.isna(override)):
-                    override = None
-                else:
-                    override = str(override).strip() or None
-            except TypeError:
-                override = str(override).strip() or None
-        result = diarize_audio(
-            audio_path=raw_audio_path,
-            pipeline=pipeline,
-            device=str(device),
-            chi_strategy=args.chi_strategy,
-            chi_speaker_override=override,
-            reference_embedding=reference_embedding,
-            embedding_model=embedding_model,
-        )
-        # Derive per-speaker similarity columns for easy analysis
-        similarities = result.speaker_similarities or {}
-        interviewer_speaker = max(similarities, key=lambda k: similarities[k]) if similarities else None
-        interviewer_sim = round(similarities[interviewer_speaker], 4) if interviewer_speaker else None
-        chi_sim = round(similarities.get(result.chi_speaker, float("nan")), 4) if (similarities and result.chi_speaker) else None
+    metadata_path = Path(args.metadata)
 
-        results.append(
-            {
+    # Track how many files per label pass QC (chi_duration >= 100 s)
+    target_per_label = 20
+    passing: dict[str, int] = {"Healthy": 0, "Patients": 0}
+
+    # Pool of files not yet in the metadata CSV (for auto-fill)
+    all_used: set[str] = set(metadata["file_name"].astype(str))
+    replacement_pool = _get_replacement_pool(metadata_path, all_used)
+
+    all_results: list[dict] = []
+
+    def _process_rows(rows: list[dict]) -> list[dict]:
+        batch_results = []
+        for row in rows:
+            raw_audio_path = CONFIG.paths.raw_en_dir / str(row["file_name"])
+            override = row.get("chi_speaker_override")
+            if override is None:
+                override = None
+            else:
+                try:
+                    if bool(pd.isna(override)):
+                        override = None
+                    else:
+                        override = str(override).strip() or None
+                except TypeError:
+                    override = str(override).strip() or None
+
+            result = diarize_audio(
+                audio_path=raw_audio_path,
+                pipeline=pipeline,
+                device=str(device),
+                chi_strategy=args.chi_strategy,
+                chi_speaker_override=override,
+                reference_embedding=reference_embedding,
+                embedding_model=embedding_model,
+            )
+            similarities = result.speaker_similarities or {}
+            interviewer_speaker = max(similarities, key=lambda k: similarities[k]) if similarities else None
+            interviewer_sim = round(similarities[interviewer_speaker], 4) if interviewer_speaker else None
+            chi_sim = round(similarities.get(result.chi_speaker, float("nan")), 4) if (similarities and result.chi_speaker) else None
+
+            entry = {
                 "file_name": row["file_name"],
                 "label": row["label"],
                 "source_audio_path": result.source_audio_path,
@@ -324,7 +390,6 @@ def main() -> None:
                 "speaker_totals": result.speaker_totals,
                 "speaker_rms": result.speaker_rms,
                 "speaker_pitch_hz": result.speaker_pitch_hz,
-                # Reference-strategy similarity analysis
                 "speaker_similarities": similarities if similarities else None,
                 "interviewer_speaker": interviewer_speaker,
                 "interviewer_sim": interviewer_sim,
@@ -337,20 +402,63 @@ def main() -> None:
                 "auto_qc_flag": result.auto_qc_flag,
                 "error_message": result.error_message,
             }
-        )
-        if result.error_message:
-            print(f"[{result.diarization_status}] {row['file_name']} -> CHI={result.chi_speaker} ({result.chi_strategy}) | {result.error_message}")
-        else:
-            print(f"[{result.diarization_status}] {row['file_name']} -> CHI={result.chi_speaker} ({result.chi_strategy})")
+            batch_results.append(entry)
 
-    summary = pd.DataFrame(results)
+            status_line = f"[{result.diarization_status}] {row['file_name']} -> CHI={result.chi_speaker} ({result.chi_strategy})"
+            if result.error_message:
+                status_line += f" | {result.error_message}"
+            passes = _result_passes_qc(entry)
+            status_line += f" | chi={result.chi_duration_s:.1f}s {'✓' if passes else '✗ corto'}"
+            print(status_line)
+
+        return batch_results
+
+    # --- Initial pass ---
+    all_results = _process_rows(subset.to_dict(orient="records"))
+    metadata = _load_metadata(metadata_path)  # reload in case it was updated
+    _update_metadata(metadata_path, metadata, all_results)
+
+    for res in all_results:
+        if _result_passes_qc(res):
+            passing[res["label"]] = passing.get(res["label"], 0) + 1
+
+    # --- Fill-up loop: replace short/failed files until target met ---
+    round_num = 1
+    while True:
+        needed: dict[str, int] = {
+            label: target_per_label - count
+            for label, count in passing.items()
+            if target_per_label - count > 0 and replacement_pool.get(label)
+        }
+        if not needed:
+            break
+
+        print(f"\n--- Ronda de relleno {round_num}: faltan {needed} ---")
+        metadata = _load_metadata(metadata_path)
+        new_rows = _add_replacements_to_metadata(metadata_path, metadata, needed, replacement_pool)
+        if not new_rows:
+            print("  [fill] Sin más archivos disponibles en el disco.")
+            break
+
+        metadata = _load_metadata(metadata_path)
+        batch_results = _process_rows(new_rows)
+        all_results.extend(batch_results)
+        _update_metadata(metadata_path, metadata, batch_results)
+
+        for res in batch_results:
+            if _result_passes_qc(res):
+                passing[res["label"]] = passing.get(res["label"], 0) + 1
+
+        round_num += 1
+
+    # --- Save final summary ---
+    summary = pd.DataFrame(all_results)
     summary_path = Path(args.summary_output)
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     summary.to_csv(summary_path, index=False)
-    _update_metadata(Path(args.metadata), metadata, results)
-    print(f"Saved diarization summary to: {summary_path}")
-    print(f"Updated metadata with diarization QC: {args.metadata}")
-    print(f"Processed {len(summary)} English files on device={device}")
+    print(f"\nGuardado summary en: {summary_path}")
+    print(f"Archivos procesados: {len(summary)} | Pasan QC: Healthy={passing['Healthy']} Patients={passing['Patients']}")
+    print(f"Device={device}")
 
 
 if __name__ == "__main__":

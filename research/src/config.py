@@ -37,10 +37,25 @@ class EncoderConfig:
 
 @dataclass(frozen=True)
 class DiarizationQCConfig:
-    auto_exclude_child_duration_s: float = 8.0
-    auto_exclude_child_share: float = 0.08
-    review_child_duration_s: float = 20.0
-    review_child_share: float = 0.20
+    # --- CHI duration thresholds ---
+    # Recordings where the child speaks < 100 s are excluded: too little
+    # speech for reliable feature extraction.
+    auto_exclude_child_duration_s: float = 100.0
+    # 100–150 s is borderline — keep but flag for manual review.
+    review_child_duration_s: float = 150.0
+
+    # --- CHI speech share (fraction of total detected speech) ---
+    # < 5 % → almost certainly a wrong speaker assignment → exclude.
+    auto_exclude_child_share: float = 0.05
+    # 5–15 % → unusually low → flag for review.
+    review_child_share: float = 0.15
+    # > 90 % → suspiciously high (interviewer may be mislabelled) → review.
+    review_child_share_high: float = 0.90
+
+    # --- Speaker count ---
+    # Only 1 speaker detected → cannot reliably split CHI from EXA → exclude.
+    auto_exclude_single_speaker: bool = True
+    # ≥ 3 speakers → session is noisy / group setting → flag for review.
     review_many_speakers: int = 3
 
 

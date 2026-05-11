@@ -1,21 +1,72 @@
 file_name,subject_id,session_id,label,speaker_role,chi_speaker_override,diarization_status,review_status,review_reason,auto_qc_flag,chi_duration_s,total_speech_s,chi_speech_share,n_detected_speakers,qc_flag,notes
-Healthy\401.mp3,401,,Healthy,CHI,,completed,approved,speaker_selection_used_loudness_fallback,,379.28250000000094,413.4881250000011,0.9172754356609393,2,,auto-generated
-Healthy\402.mp3,402,,Healthy,CHI,,completed,approved,speaker_selection_used_loudness_fallback,exclude_suspect_child_assignment,3.425624999999968,295.1606249999983,0.01160596878394599,2,,auto-generated
-Healthy\403.mp3,403,,Healthy,CHI,,completed,pending,pitch_unavailable,,211.14000000000033,277.7118750000002,0.760284377468555,2,,auto-generated
-Healthy\404.mp3,404,,Healthy,CHI,,completed,pending,pitch_unavailable,,179.61749999999984,213.68812500000013,0.8405591092158243,2,,auto-generated
-Healthy\405.mp3,405,,Healthy,CHI,,completed,pending,multi_speaker_session; speaker_selection_used_loudness_fallback,,251.55562499999837,318.19499999999834,0.7905706406448866,2,,auto-generated
-Healthy\406.mp3,406,,Healthy,CHI,,completed,pending,child_duration_too_short; child_share_too_low; speaker_selection_used_loudness_fallback,exclude_suspect_child_assignment,2.6831249999999045,343.08562499999937,0.007820569573557357,2,,auto-generated
-Healthy\408.mp3,408,,Healthy,CHI,,failed,pending,pitch_unavailable,exclude_diarization_failed,0.0,0.0,0.0,0,,auto-generated
-Healthy\409.mp3,409,,Healthy,CHI,,completed,pending,speaker_selection_used_loudness_fallback,,192.56062499999985,247.37062499999968,0.7784296336721472,2,,auto-generated
-Healthy\410.mp3,410,,Healthy,CHI,,completed,approved,speaker_selection_used_loudness_fallback,,169.72874999999993,196.30687500000005,0.8646093011261062,2,,auto-generated
-Healthy\411.mp3,411,,Healthy,CHI,,completed,pending,pitch_unavailable,,375.31687500000044,425.1487500000002,0.8827895530681915,2,,auto-generated
-Patients\568.mp3,568,,Patients,CHI,,failed,pending,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_diarization_failed,0.0,0.0,0.0,0,,auto-generated
-Patients\569.mp3,569,,Patients,CHI,,failed,pending,pitch_unavailable,exclude_diarization_failed,0.0,0.0,0.0,0,,auto-generated
-Patients\570.mp3,570,,Patients,CHI,,completed,pending,pitch_unavailable,,408.8137499999996,408.8137499999996,1.0,1,,auto-generated
-Patients\572.mp3,572,,Patients,CHI,,completed,pending,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,4.488749999999754,418.0949999999998,0.010736196319017823,2,,auto-generated
-Patients\574.mp3,574,,Patients,CHI,,completed,pending,pitch_unavailable,,340.7400000000007,407.8687500000012,0.83541580471659,2,,auto-generated
-Patients\576.mp3,576,,Patients,CHI,,completed,pending,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,1.9237500000000978,259.16625000000005,0.0074228415158227486,2,,auto-generated
-Patients\607.mp3,607,,Patients,CHI,,completed,pending,pitch_unavailable,,387.43312499999956,428.7599999999993,0.9036130352644841,2,,auto-generated
-Patients\609.mp3,609,,Patients,CHI,,completed,pending,pitch_unavailable,,390.31874999999945,410.4506249999996,0.9509517740410307,2,,auto-generated
-Patients\611.mp3,611,,Patients,CHI,,completed,pending,pitch_unavailable,,181.6424999999998,243.4387499999999,0.746152779703313,2,,auto-generated
-Patients\617.mp3,617,,Patients,CHI,,completed,pending,pitch_unavailable,,424.4399999999996,424.4399999999996,1.0,1,,auto-generated
+Healthy/401.mp3,,,Healthy,,,completed,needs_review,child_share_suspiciously_high; pitch_unavailable,review_child_assignment,379.28250000000094,413.4881250000011,0.9172754356609392,2.0,,
+Healthy/403.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,211.1400000000004,277.7118750000002,0.760284377468555,2.0,,
+Healthy/404.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,179.61749999999984,213.68812500000013,0.8405591092158243,2.0,,
+Healthy/405.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,251.5556249999984,318.19499999999834,0.7905706406448866,2.0,,
+Healthy/409.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,192.56062499999985,247.37062499999968,0.7784296336721472,2.0,,
+Healthy/410.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,169.72874999999993,196.30687500000005,0.8646093011261062,2.0,,
+Healthy/411.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,375.3168750000005,425.1487500000002,0.8827895530681915,2.0,,
+Healthy/412.mp3,,,Healthy,,,completed,needs_review,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,0.9112499999999386,384.5137500000006,0.0023698762397962,2.0,,
+Healthy/414.mp3,,,Healthy,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Healthy/415.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,244.40062499999885,282.72374999999886,0.8644502805300222,2.0,,
+Healthy/416.mp3,,,Healthy,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Healthy/417.mp3,,,Healthy,,,completed,needs_review,child_share_suspiciously_high; pitch_unavailable,review_child_assignment,464.3831249999985,505.49062499999866,0.9186780170255378,2.0,,
+Healthy/418.mp3,,,Healthy,,,completed,needs_review,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,2.6493750000000205,328.20187500000094,0.0080723944675819,2.0,,
+Healthy/419.mp3,,,Healthy,,,completed,needs_review,child_duration_too_short; child_share_too_low; multi_speaker_session; pitch_unavailable,exclude_suspect_child_assignment,11.863125000000082,342.03937500000075,0.034683506833095,3.0,,
+Healthy/421.mp3,,,Healthy,,,completed,needs_review,child_duration_too_short; child_share_too_low; multi_speaker_session; pitch_unavailable,exclude_suspect_child_assignment,12.335624999999936,655.8468749999993,0.0188086967708734,3.0,,
+Healthy/423.mp3,,,Healthy,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Healthy/425.mp3,,,Healthy,,,completed,needs_review,child_duration_too_short; child_share_low; pitch_unavailable,exclude_suspect_child_assignment,21.14437499999985,406.8393750000007,0.0519722925048732,2.0,,
+Healthy/429.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,161.47687499999995,179.8031249999999,0.8980760206475835,2.0,,
+Healthy/439.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,205.04812499999983,232.8243749999997,0.8806987026165114,2.0,,
+Healthy/441.mp3,,,Healthy,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Patients/413.mp3,,,Patients,,,completed,needs_review,child_duration_low; pitch_unavailable,review_child_assignment,137.07562499999975,161.08874999999983,0.8509323276765132,2.0,,
+Patients/427.mp3,,,Patients,,,completed,pending,pitch_unavailable,,179.48250000000098,255.1837500000009,0.7033461182383295,2.0,,
+Patients/480.mp3,,,Patients,,,completed,pending,pitch_unavailable,,435.2737500000019,494.9606250000022,0.8794108622276771,2.0,,
+Patients/527.mp3,,,Patients,,,completed,pending,pitch_unavailable,,266.55749999999784,302.2481249999977,0.881916140918988,2.0,,
+Patients/529.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; pitch_unavailable,review_child_assignment,595.4681249999994,619.1099999999997,0.9618131269079804,2.0,,
+Patients/531.mp3,,,Patients,,,completed,needs_review,child_duration_low; multi_speaker_session; pitch_unavailable,review_child_assignment,149.20874999999967,197.7918749999997,0.7543724938145201,3.0,,
+Patients/568.mp3,,,Patients,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Patients/569.mp3,,,Patients,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Patients/570.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,408.8137499999996,408.8137499999996,1.0,1.0,,
+Patients/572.mp3,,,Patients,,,completed,needs_review,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,4.488749999999754,418.0949999999998,0.0107361963190178,2.0,,
+Patients/574.mp3,,,Patients,,,completed,pending,pitch_unavailable,,340.7400000000007,407.8687500000012,0.83541580471659,2.0,,
+Patients/576.mp3,,,Patients,,,completed,needs_review,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,1.923750000000097,259.16625000000005,0.0074228415158227,2.0,,
+Patients/607.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; pitch_unavailable,review_child_assignment,387.4331249999996,428.7599999999993,0.903613035264484,2.0,,
+Patients/609.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; pitch_unavailable,review_child_assignment,390.31874999999945,410.4506249999996,0.9509517740410308,2.0,,
+Patients/611.mp3,,,Patients,,,completed,pending,pitch_unavailable,,181.6424999999998,243.4387499999999,0.746152779703313,2.0,,
+Patients/617.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,424.4399999999996,424.4399999999996,1.0,1.0,,
+Patients/625.mp3,,,Patients,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Patients/667.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,271.09687500000024,271.09687500000024,1.0,1.0,,
+Patients/673.mp3,,,Patients,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Patients/678.mp3,,,Patients,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Healthy/402.mp3,,,Healthy,,,completed,needs_review,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,3.425624999999968,295.1606249999983,0.0116059687839459,2.0,,
+Healthy/406.mp3,,,Healthy,,,completed,needs_review,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,2.6831249999999045,343.08562499999937,0.0078205695735573,2.0,,
+Healthy/408.mp3,,,Healthy,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Healthy/443.mp3,,,Healthy,,,completed,pending,pitch_unavailable,,208.40625000000023,238.10625000000024,0.8752657689581859,2.0,,
+Healthy/446.mp3,,,Healthy,,,completed,needs_review,child_duration_low; child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,138.6450000000001,138.6450000000001,1.0,1.0,,
+Healthy/448.mp3,,,Healthy,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Healthy/450.mp3,,,Healthy,,,completed,needs_review,child_duration_low; child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,139.5056249999999,139.5056249999999,1.0,1.0,,
+Healthy/452.mp3,,,Healthy,,,completed,needs_review,child_duration_too_short; child_share_low; pitch_unavailable,exclude_suspect_child_assignment,14.107500000000016,135.55687499999993,0.1040707083281465,2.0,,
+Healthy/454.mp3,,,Healthy,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Patients/444.mp3,,,Patients,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Patients/479.mp3,,,Patients,,,completed,needs_review,child_duration_too_short; child_share_low; pitch_unavailable,exclude_suspect_child_assignment,11.171250000000017,194.50125000000028,0.0574353635259413,2.0,,
+Patients/535.mp3,,,Patients,,,completed,needs_review,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,7.93124999999992,243.94500000000056,0.0325124515771993,2.0,,
+Patients/567.mp3,,,Patients,,,completed,needs_review,child_duration_too_short; child_share_too_low; pitch_unavailable,exclude_suspect_child_assignment,19.237500000000185,408.4762500000009,0.047095761381476,2.0,,
+Patients/679.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; pitch_unavailable,review_child_assignment,235.9631250000001,258.13687500000015,0.9141008040792312,2.0,,
+Patients/680.mp3,,,Patients,,,completed,needs_review,child_duration_low; pitch_unavailable,review_child_assignment,126.52875000000016,150.84562500000027,0.838796285938024,2.0,,
+Patients/717.mp3,,,Patients,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Healthy/455.mp3,,,Healthy,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,238.5618750000002,238.5618750000002,1.0,1.0,,
+Healthy/456.mp3,,,Healthy,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,181.22062500000027,181.22062500000027,1.0,1.0,,
+Healthy/457.mp3,,,Healthy,,,completed,needs_review,child_share_suspiciously_high; pitch_unavailable,review_child_assignment,287.19562499999995,308.45812499999994,0.931068439192516,2.0,,
+Healthy/458.mp3,,,Healthy,,,completed,needs_review,child_duration_too_short; child_share_low; pitch_unavailable,exclude_suspect_child_assignment,23.60812499999992,180.52875000000023,0.1307721069358752,2.0,,
+Healthy/459.mp3,,,Healthy,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,168.361875,168.361875,1.0,1.0,,
+Healthy/460.mp3,,,Healthy,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,180.42750000000007,180.42750000000007,1.0,1.0,,
+Patients/721.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,251.30249999999995,251.30249999999995,1.0,1.0,,
+Patients/723.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; pitch_unavailable,review_child_assignment,174.133125,191.09250000000003,0.9112504415400916,2.0,,
+Patients/725.mp3,,,Patients,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Patients/727.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,248.6699999999995,248.6699999999995,1.0,1.0,,
+Patients/729.mp3,,,Patients,,,completed,needs_review,child_duration_too_short; child_share_too_low; multi_speaker_session; pitch_unavailable,exclude_suspect_child_assignment,16.453125000000227,447.0018749999995,0.0368077315111938,4.0,,
+Healthy/461.mp3,,,Healthy,,,failed,needs_review,Could not extract CHI audio from diarization output.,exclude_diarization_failed,0.0,0.0,0.0,0.0,,
+Patients/731.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,244.1643750000001,244.1643750000001,1.0,1.0,,
+Patients/733.mp3,,,Patients,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,269.54437499999983,269.54437499999983,1.0,1.0,,
+Healthy/463.mp3,,,Healthy,,,completed,needs_review,child_share_suspiciously_high; single_speaker_detected; pitch_unavailable,exclude_suspect_child_assignment,258.05249999999967,258.05249999999967,1.0,1.0,,
