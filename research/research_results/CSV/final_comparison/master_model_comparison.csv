@@ -1,0 +1,14 @@
+branch,domain,scenario,sample_accuracy,sample_balanced_accuracy,sample_auc,sample_recall,sample_precision,sample_f1,subject_accuracy,subject_balanced_accuracy,subject_auc,subject_recall,subject_precision,subject_f1,fold_bal_acc_mean,fold_bal_acc_std
+Fase1,czech,10fold_cv,0.8603,0.8577,0.9216,0.882,0.8685,0.8752,0.8947,0.8944,0.9556,0.9,0.9,0.9,0.793,0.0
+V3_control,czech,10fold_cv,0.8316,0.8089,0.9033,0.9614,0.7907,0.8677,0.9082,0.8977,0.9621,1.0,0.8571,0.9231,0.731,0.1108
+V3_LayerMix,czech,10fold_cv,0.8948,0.8783,0.9451,0.9889,0.8518,0.9152,0.949,0.9432,0.9739,1.0,0.9153,0.9558,0.8591,0.068
+V3_Noise003,czech,10fold_cv,0.8659,0.8497,0.9045,0.9585,0.8332,0.8914,0.949,0.9432,0.9604,1.0,0.9153,0.9558,0.8102,0.0667
+Fase2_baseline,english,zero_shot_raw,0.4167,0.5,0.6,1.0,0.4167,0.5882,,,,,,,,
+Fase2_baseline,english,zero_shot_recalibrated,0.6667,0.6286,0.6,0.4,0.6667,0.5,,,,,,,,
+V3_LayerMix,english,zero_shot_raw,0.4167,0.5,0.6,1.0,0.4167,0.5882,,,,,,,,
+V3_LayerMix,english,zero_shot_recalibrated,0.4167,0.5,0.6,1.0,0.4167,0.5882,,,,,,,,
+V3_Noise003,english,zero_shot_raw,0.6667,0.7143,0.8,1.0,0.5556,0.7143,,,,,,,,
+V3_Noise003,english,zero_shot_recalibrated,0.75,0.7857,0.8,1.0,0.625,0.7692,,,,,,,,
+Fase2_baseline,english,linear_probe,0.6667,0.6571,0.7429,0.6,0.6,0.6,,,,,,,,
+V3_LayerMix,english,linear_probe,0.5833,0.5571,0.5143,0.4,0.5,0.4444,,,,,,,,
+V3_Noise003,english,linear_probe,0.75,0.7571,0.7429,0.8,0.6667,0.7273,,,,,,,,

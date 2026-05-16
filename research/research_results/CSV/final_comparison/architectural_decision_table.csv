@@ -1,0 +1,5 @@
+use_case,best_model,why,key_metric
+Czech closed-domain diagnosis,V3 LayerMix,"Best sample bal_acc (0.878), subject bal_acc (0.943), highest AUC (0.945), lowest fold std",subject_balanced_accuracy = 0.943
+English transfer / multilingual robustness,V3 Noise 0.03,"Best zero-shot AUC (0.800), best recalibrated bal_acc (0.786), LP bal_acc (0.757) far above LayerMix (0.557)",zero-shot AUC = 0.800 vs 0.600 baseline
+Clinical sensitivity priority,V3 LayerMix (Czech) / V3 Noise 0.03 (English),"LayerMix: subject recall=1.00 in Czech. Noise: zero-shot recall=1.00 in English, LP recall=0.80",subject_recall = 1.00 (LayerMix CZ) / zero-shot recall = 1.00 (Noise EN)
+Latent-geometry robustness,V3 Noise 0.03 (hypothesis),Noise avoids saturation that LayerMix caused in English. Geometry audit pending but expected better.,TBD after geometry audit v3_noise

@@ -1,0 +1,27 @@
+{
+  "arch": "HuBERT_BASE -> AttentionBiLSTM + SupCon",
+  "preprocessing": {
+    "target_sr": 16000,
+    "highpass_hz": 100,
+    "target_rms": 0.08,
+    "max_peak_after_rms": 0.99,
+    "default_profile": "multilingual_light"
+  },
+  "model_config": {
+    "input_dim": 768,
+    "lstm_hidden": 256,
+    "lstm_layers": 2,
+    "dropout": 0.3,
+    "fc_hidden": 128,
+    "num_heads": 1
+  },
+  "training_config": {
+    "lambda_contrastive": 0.1,
+    "temperature": 0.07,
+    "epochs": 3,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "pos_weight": 1.4
+  },
+  "source_manifest": "research/processed_data/manifests/hubert_sequences_cleaned.csv"
+}

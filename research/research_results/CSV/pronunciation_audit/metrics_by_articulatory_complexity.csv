@@ -1,0 +1,10 @@
+group_col,model_name,group,n_samples,n_healthy,n_patients,n_subjects,accuracy,balanced_accuracy,precision,recall,f1,false_positive_rate,auc
+articulatory_complexity,Fase1_baseline,high,174,81,93,19,0.8276,0.8172,0.7692,0.9677,0.8571,0.3333,0.9258
+articulatory_complexity,Fase1_baseline,low,163,70,93,19,0.8037,0.782,0.7699,0.9355,0.8447,0.3714,0.8998
+articulatory_complexity,Fase1_baseline,medium,243,107,136,19,0.8066,0.7824,0.7486,0.9853,0.8508,0.4206,0.9378
+articulatory_complexity,V3_control,high,889,396,493,98,0.8133,0.7914,0.7512,0.9919,0.8549,0.4091,0.9155
+articulatory_complexity,V3_control,low,830,347,483,98,0.7675,0.7251,0.7197,0.9834,0.8311,0.5331,0.9045
+articulatory_complexity,V3_control,medium,1256,523,733,98,0.7404,0.6908,0.6955,0.9877,0.8162,0.6061,0.8931
+articulatory_complexity,V3_LayerMix,high,889,396,493,98,0.9044,0.8932,0.8554,0.9959,0.9203,0.2096,0.9556
+articulatory_complexity,V3_LayerMix,low,830,347,483,98,0.8687,0.8446,0.8202,0.9917,0.8978,0.3026,0.9459
+articulatory_complexity,V3_LayerMix,medium,1256,523,733,98,0.8575,0.8289,0.8037,1.0,0.8912,0.3423,0.9366

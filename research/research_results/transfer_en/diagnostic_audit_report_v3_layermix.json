@@ -1,0 +1,139 @@
+{
+  "tag": "V3_LayerMix",
+  "datasets": {
+    "cz_samples": 2975,
+    "cz_healthy": 1266,
+    "cz_patients": 1709,
+    "en_samples": 12,
+    "en_healthy": 7,
+    "en_patients": 5
+  },
+  "geometry": {
+    "cz_centroid_distance": 1.6384928124290064,
+    "en_healthy_to_cz_healthy_mean": 2.159931354057187,
+    "en_healthy_to_cz_patients_mean": 2.1287875745418803,
+    "en_patients_to_cz_healthy_mean": 2.348699552571495,
+    "en_patients_to_cz_patients_mean": 2.28542262515772,
+    "geometry_accuracy": 0.4167
+  },
+  "best_en_threshold": 0.9999,
+  "best_en_metrics": {
+    "threshold": 0.9999,
+    "balanced_accuracy": 0.5,
+    "accuracy": 0.4166666666666667,
+    "recall": 1.0,
+    "precision": 0.4166666666666667,
+    "f1": 0.5882352941176471
+  },
+  "auc": 0.6,
+  "per_subject": [
+    {
+      "subject_id": "401",
+      "label": 0,
+      "score": 0.9999891519546508,
+      "d_to_cz_healthy": 2.0331,
+      "d_to_cz_patients": 2.0125,
+      "closer_to": "patients",
+      "geometry_matches": false
+    },
+    {
+      "subject_id": "403",
+      "label": 0,
+      "score": 0.9999911785125732,
+      "d_to_cz_healthy": 2.2223,
+      "d_to_cz_patients": 2.1685,
+      "closer_to": "patients",
+      "geometry_matches": false
+    },
+    {
+      "subject_id": "404",
+      "label": 0,
+      "score": 0.999991774559021,
+      "d_to_cz_healthy": 2.6743,
+      "d_to_cz_patients": 2.5587,
+      "closer_to": "patients",
+      "geometry_matches": false
+    },
+    {
+      "subject_id": "405",
+      "label": 0,
+      "score": 0.9999854564666748,
+      "d_to_cz_healthy": 1.9712,
+      "d_to_cz_patients": 1.9655,
+      "closer_to": "patients",
+      "geometry_matches": false
+    },
+    {
+      "subject_id": "409",
+      "label": 0,
+      "score": 0.9999868869781494,
+      "d_to_cz_healthy": 1.9747,
+      "d_to_cz_patients": 1.9656,
+      "closer_to": "patients",
+      "geometry_matches": false
+    },
+    {
+      "subject_id": "410",
+      "label": 0,
+      "score": 0.9999918937683104,
+      "d_to_cz_healthy": 2.5898,
+      "d_to_cz_patients": 2.4844,
+      "closer_to": "patients",
+      "geometry_matches": false
+    },
+    {
+      "subject_id": "411",
+      "label": 0,
+      "score": 0.9999468326568604,
+      "d_to_cz_healthy": 1.6542,
+      "d_to_cz_patients": 1.7463,
+      "closer_to": "healthy",
+      "geometry_matches": true
+    },
+    {
+      "subject_id": "574",
+      "label": 1,
+      "score": 0.9999873638153076,
+      "d_to_cz_healthy": 2.1016,
+      "d_to_cz_patients": 2.0722,
+      "closer_to": "patients",
+      "geometry_matches": true
+    },
+    {
+      "subject_id": "607",
+      "label": 1,
+      "score": 0.9999783039093018,
+      "d_to_cz_healthy": 1.8475,
+      "d_to_cz_patients": 1.8724,
+      "closer_to": "healthy",
+      "geometry_matches": false
+    },
+    {
+      "subject_id": "609",
+      "label": 1,
+      "score": 0.9999916553497314,
+      "d_to_cz_healthy": 2.7598,
+      "d_to_cz_patients": 2.6351,
+      "closer_to": "patients",
+      "geometry_matches": true
+    },
+    {
+      "subject_id": "611",
+      "label": 1,
+      "score": 0.999991536140442,
+      "d_to_cz_healthy": 2.3502,
+      "d_to_cz_patients": 2.2781,
+      "closer_to": "patients",
+      "geometry_matches": true
+    },
+    {
+      "subject_id": "617",
+      "label": 1,
+      "score": 0.9999921321868896,
+      "d_to_cz_healthy": 2.6844,
+      "d_to_cz_patients": 2.5692,
+      "closer_to": "patients",
+      "geometry_matches": true
+    }
+  ]
+}

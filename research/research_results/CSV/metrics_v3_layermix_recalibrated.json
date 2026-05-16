@@ -1,0 +1,255 @@
+{
+  "config": {
+    "arch": "V3_LayerMix",
+    "recalibration": "threshold_optimization",
+    "original_threshold": 0.2,
+    "best_policy": "Best Precision (recall>=0.95)",
+    "recommended_threshold": 0.61
+  },
+  "sample_level": {
+    "original": {
+      "threshold": 0.2,
+      "accuracy": 0.8746,
+      "balanced_accuracy": 0.8533,
+      "precision": 0.8227,
+      "recall": 0.9965,
+      "f1": 0.9013,
+      "fp_count": 361.0,
+      "auc": 0.9451
+    },
+    "recalibrated": {
+      "threshold": 0.9,
+      "accuracy": 0.9055,
+      "balanced_accuracy": 0.8968,
+      "precision": 0.8885,
+      "recall": 0.9555,
+      "f1": 0.9208,
+      "fp_count": 129.0,
+      "auc": 0.9451
+    }
+  },
+  "subject_level": {
+    "original": {
+      "threshold": 0.2,
+      "accuracy": 0.8061,
+      "balanced_accuracy": 0.7841,
+      "precision": 0.7397,
+      "recall": 1.0,
+      "f1": 0.8504,
+      "fp_subjects": 19.0,
+      "auc": 0.9739
+    },
+    "recalibrated": {
+      "threshold": 0.61,
+      "accuracy": 0.9592,
+      "balanced_accuracy": 0.9545,
+      "precision": 0.931,
+      "recall": 1.0,
+      "f1": 0.9643,
+      "fp_subjects": 4.0,
+      "auc": 0.9739
+    }
+  },
+  "improvements": {
+    "sample_precision_delta": 0.0658,
+    "subject_precision_delta": 0.1913,
+    "sample_recall_delta": -0.041,
+    "subject_recall_delta": 0.0
+  },
+  "threshold_comparison": [
+    {
+      "policy": "Current (recall-max, thr=0.20)",
+      "threshold": 0.2,
+      "sample_bal_acc": 0.8533,
+      "sample_recall": 0.9965,
+      "sample_precision": 0.8227,
+      "sample_f1": 0.9013,
+      "subject_bal_acc": 0.7841,
+      "subject_recall": 1.0,
+      "subject_precision": 0.7397,
+      "subject_f1": 0.8504
+    },
+    {
+      "policy": "Best Balanced Accuracy",
+      "threshold": 0.61,
+      "sample_bal_acc": 0.8975,
+      "sample_recall": 0.9585,
+      "sample_precision": 0.8878,
+      "sample_f1": 0.9218,
+      "subject_bal_acc": 0.9545,
+      "subject_recall": 1.0,
+      "subject_precision": 0.931,
+      "subject_f1": 0.9643
+    },
+    {
+      "policy": "Best F1",
+      "threshold": 0.61,
+      "sample_bal_acc": 0.8947,
+      "sample_recall": 0.9719,
+      "sample_precision": 0.8779,
+      "sample_f1": 0.9225,
+      "subject_bal_acc": 0.9545,
+      "subject_recall": 1.0,
+      "subject_precision": 0.931,
+      "subject_f1": 0.9643
+    },
+    {
+      "policy": "Best Precision (recall>=0.95)",
+      "threshold": 0.61,
+      "sample_bal_acc": 0.8968,
+      "sample_recall": 0.9555,
+      "sample_precision": 0.8885,
+      "sample_f1": 0.9208,
+      "subject_bal_acc": 0.9545,
+      "subject_recall": 1.0,
+      "subject_precision": 0.931,
+      "subject_f1": 0.9643
+    }
+  ],
+  "critical_subjects_summary": [
+    {
+      "subject_id": "H26",
+      "policy": "Current",
+      "threshold": 0.2,
+      "mean_score": 0.9905,
+      "n_total": 24,
+      "fp": 24,
+      "fp_rate": 1.0
+    },
+    {
+      "subject_id": "H26",
+      "policy": "Best BalAcc",
+      "threshold": 0.61,
+      "mean_score": 0.9905,
+      "n_total": 24,
+      "fp": 24,
+      "fp_rate": 1.0
+    },
+    {
+      "subject_id": "H26",
+      "policy": "Best F1",
+      "threshold": 0.61,
+      "mean_score": 0.9905,
+      "n_total": 24,
+      "fp": 24,
+      "fp_rate": 1.0
+    },
+    {
+      "subject_id": "H26",
+      "policy": "Best Prec",
+      "threshold": 0.61,
+      "mean_score": 0.9905,
+      "n_total": 24,
+      "fp": 24,
+      "fp_rate": 1.0
+    },
+    {
+      "subject_id": "H27",
+      "policy": "Current",
+      "threshold": 0.2,
+      "mean_score": 0.8933,
+      "n_total": 27,
+      "fp": 25,
+      "fp_rate": 0.9259
+    },
+    {
+      "subject_id": "H27",
+      "policy": "Best BalAcc",
+      "threshold": 0.61,
+      "mean_score": 0.8933,
+      "n_total": 27,
+      "fp": 25,
+      "fp_rate": 0.9259
+    },
+    {
+      "subject_id": "H27",
+      "policy": "Best F1",
+      "threshold": 0.61,
+      "mean_score": 0.8933,
+      "n_total": 27,
+      "fp": 25,
+      "fp_rate": 0.9259
+    },
+    {
+      "subject_id": "H27",
+      "policy": "Best Prec",
+      "threshold": 0.61,
+      "mean_score": 0.8933,
+      "n_total": 27,
+      "fp": 25,
+      "fp_rate": 0.9259
+    },
+    {
+      "subject_id": "H28",
+      "policy": "Current",
+      "threshold": 0.2,
+      "mean_score": 0.8991,
+      "n_total": 33,
+      "fp": 31,
+      "fp_rate": 0.9394
+    },
+    {
+      "subject_id": "H28",
+      "policy": "Best BalAcc",
+      "threshold": 0.61,
+      "mean_score": 0.8991,
+      "n_total": 33,
+      "fp": 31,
+      "fp_rate": 0.9394
+    },
+    {
+      "subject_id": "H28",
+      "policy": "Best F1",
+      "threshold": 0.61,
+      "mean_score": 0.8991,
+      "n_total": 33,
+      "fp": 31,
+      "fp_rate": 0.9394
+    },
+    {
+      "subject_id": "H28",
+      "policy": "Best Prec",
+      "threshold": 0.61,
+      "mean_score": 0.8991,
+      "n_total": 33,
+      "fp": 31,
+      "fp_rate": 0.9394
+    },
+    {
+      "subject_id": "H29",
+      "policy": "Current",
+      "threshold": 0.2,
+      "mean_score": 0.9822,
+      "n_total": 27,
+      "fp": 27,
+      "fp_rate": 1.0
+    },
+    {
+      "subject_id": "H29",
+      "policy": "Best BalAcc",
+      "threshold": 0.61,
+      "mean_score": 0.9822,
+      "n_total": 27,
+      "fp": 27,
+      "fp_rate": 1.0
+    },
+    {
+      "subject_id": "H29",
+      "policy": "Best F1",
+      "threshold": 0.61,
+      "mean_score": 0.9822,
+      "n_total": 27,
+      "fp": 27,
+      "fp_rate": 1.0
+    },
+    {
+      "subject_id": "H29",
+      "policy": "Best Prec",
+      "threshold": 0.61,
+      "mean_score": 0.9822,
+      "n_total": 27,
+      "fp": 27,
+      "fp_rate": 1.0
+    }
+  ]
+}

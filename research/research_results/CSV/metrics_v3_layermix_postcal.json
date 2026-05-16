@@ -1,0 +1,313 @@
+{
+  "config": {
+    "arch": "V3_LayerMix_postcal",
+    "original_threshold": 0.2,
+    "recalibrated_threshold": 0.61
+  },
+  "best_temp": 0.2,
+  "syllable_thresholds": {},
+  "strategies": [
+    {
+      "strategy": "Original (thr=0.20)",
+      "threshold": 0.2,
+      "subject_bal_acc": 0.7841,
+      "subject_precision": 0.7397,
+      "subject_recall": 1.0,
+      "subject_f1": 0.8504,
+      "subject_auc": 0.9739,
+      "brier": 0.0604
+    },
+    {
+      "strategy": "Recalib (thr=0.61)",
+      "threshold": 0.61,
+      "subject_bal_acc": 0.9545,
+      "subject_precision": 0.931,
+      "subject_recall": 1.0,
+      "subject_f1": 0.9643,
+      "subject_auc": 0.9739,
+      "brier": 0.0604
+    },
+    {
+      "strategy": "Platt",
+      "threshold": 0.5,
+      "subject_bal_acc": 0.9545,
+      "subject_precision": 0.931,
+      "subject_recall": 1.0,
+      "subject_f1": 0.9643,
+      "subject_auc": 0.9739,
+      "brier": 0.0566
+    },
+    {
+      "strategy": "Temperature",
+      "threshold": 0.91,
+      "subject_bal_acc": 0.9545,
+      "subject_precision": 0.931,
+      "subject_recall": 1.0,
+      "subject_f1": 0.9643,
+      "subject_auc": 0.9739,
+      "brier": 0.052
+    },
+    {
+      "strategy": "Isotonic",
+      "threshold": 0.01,
+      "subject_bal_acc": 0.9545,
+      "subject_precision": 0.931,
+      "subject_recall": 1.0,
+      "subject_f1": 0.9643,
+      "subject_auc": 0.9844,
+      "brier": 0.0313
+    },
+    {
+      "strategy": "Sub-task thresholds",
+      "threshold": "N/A",
+      "subject_bal_acc": 0.9545,
+      "subject_precision": 0.931,
+      "subject_recall": 1.0,
+      "subject_f1": 0.9643,
+      "subject_auc": 0.9739,
+      "brier": NaN
+    }
+  ],
+  "hard_negatives": [
+    {
+      "subject_id": "H26",
+      "syllable_group": "consonant",
+      "n_samples": 4,
+      "mean_score": 0.991,
+      "fp_orig_thr": 4,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 4,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H26",
+      "syllable_group": "word_1syll",
+      "n_samples": 6,
+      "mean_score": 0.9892,
+      "fp_orig_thr": 6,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 6,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H26",
+      "syllable_group": "word_2syll",
+      "n_samples": 5,
+      "mean_score": 0.9903,
+      "fp_orig_thr": 5,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 5,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H26",
+      "syllable_group": "word_3syll",
+      "n_samples": 4,
+      "mean_score": 0.9912,
+      "fp_orig_thr": 4,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 4,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H26",
+      "syllable_group": "word_4syll",
+      "n_samples": 3,
+      "mean_score": 0.9912,
+      "fp_orig_thr": 3,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 3,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H26",
+      "syllable_group": "word_difficult",
+      "n_samples": 2,
+      "mean_score": 0.9914,
+      "fp_orig_thr": 2,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 2,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H27",
+      "syllable_group": "consonant",
+      "n_samples": 6,
+      "mean_score": 0.9896,
+      "fp_orig_thr": 6,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 6,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H27",
+      "syllable_group": "word_1syll",
+      "n_samples": 7,
+      "mean_score": 0.8535,
+      "fp_orig_thr": 6,
+      "fp_orig_rate": 0.8571,
+      "fp_syl_thr": 6,
+      "fp_syl_rate": 0.8571
+    },
+    {
+      "subject_id": "H27",
+      "syllable_group": "word_2syll",
+      "n_samples": 5,
+      "mean_score": 0.9609,
+      "fp_orig_thr": 5,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 5,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H27",
+      "syllable_group": "word_3syll",
+      "n_samples": 4,
+      "mean_score": 0.7204,
+      "fp_orig_thr": 3,
+      "fp_orig_rate": 0.75,
+      "fp_syl_thr": 3,
+      "fp_syl_rate": 0.75
+    },
+    {
+      "subject_id": "H27",
+      "syllable_group": "word_4syll",
+      "n_samples": 3,
+      "mean_score": 0.8709,
+      "fp_orig_thr": 3,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 3,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H27",
+      "syllable_group": "word_difficult",
+      "n_samples": 2,
+      "mean_score": 0.954,
+      "fp_orig_thr": 2,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 2,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H28",
+      "syllable_group": "consonant",
+      "n_samples": 10,
+      "mean_score": 0.9599,
+      "fp_orig_thr": 10,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 10,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H28",
+      "syllable_group": "word_1syll",
+      "n_samples": 9,
+      "mean_score": 0.8544,
+      "fp_orig_thr": 8,
+      "fp_orig_rate": 0.8889,
+      "fp_syl_thr": 8,
+      "fp_syl_rate": 0.8889
+    },
+    {
+      "subject_id": "H28",
+      "syllable_group": "word_2syll",
+      "n_samples": 5,
+      "mean_score": 0.9559,
+      "fp_orig_thr": 5,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 5,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H28",
+      "syllable_group": "word_3syll",
+      "n_samples": 4,
+      "mean_score": 0.7165,
+      "fp_orig_thr": 3,
+      "fp_orig_rate": 0.75,
+      "fp_syl_thr": 3,
+      "fp_syl_rate": 0.75
+    },
+    {
+      "subject_id": "H28",
+      "syllable_group": "word_4syll",
+      "n_samples": 3,
+      "mean_score": 0.9592,
+      "fp_orig_thr": 3,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 3,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H28",
+      "syllable_group": "word_difficult",
+      "n_samples": 2,
+      "mean_score": 0.9297,
+      "fp_orig_thr": 2,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 2,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H29",
+      "syllable_group": "consonant",
+      "n_samples": 6,
+      "mean_score": 0.983,
+      "fp_orig_thr": 6,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 6,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H29",
+      "syllable_group": "word_1syll",
+      "n_samples": 7,
+      "mean_score": 0.9875,
+      "fp_orig_thr": 7,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 7,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H29",
+      "syllable_group": "word_2syll",
+      "n_samples": 5,
+      "mean_score": 0.9878,
+      "fp_orig_thr": 5,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 5,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H29",
+      "syllable_group": "word_3syll",
+      "n_samples": 4,
+      "mean_score": 0.9609,
+      "fp_orig_thr": 4,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 4,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H29",
+      "syllable_group": "word_4syll",
+      "n_samples": 3,
+      "mean_score": 0.9834,
+      "fp_orig_thr": 3,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 3,
+      "fp_syl_rate": 1.0
+    },
+    {
+      "subject_id": "H29",
+      "syllable_group": "word_difficult",
+      "n_samples": 2,
+      "mean_score": 0.9879,
+      "fp_orig_thr": 2,
+      "fp_orig_rate": 1.0,
+      "fp_syl_thr": 2,
+      "fp_syl_rate": 1.0
+    }
+  ]
+}

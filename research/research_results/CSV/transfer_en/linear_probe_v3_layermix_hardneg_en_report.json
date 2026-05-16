@@ -1,0 +1,170 @@
+{
+  "lp_metrics": {
+    "accuracy": 0.5,
+    "balanced_accuracy": 0.4571428571428572,
+    "precision": 0.3333333333333333,
+    "recall": 0.2,
+    "f1": 0.25,
+    "auc": 0.2
+  },
+  "folds": [
+    {
+      "test_subject": "401",
+      "label": 0,
+      "score": 0.811610580554825,
+      "pred": 1
+    },
+    {
+      "test_subject": "403",
+      "label": 0,
+      "score": 0.08153180149551917,
+      "pred": 0
+    },
+    {
+      "test_subject": "404",
+      "label": 0,
+      "score": 0.7882041019309916,
+      "pred": 1
+    },
+    {
+      "test_subject": "405",
+      "label": 0,
+      "score": 0.1077635033364707,
+      "pred": 0
+    },
+    {
+      "test_subject": "409",
+      "label": 0,
+      "score": 0.3765375307448962,
+      "pred": 0
+    },
+    {
+      "test_subject": "410",
+      "label": 0,
+      "score": 0.45035320028353,
+      "pred": 0
+    },
+    {
+      "test_subject": "411",
+      "label": 0,
+      "score": 0.09740808546614566,
+      "pred": 0
+    },
+    {
+      "test_subject": "574",
+      "label": 1,
+      "score": 0.06844669320127467,
+      "pred": 0
+    },
+    {
+      "test_subject": "607",
+      "label": 1,
+      "score": 0.0010065290670663017,
+      "pred": 0
+    },
+    {
+      "test_subject": "609",
+      "label": 1,
+      "score": 0.08029234313563882,
+      "pred": 0
+    },
+    {
+      "test_subject": "611",
+      "label": 1,
+      "score": 0.0022304682783897095,
+      "pred": 0
+    },
+    {
+      "test_subject": "617",
+      "label": 1,
+      "score": 0.9724491741057384,
+      "pred": 1
+    }
+  ],
+  "per_subject": [
+    {
+      "subject_id": "401",
+      "label": 0,
+      "score": 0.811610580554825,
+      "pred": 1,
+      "correct": false
+    },
+    {
+      "subject_id": "403",
+      "label": 0,
+      "score": 0.08153180149551917,
+      "pred": 0,
+      "correct": true
+    },
+    {
+      "subject_id": "404",
+      "label": 0,
+      "score": 0.7882041019309916,
+      "pred": 1,
+      "correct": false
+    },
+    {
+      "subject_id": "405",
+      "label": 0,
+      "score": 0.1077635033364707,
+      "pred": 0,
+      "correct": true
+    },
+    {
+      "subject_id": "409",
+      "label": 0,
+      "score": 0.3765375307448962,
+      "pred": 0,
+      "correct": true
+    },
+    {
+      "subject_id": "410",
+      "label": 0,
+      "score": 0.45035320028353,
+      "pred": 0,
+      "correct": true
+    },
+    {
+      "subject_id": "411",
+      "label": 0,
+      "score": 0.09740808546614566,
+      "pred": 0,
+      "correct": true
+    },
+    {
+      "subject_id": "574",
+      "label": 1,
+      "score": 0.06844669320127467,
+      "pred": 0,
+      "correct": false
+    },
+    {
+      "subject_id": "607",
+      "label": 1,
+      "score": 0.0010065290670663017,
+      "pred": 0,
+      "correct": false
+    },
+    {
+      "subject_id": "609",
+      "label": 1,
+      "score": 0.08029234313563882,
+      "pred": 0,
+      "correct": false
+    },
+    {
+      "subject_id": "611",
+      "label": 1,
+      "score": 0.0022304682783897095,
+      "pred": 0,
+      "correct": false
+    },
+    {
+      "subject_id": "617",
+      "label": 1,
+      "score": 0.9724491741057384,
+      "pred": 1,
+      "correct": true
+    }
+  ]
+}

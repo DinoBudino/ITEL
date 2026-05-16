@@ -97,7 +97,7 @@ def _find_best_threshold(model, loader, device):
     return best_thr
 
 
-def _train_fold(model, train_loader, val_loader, device, epochs, lr, weight_decay, pos_weight, lambda_contrastive, temperature):
+def _train_fold(model, train_loader, val_loader, device, epochs, lr, weight_decay, pos_weight, lambda_contrastive, temperature, checkpoint_path=None):
     model.to(device)
     criterion_bce = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([pos_weight], device=device))
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
@@ -146,6 +146,30 @@ def _train_fold(model, train_loader, val_loader, device, epochs, lr, weight_deca
         )
 
     model.load_state_dict(best_state)
+    if checkpoint_path and best_state is not None:
+        Path(checkpoint_path).parent.mkdir(parents=True, exist_ok=True)
+        torch.save({
+            "state_dict": best_state,
+            "model_config": {
+                "input_dim": 768, "lstm_hidden": 256, "lstm_layers": 2,
+                "dropout": 0.3, "fc_hidden": 128, "num_heads": 1,
+            },
+            "best_threshold": float(best_threshold),
+            "best_recall": float(best_recall),
+            "training_config": {
+                "epochs": epochs, "lr": lr, "weight_decay": weight_decay,
+                "pos_weight": pos_weight, "lambda_contrastive": lambda_contrastive,
+                "temperature": temperature,
+            },
+            "preprocessing": {
+                "target_sr": CONFIG.audio.target_sr,
+                "highpass_hz": CONFIG.audio.highpass_hz,
+                "target_rms": CONFIG.audio.target_rms,
+                "max_peak_after_rms": CONFIG.audio.max_peak_after_rms,
+                "default_profile": CONFIG.audio.default_profile,
+            },
+        }, checkpoint_path)
+        print(f"  Checkpoint saved: {checkpoint_path}")
     return model, best_threshold
 
 
@@ -163,6 +187,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--temperature", type=float, default=0.07, help="Temperature for contrastive loss.")
     p.add_argument("--device", default=None)
     p.add_argument("--output-dir", default=str(CONFIG.paths.reports_dir / "CSV"))
+    p.add_argument("--save-checkpoint-dir", default=str(CONFIG.paths.reports_dir / "checkpoints"))
+    p.add_argument("--limit", type=int, default=None, help="Limit to first N samples (quick runs).")
+    p.add_argument("--fold", type=int, default=None, help="Train only a single fold (1-indexed).")
     return p.parse_args()
 
 
@@ -172,18 +199,27 @@ def main() -> None:
     print(f"Device: {device}  lambda={args.lambda_contrastive}  temp={args.temperature}")
 
     manifest = pd.read_csv(args.sequence_manifest)
+    if args.limit is not None:
+        manifest = manifest.head(args.limit)
     print(f"Loaded {len(manifest)} samples  |  Label dist: {manifest.label.value_counts().to_dict()}")
 
     y = manifest["label"].values
     groups = manifest["subject_id"].values
     splitter = StratifiedGroupKFold(n_splits=args.n_splits, shuffle=True, random_state=args.random_state)
 
+    checkpoint_dir = Path(args.save_checkpoint_dir)
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+
     tag = f"contrastive_l{args.lambda_contrastive}"
     all_preds = []
     all_embs = []
     fold_metrics_list = []
 
+    fold_indices = [args.fold] if args.fold is not None else list(range(1, args.n_splits + 1))
     for fold_idx, (train_idx, val_idx) in enumerate(splitter.split(np.zeros(len(manifest)), y, groups=groups), start=1):
+        if fold_idx not in fold_indices:
+            continue
+
         print(f"\n===== Fold {fold_idx}/{args.n_splits} =====")
         train_df = manifest.iloc[train_idx].copy()
         val_df = manifest.iloc[val_idx].copy()
@@ -195,12 +231,14 @@ def main() -> None:
                                 collate_fn=collate_sequences, num_workers=0)
 
         model = AttentionBiLSTMClassifier(input_dim=768, lstm_hidden=256, lstm_layers=2, dropout=0.3, fc_hidden=128, num_heads=1)
+        ckpt_path = str(checkpoint_dir / f"fold_{fold_idx}_of_{args.n_splits}.pt")
         model, best_thr = _train_fold(
             model, train_loader, val_loader, device,
             epochs=args.epochs, lr=args.lr, weight_decay=args.weight_decay,
             pos_weight=args.pos_weight,
             lambda_contrastive=args.lambda_contrastive,
             temperature=args.temperature,
+            checkpoint_path=ckpt_path,
         )
         print(f"  Best threshold: {best_thr:.2f}")
 
@@ -283,9 +321,27 @@ def main() -> None:
             r = ss.iloc[0]
             print(f"  {s}: score={r['score_patients']:.4f}  label={r['label']}  pred={r['pred_label']}")
 
+    metadata = {
+        "arch": "HuBERT_BASE -> AttentionBiLSTM + SupCon",
+        "preprocessing": {
+            "target_sr": CONFIG.audio.target_sr,
+            "highpass_hz": CONFIG.audio.highpass_hz,
+            "target_rms": CONFIG.audio.target_rms,
+            "max_peak_after_rms": CONFIG.audio.max_peak_after_rms,
+            "default_profile": CONFIG.audio.default_profile,
+        },
+        "model_config": {"input_dim": 768, "lstm_hidden": 256, "lstm_layers": 2, "dropout": 0.3, "fc_hidden": 128, "num_heads": 1},
+        "training_config": {"lambda_contrastive": args.lambda_contrastive, "temperature": args.temperature, "epochs": args.epochs, "lr": args.lr, "lr": args.lr, "weight_decay": args.weight_decay, "pos_weight": args.pos_weight},
+        "source_manifest": args.sequence_manifest,
+    }
+    metadata_path = checkpoint_dir / "model_metadata.json"
+    metadata_path.write_text(json.dumps(metadata, indent=2, default=str), encoding="utf-8")
+
     print(f"\nPredictions: {pred_out}")
     print(f"Embeddings:  {emb_out}")
     print(f"Metrics:     {metrics_out}")
+    print(f"Checkpoints: {checkpoint_dir}")
+    print(f"Metadata:    {metadata_path}")
 
 
 if __name__ == "__main__":

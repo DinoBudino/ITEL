@@ -1,0 +1,7 @@
+group_col,model_name,group,n_samples,n_healthy,n_patients,n_subjects,accuracy,balanced_accuracy,precision,recall,f1,false_positive_rate,auc
+task_type,Fase1_baseline,controlled_consonant,147,62,85,19,0.8367,0.8086,0.785,0.9882,0.875,0.371,0.9518
+task_type,Fase1_baseline,controlled_word,433,196,237,19,0.8037,0.7876,0.7517,0.9578,0.8423,0.3827,0.9111
+task_type,V3_control,controlled_consonant,767,305,462,98,0.7405,0.6766,0.702,0.9892,0.8212,0.6361,0.9044
+task_type,V3_control,controlled_word,2208,961,1247,98,0.7799,0.749,0.7237,0.9872,0.8351,0.4891,0.9032
+task_type,V3_LayerMix,controlled_consonant,767,305,462,98,0.8514,0.8131,0.8021,1.0,0.8902,0.3738,0.9423
+task_type,V3_LayerMix,controlled_word,2208,961,1247,98,0.8827,0.866,0.8307,0.9952,0.9055,0.2633,0.946

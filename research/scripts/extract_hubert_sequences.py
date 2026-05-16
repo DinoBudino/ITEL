@@ -19,7 +19,7 @@ from research.src.sequence_model import HubertSequenceEncoder
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Extract HuBERT last_hidden_state sequences [T,768] and save to .pt files."
+        description="Extract HuBERT layer sequences and save to .pt files."
     )
     parser.add_argument(
         "--sample-manifest",
@@ -53,6 +53,12 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Process only first N samples (debug).",
     )
+    parser.add_argument(
+        "--all-layers",
+        action="store_true",
+        default=False,
+        help="Save all 12 HuBERT transformer layers [12, T, 768] instead of last layer only.",
+    )
     return parser.parse_args()
 
 
@@ -70,12 +76,15 @@ def main() -> None:
         duration_label = "2.0s_fixed"
         duration_s = CONFIG.audio.train_segment_s
 
+    layer_label = "12layers" if args.all_layers else "last"
+    print(f"Layer mode: {layer_label}  |  Duration mode: {duration_label}")
+
     sample_manifest = pd.read_csv(args.sample_manifest)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Device: {device}  |  Duration mode: {duration_label}")
+    print(f"Device: {device}")
 
     encoder = HubertSequenceEncoder(device=device)
 
@@ -84,7 +93,9 @@ def main() -> None:
     if args.limit:
         rows = rows[: args.limit]
 
-    for row in tqdm(rows, desc=f"extracting hubert seq ({duration_label})"):
+    seq_dim_label = "all_12_layers" if args.all_layers else "last_hidden"
+
+    for row in tqdm(rows, desc=f"extracting hubert seq ({duration_label}, {layer_label})"):
         sample_id = row["sample_id"]
         audio_path = row["raw_audio_path"]
         pt_path = output_dir / f"{sample_id}.pt"
@@ -107,10 +118,14 @@ def main() -> None:
                 profile=CONFIG.audio.default_profile,
             )
             waveform = torch.tensor(samples, dtype=torch.float32).unsqueeze(0)
-            seq, mask = encoder.extract_sequence(waveform)
+
+            if args.all_layers:
+                seq, mask = encoder.extract_all_layers(waveform)
+            else:
+                seq, mask = encoder.extract_sequence(waveform)
 
             torch.save(
-                {"sequence": seq.float(), "mask": mask.bool()},
+                {"sequence": seq.float(), "mask": mask.bool(), "mode": seq_dim_label},
                 pt_path,
             )
 
