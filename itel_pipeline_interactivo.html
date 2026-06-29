@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ITEL — Pipeline de Clasificación de Voz</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #222; min-height: 100vh; }
+
+header {
+  background: #1a1a2e;
+  color: white;
+  padding: 15px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-left { display: flex; flex-direction: column; gap: 2px; }
+.header-title { font-size: 1.1rem; font-weight: 800; letter-spacing: .3px; }
+.header-sub { font-size: 0.75rem; color: #7ec8e3; }
+.header-badge {
+  background: rgba(126,200,227,.15);
+  border: 1px solid rgba(126,200,227,.4);
+  color: #7ec8e3;
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.main { max-width: 1500px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+/* ─── DIAGRAM CARD ─── */
+.diagram-card {
+  background: white;
+  border-radius: 14px;
+  padding: 28px 24px 20px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.08);
+}
+.diagram-title {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin-bottom: 6px;
+  letter-spacing: .2px;
+}
+.diagram-subtitle {
+  text-align: center;
+  font-size: 0.78rem;
+  color: #999;
+  margin-bottom: 26px;
+}
+
+.diagram {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+/* ─── ARROW ─── */
+.arrow {
+  flex: 0 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  font-size: 1.3rem;
+  padding-bottom: 24px;
+}
+
+/* ─── STAGE ─── */
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-width: 90px;
+}
+.stage-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #999;
+  margin-bottom: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* clickable wrapper */
+.block {
+  cursor: pointer;
+  transition: transform .18s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+.block:hover { transform: scale(1.08); }
+.block.active { transform: scale(1.08); }
+
+.block-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #555;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ─── WAV INPUT ─── */
+.wav-icon {
+  width: 70px;
+  height: 80px;
+  background: linear-gradient(160deg, #2c3e50 0%, #1a1a2e 100%);
+  border-radius: 10px;
+  border: 2.5px solid #34495e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.block.active .wav-icon, .block:hover .wav-icon {
+  border-color: #7ec8e3;
+  box-shadow: 0 0 0 3px rgba(126,200,227,.25);
+}
+.wav-wave { display: flex; gap: 2px; align-items: center; height: 28px; }
+.wav-bar {
+  width: 3px;
+  background: #7ec8e3;
+  border-radius: 2px;
+  transition: height .2s;
+}
+.wav-label { font-size: 0.65rem; color: #7ec8e3; font-weight: 700; letter-spacing: 1px; }
+
+/* ─── PREPROCESSING ─── */
+.prep-icon {
+  width: 68px;
+  height: 80px;
+  background: linear-gradient(160deg, #1a5276 0%, #154360 100%);
+  border-radius: 10px;
+  border: 2.5px solid #2471a3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.block.active .prep-icon, .block:hover .prep-icon {
+  border-color: #5dade2;
+  box-shadow: 0 0 0 3px rgba(93,173,226,.25);
+}
+.prep-line { height: 2px; width: 44px; border-radius: 2px; }
+.prep-line.raw { background: #e74c3c; }
+.prep-line.filtered { background: #2ecc71; }
+.prep-line.norm { background: #f39c12; }
+
+/* ─── HUBERT ─── */
+.hubert-icon {
+  width: 78px;
+  height: 88px;
+  background: linear-gradient(160deg, #4a235a 0%, #6c3483 100%);
+  border-radius: 10px;
+  border: 2.5px solid #7d3c98;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.block.active .hubert-icon, .block:hover .hubert-icon {
+  border-color: #a569bd;
+  box-shadow: 0 0 0 3px rgba(165,105,189,.25);
+}
+.transformer-row { display: flex; gap: 4px; }
+.t-block {
+  width: 11px; height: 11px; border-radius: 2px; background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.35);
+}
+.t-block.lit { background: rgba(165,105,189,.7); border-color: #c39bd3; }
+.hubert-tag { font-size: 0.6rem; color: #c39bd3; font-weight: 700; letter-spacing: .5px; margin-top: 2px; }
+
+/* ─── LAYERMIX ─── */
+.mix-icon {
+  width: 68px;
+  height: 80px;
+  background: linear-gradient(160deg, #1a4a3c 0%, #0e6655 100%);
+  border-radius: 10px;
+  border: 2.5px solid #1e8449;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.block.active .mix-icon, .block:hover .mix-icon {
+  border-color: #27ae60;
+  box-shadow: 0 0 0 3px rgba(39,174,96,.25);
+}
+.mix-bar-row { display: flex; align-items: flex-end; gap: 3px; }
+.mb { width: 8px; border-radius: 2px 2px 0 0; background: #27ae60; }
+.mix-label-inner { font-size: 0.58rem; color: #82e0aa; font-weight: 700; letter-spacing: .5px; }
+
+/* ─── SCALER ─── */
+.scaler-icon {
+  width: 66px;
+  height: 76px;
+  background: linear-gradient(160deg, #4a3000 0%, #784212 100%);
+  border-radius: 10px;
+  border: 2.5px solid #935116;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.block.active .scaler-icon, .block:hover .scaler-icon {
+  border-color: #f39c12;
+  box-shadow: 0 0 0 3px rgba(243,156,18,.25);
+}
+.scaler-dots { display: flex; gap: 4px; align-items: center; }
+.sd { width: 8px; height: 8px; border-radius: 50%; background: #e59866; }
+.sd.shifted { background: #f39c12; }
+.scaler-arrow-inner { font-size: 0.85rem; color: #f39c12; }
+.scaler-dots-after { display: flex; gap: 3px; align-items: center; }
+.sda { width: 5px; height: 5px; border-radius: 50%; background: #f8c471; }
+
+/* ─── ONNX CLASSIFIER ─── */
+.onnx-icon {
+  width: 74px;
+  height: 84px;
+  background: linear-gradient(160deg, #1a2a4a 0%, #21618c 100%);
+  border-radius: 10px;
+  border: 2.5px solid #2980b9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.block.active .onnx-icon, .block:hover .onnx-icon {
+  border-color: #5dade2;
+  box-shadow: 0 0 0 3px rgba(93,173,226,.25);
+}
+.nn-layer { display: flex; gap: 5px; align-items: center; }
+.nn-node { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.4); background: rgba(255,255,255,.15); }
+.nn-node.out { background: rgba(93,173,226,.6); border-color: #7fb3d3; }
+.onnx-tag { font-size: 0.58rem; color: #7fb3d3; font-weight: 700; letter-spacing: .5px; }
+
+/* ─── OUTPUT ─── */
+.output-block-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: stretch;
+  width: 96px;
+  cursor: pointer;
+  transition: transform .18s;
+}
+.output-block-wrap:hover { transform: scale(1.06); }
+.output-block-wrap.active { transform: scale(1.06); }
+
+.out-row {
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1.5px solid;
+  transition: all .2s;
+}
+.out-row:first-child { border-radius: 8px 8px 0 0; }
+.out-row:last-child { border-radius: 0 0 8px 8px; }
+.out-healthy {
+  background: linear-gradient(135deg, #196f3d, #1e8449);
+  border-color: #27ae60;
+  color: white;
+}
+.out-patients {
+  background: linear-gradient(135deg, #922b21, #c0392b);
+  border-color: #e74c3c;
+  color: white;
+}
+.out-prob { font-size: 0.82rem; font-weight: 800; }
+.out-name { font-size: 0.68rem; font-weight: 500; opacity: .9; }
+.out-label { font-size: 0.62rem; color: #888; text-align: center; margin-top: 6px; line-height: 1.4; }
+
+.output-block-wrap.active .out-row,
+.output-block-wrap:hover .out-row {
+  filter: brightness(1.15);
+  box-shadow: 0 3px 12px rgba(0,0,0,.25);
+}
+
+/* ─── SECTION BARS ─── */
+.section-bars { display: flex; margin-top: 20px; padding: 0 4px; }
+.sec-bar { text-align: center; font-size: 0.65rem; color: #888; padding: 5px 8px; border-top: 2px solid; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+
+.hint { text-align: center; font-size: 0.76rem; color: #bbb; margin-top: 10px; }
+
+/* ─── BOTTOM ─── */
+.bottom { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+
+.info-panel, .chart-panel {
+  background: white;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: 20px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.tag-input  { background: #1a1a2e; color: #7ec8e3; }
+.tag-prep   { background: #154360; color: #5dade2; }
+.tag-enc    { background: #4a235a; color: #c39bd3; }
+.tag-mix    { background: #1a4a3c; color: #82e0aa; }
+.tag-scaler { background: #4a3000; color: #f8c471; }
+.tag-clf    { background: #1a2a4a; color: #7fb3d3; }
+.tag-out    { background: #1c2833; color: #abebc6; }
+
+.info-name { font-size: 1.25rem; font-weight: 800; color: #1a1a2e; }
+.info-desc { font-size: 0.86rem; line-height: 1.72; color: #555; }
+.info-detail {
+  background: #f7f9fc;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.81rem;
+  color: #333;
+  line-height: 1.7;
+}
+.info-detail strong { color: #1a1a2e; }
+
+.code-badge {
+  background: #1a1a2e;
+  color: #7ec8e3;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  padding: 8px 14px;
+  border-radius: 6px;
+  line-height: 1.6;
+}
+
+.placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  gap: 10px;
+  font-size: 0.84rem;
+}
+
+.chart-container { position: relative; flex: 1; min-height: 240px; }
+.chart-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 0.84rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-title">ITEL — Clasificación de Voz (TEL)</div>
+    <div class="header-sub">Tesis · Pipeline de Inferencia Interactivo · Haz clic en cada etapa</div>
+  </div>
+  <div class="header-badge">WAV → Healthy / Patients</div>
+</header>
+
+<div class="main">
+
+  <!-- DIAGRAM -->
+  <div class="diagram-card">
+    <div class="diagram-title">Pipeline de Inferencia ITEL</div>
+    <div class="diagram-subtitle">Clasificación automática de trastorno específico del lenguaje (TEL) a partir de voz</div>
+
+    <div class="diagram">
+
+      <!-- INPUT WAV -->
+      <div class="stage">
+        <div class="stage-label">Input</div>
+        <div class="block" id="node-WAV" onclick="sel('WAV')">
+          <div class="wav-icon">
+            <div class="wav-wave">
+              <div class="wav-bar" style="height:8px"></div>
+              <div class="wav-bar" style="height:20px"></div>
+              <div class="wav-bar" style="height:14px"></div>
+              <div class="wav-bar" style="height:26px"></div>
+              <div class="wav-bar" style="height:10px"></div>
+              <div class="wav-bar" style="height:22px"></div>
+              <div class="wav-bar" style="height:6px"></div>
+            </div>
+            <div class="wav-label">.WAV</div>
+          </div>
+          <div class="block-label">Audio del<br>paciente</div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- PREPROCESSING -->
+      <div class="stage">
+        <div class="stage-label">Preprocesamiento</div>
+        <div class="block" id="node-Prep" onclick="sel('Prep')">
+          <div class="prep-icon">
+            <div style="font-size:.56rem;color:#85c1e9;font-weight:700;">ANTES</div>
+            <div class="prep-line raw"></div>
+            <div style="font-size:.56rem;color:#85c1e9;font-weight:700;margin-top:2px;">↓</div>
+            <div class="prep-line filtered"></div>
+            <div class="prep-line norm"></div>
+            <div style="font-size:.56rem;color:#85c1e9;font-weight:700;">DESPUÉS</div>
+          </div>
+          <div class="block-label">Resample · HP Filter<br>Normalize · Pad</div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- HUBERT ENCODER -->
+      <div class="stage">
+        <div class="stage-label">Encoder</div>
+        <div class="block" id="node-HuBERT" onclick="sel('HuBERT')">
+          <div class="hubert-icon">
+            <div class="transformer-row">
+              <div class="t-block lit"></div><div class="t-block lit"></div>
+              <div class="t-block lit"></div><div class="t-block"></div>
+            </div>
+            <div class="transformer-row">
+              <div class="t-block"></div><div class="t-block lit"></div>
+              <div class="t-block"></div><div class="t-block lit"></div>
+            </div>
+            <div class="transformer-row">
+              <div class="t-block lit"></div><div class="t-block"></div>
+              <div class="t-block lit"></div><div class="t-block lit"></div>
+            </div>
+            <div class="hubert-tag">HuBERT</div>
+          </div>
+          <div class="block-label">HuBERT Base<br>12 capas · 768d</div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- LAYER MIX / EMBEDDING -->
+      <div class="stage">
+        <div class="stage-label">Embedding</div>
+        <div class="block" id="node-Embed" onclick="sel('Embed')">
+          <div class="mix-icon">
+            <div class="mix-bar-row">
+              <div class="mb" style="height:14px;opacity:.4"></div>
+              <div class="mb" style="height:22px;opacity:.6"></div>
+              <div class="mb" style="height:18px;opacity:.7"></div>
+              <div class="mb" style="height:30px;opacity:1"></div>
+              <div class="mb" style="height:24px;opacity:.8"></div>
+            </div>
+            <div class="mix-label-inner">EMBED</div>
+          </div>
+          <div class="block-label">Mean · Std · Delta<br>Slope · 4608d</div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- SCALER -->
+      <div class="stage">
+        <div class="stage-label">Normalización</div>
+        <div class="block" id="node-Scaler" onclick="sel('Scaler')">
+          <div class="scaler-icon">
+            <div class="scaler-dots">
+              <div class="sd"></div><div class="sd"></div><div class="sd shifted"></div>
+            </div>
+            <div class="scaler-arrow-inner">⇒</div>
+            <div class="scaler-dots-after">
+              <div class="sda"></div><div class="sda"></div><div class="sda"></div>
+            </div>
+          </div>
+          <div class="block-label">StandardScaler<br>μ=0, σ=1</div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- ONNX CLASSIFIER -->
+      <div class="stage">
+        <div class="stage-label">Clasificador</div>
+        <div class="block" id="node-ONNX" onclick="sel('ONNX')">
+          <div class="onnx-icon">
+            <div class="nn-layer">
+              <div class="nn-node"></div><div class="nn-node"></div><div class="nn-node"></div>
+            </div>
+            <div class="nn-layer" style="margin:3px 0">
+              <div class="nn-node"></div><div class="nn-node"></div>
+            </div>
+            <div class="nn-layer">
+              <div class="nn-node out"></div><div class="nn-node out"></div>
+            </div>
+            <div class="onnx-tag">ONNX</div>
+          </div>
+          <div class="block-label">ONNX Runtime<br>Logits → Softmax</div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- OUTPUT -->
+      <div class="stage">
+        <div class="stage-label">Output</div>
+        <div class="output-block-wrap" id="node-Output" onclick="sel('Output')">
+          <div class="out-row out-healthy">
+            <span class="out-prob">0.85</span>
+            <span class="out-name">Healthy</span>
+          </div>
+          <div class="out-row out-patients">
+            <span class="out-prob">0.15</span>
+            <span class="out-name">Patients</span>
+          </div>
+        </div>
+        <div class="out-label">Softmax<br>Activation</div>
+      </div>
+
+    </div>
+
+    <!-- Section bars -->
+    <div class="section-bars">
+      <div class="sec-bar" style="flex:4; border-color:#5dade2; color:#5dade2;">Extracción de Características</div>
+      <div class="sec-bar" style="flex:1.5; border-color:#f39c12; color:#f39c12;">Clasificación</div>
+      <div class="sec-bar" style="flex:1; border-color:#27ae60; color:#27ae60;">Distribución</div>
+    </div>
+
+    <div class="hint">↑ Haz clic en cualquier etapa del pipeline para ver detalles y gráfica</div>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bottom">
+
+    <div class="info-panel">
+      <div class="panel-title">Descripción del componente</div>
+      <div class="placeholder" id="placeholder">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+          <circle cx="12" cy="16" r=".6" fill="#ccc"/>
+        </svg>
+        <span>Selecciona una etapa del pipeline</span>
+      </div>
+      <div id="info-content" style="display:none; flex-direction:column; gap:10px;"></div>
+    </div>
+
+    <div class="chart-panel">
+      <div class="panel-title" id="chart-title">Visualización</div>
+      <div class="chart-empty" id="chart-empty">Selecciona una etapa para ver su visualización</div>
+      <div class="chart-container" id="chart-container" style="display:none;">
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const DATA = {
+  WAV: {
+    tagClass: 'tag-input', tagText: 'Input · Señal de Voz',
+    name: 'Archivo WAV — Audio del Paciente',
+    desc: 'La entrada del sistema ITEL es un archivo <strong>.WAV mono</strong> con la grabación de voz del paciente. El audio captura tareas de habla controlada (sonidos del habla, palabras, frases) diseñadas para detectar marcadores de TEL (Trastorno Específico del Lenguaje).',
+    detail: '<strong>Frecuencia de muestreo:</strong> Variable (se normaliza a 16 kHz) · <strong>Canal:</strong> Mono · <strong>Duración objetivo:</strong> 2.0 s · <strong>Formato:</strong> WAV PCM',
+    code: 'POST /predict\nContent-Type: multipart/form-data\nfile: audio.wav',
+    chartFn: waveformChart
+  },
+  Prep: {
+    tagClass: 'tag-prep', tagText: 'Preprocesamiento',
+    name: 'AudioPreprocessor — Limpieza y Normalización',
+    desc: 'Cadena de transformaciones que lleva el audio crudo a un formato uniforme antes del encoder. Incluye: <strong>resampleo a 16 kHz</strong>, filtro pasa-altos Butterworth de orden 5 (100 Hz) para eliminar ruido de baja frecuencia, <strong>normalización de pico a ±1</strong>, y padding/trim centrado para fijar duración en 2 segundos.',
+    detail: '<strong>Resampleo:</strong> librosa (cualquier SR → 16 kHz) · <strong>HP Cutoff:</strong> 100 Hz · <strong>Normalización:</strong> peak / max(|x|) · <strong>Duración fija:</strong> 2.0 s (32 000 muestras)',
+    code: 'preprocessor = AudioPreprocessor(\n  target_sr=16000,\n  hp_cutoff=100,\n  target_duration=2.0\n)',
+    chartFn: prepChart
+  },
+  HuBERT: {
+    tagClass: 'tag-enc', tagText: 'Encoder · HuBERT',
+    name: 'HuBERT Base — Encoder Transformer',
+    desc: 'El modelo <strong>HuBERT (Hidden Unit BERT)</strong> es un transformer pre-entrenado con aprendizaje auto-supervisado sobre 960 h de audio (LibriSpeech). Extrae representaciones contextuales profundas de la voz. En ITEL se usa como encoder fijo (frozen) para aprovechar el conocimiento general del habla.',
+    detail: '<strong>Bundle:</strong> torchaudio HUBERT_BASE · <strong>Capas:</strong> 12 · <strong>Dimensión:</strong> 768 · <strong>Parámetros:</strong> ~94M · <strong>Device:</strong> CUDA / CPU',
+    code: 'bundle = torchaudio.pipelines.HUBERT_BASE\nmodel = bundle.get_model()\nfeatures, _ = model(waveform)\n# features: [T, 768]',
+    chartFn: hubertChart
+  },
+  Embed: {
+    tagClass: 'tag-mix', tagText: 'Embedding · 4608d',
+    name: 'Extracción de Embedding — 6 Estadísticos Temporales',
+    desc: 'A partir del tensor de salida HuBERT [T × 768], se calculan <strong>6 estadísticos temporales</strong> concatenados para capturar la dinámica completa del habla: media, desviación estándar, cuartil inicial (25%), cuartil final (25%), delta (diferencia inicial-final) y correlación temporal (slope). Resultado: vector de 768×6 = <strong>4608 dimensiones</strong>.',
+    detail: '<strong>mean_emb:</strong> 768d · <strong>std_emb:</strong> 768d · <strong>first_25:</strong> 768d · <strong>last_25:</strong> 768d · <strong>delta:</strong> 768d · <strong>slope:</strong> 768d · <strong>Total:</strong> 4608d',
+    code: 'mean_emb  = features.mean(dim=0)   # 768\nstd_emb   = features.std(dim=0)    # 768\nfirst_25  = features[:T//4].mean() # 768\nlast_25   = features[-T//4:].mean()# 768\ndelta     = first_25 - last_25     # 768\nslope_emb = temporal_corr(features)# 768\n# concat → 4608d',
+    chartFn: embeddingChart
+  },
+  Scaler: {
+    tagClass: 'tag-scaler', tagText: 'Normalización · StandardScaler',
+    name: 'StandardScaler — Normalización del Embedding',
+    desc: 'Aplica la transformación <strong>z = (x − μ) / σ</strong> usando la media y desviación estándar calculadas sobre el conjunto de entrenamiento. Garantiza que cada dimensión del embedding tenga media 0 y varianza 1, condición necesaria para que el clasificador ONNX funcione correctamente.',
+    detail: '<strong>Tipo:</strong> sklearn StandardScaler (serializado) · <strong>Input:</strong> 4608d · <strong>Output:</strong> 4608d normalizado · <strong>Archivo:</strong> assets/models/scaler.pkl',
+    code: 'scaler = load_scaler("assets/models/scaler.pkl")\nembedding_scaled = scaler.transform(\n  embedding.reshape(1, -1)\n)  # shape: [1, 4608]',
+    chartFn: scalerChart
+  },
+  ONNX: {
+    tagClass: 'tag-clf', tagText: 'Clasificador · ONNX Runtime',
+    name: 'ONNX Classifier — Inferencia con Runtime Optimizado',
+    desc: 'El clasificador entrenado (LogReg / SVM / MLP) se exporta a formato <strong>ONNX</strong> para inferencia rápida y portable sin dependencia de sklearn/PyTorch en producción. Recibe el embedding normalizado y produce <strong>logits</strong> para 2 clases. Se aplica <strong>Softmax</strong> para obtener probabilidades.',
+    detail: '<strong>Runtime:</strong> onnxruntime (CPU) · <strong>Input:</strong> [1, 4608] · <strong>Output:</strong> logits [1, 2] · <strong>Modelo:</strong> assets/models/classifier.onnx',
+    code: 'logits = classifier.predict_logits(\n  embedding_scaled\n)  # [1, 2]\nprobs = softmax(logits[0])\n# probs: [p_Healthy, p_Patients]',
+    chartFn: onnxChart
+  },
+  Output: {
+    tagClass: 'tag-out', tagText: 'Output · Diagnóstico',
+    name: 'Output — Clasificación Healthy / Patients',
+    desc: 'El sistema retorna un <strong>JSON</strong> con la etiqueta predicha (<em>Healthy</em> o <em>Patients</em>), la confianza, las probabilidades de ambas clases, la versión del modelo y los tiempos de cada etapa. La clase <em>Patients</em> indica posible presencia de TEL; recall clínico ≥ 0.95.',
+    detail: '<strong>Clases:</strong> Healthy (0) · Patients (1) · <strong>Mejor modelo CZ:</strong> bal_acc=0.878 · <strong>AUC:</strong> 0.945 · <strong>Recall clínico:</strong> ≥ 0.95',
+    code: '{\n  "predicted_label": "Healthy",\n  "confidence": 0.854,\n  "probabilities": {\n    "Healthy": 0.854,\n    "Patients": 0.146\n  },\n  "model_version": "v3-layermix",\n  "timings_ms": { "total": 312.4 }\n}',
+    chartFn: outputChart
+  }
+};
+
+function rnd(min, max, n) {
+  return Array.from({length: n}, () => +(Math.random()*(max-min)+min).toFixed(4));
+}
+function baseOpts(yLabel, min, max) {
+  return {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { enabled: true } },
+    scales: {
+      x: { grid:{color:'#f4f4f4'}, ticks:{font:{size:9}} },
+      y: { grid:{color:'#f4f4f4'}, ticks:{font:{size:9}},
+           title:{display:!!yLabel, text:yLabel||'', font:{size:9}},
+           ...(min!==undefined?{min}:{}), ...(max!==undefined?{max}:{}) }
+    }
+  };
+}
+
+function waveformChart() {
+  const d = rnd(-1,1,80);
+  return { type:'line', data:{ labels:Array.from({length:80},(_,i)=>i*0.4), datasets:[{
+    label:'Amplitud', data:d, borderColor:'#7ec8e3', borderWidth:1.2, pointRadius:0,
+    fill:true, backgroundColor:'rgba(126,200,227,.12)'
+  }]}, options: baseOpts('Amplitud',-1.2,1.2) };
+}
+
+function prepChart() {
+  const raw = rnd(-1.5,1.5,60);
+  const filtered = raw.map(v=>Math.max(-1,Math.min(1,v*0.85)));
+  return { type:'line', data:{ labels:Array.from({length:60},(_,i)=>i),
+    datasets:[
+      { label:'Crudo', data:raw, borderColor:'#e74c3c', borderWidth:1.2, pointRadius:0, fill:false },
+      { label:'Procesado', data:filtered, borderColor:'#27ae60', borderWidth:1.5, pointRadius:0, fill:false }
+    ]
+  }, options:{...baseOpts('Amplitud',-1.5,1.5), plugins:{legend:{display:true,labels:{font:{size:9}}}}} };
+}
+
+function hubertChart() {
+  const d = rnd(-2,2,30);
+  return { type:'line', data:{ labels:Array.from({length:30},(_,i)=>`t${i+1}`), datasets:[{
+    label:'Dim 0 (768d)', data:d, borderColor:'#c39bd3', borderWidth:1.5, pointRadius:2,
+    pointBackgroundColor:'#c39bd3', fill:true, backgroundColor:'rgba(195,155,211,.08)'
+  }]}, options: baseOpts('Activación HuBERT') };
+}
+
+function embeddingChart() {
+  const labels=['Mean','Std','First25','Last25','Delta','Slope'];
+  const magnitudes = [0.62, 0.41, 0.58, 0.55, 0.29, 0.18];
+  return { type:'bar', data:{ labels, datasets:[{
+    label:'Magnitud media (|embedding|)', data:magnitudes,
+    backgroundColor:['#27ae60','#1e8449','#82e0aa','#52be80','#a9dfbf','#d5f5e3'],
+    borderRadius:6
+  }]}, options:{...baseOpts('Magnitud media',0,0.8), plugins:{legend:{display:false}}} };
+}
+
+function scalerChart() {
+  const before = rnd(-3,8,40);
+  const after = before.map(v=>+((v-2.5)/1.8).toFixed(4));
+  return { type:'line', data:{ labels:Array.from({length:40},(_,i)=>i+1), datasets:[
+    { label:'Antes (raw)', data:before, borderColor:'#e59866', borderWidth:1.3, pointRadius:0, fill:false },
+    { label:'Después (scaled)', data:after, borderColor:'#f39c12', borderWidth:1.5, pointRadius:0, fill:false }
+  ]}, options:{...baseOpts('Valor'), plugins:{legend:{display:true,labels:{font:{size:9}}}}} };
+}
+
+function onnxChart() {
+  // Confusion-matrix style per-class probabilities for a batch
+  const healthy = rnd(0.5,0.99,15);
+  const patients = healthy.map(v=>+(1-v+Math.random()*0.04-0.02).toFixed(4));
+  return { type:'line', data:{ labels:Array.from({length:15},(_,i)=>`M${i+1}`), datasets:[
+    { label:'P(Healthy)', data:healthy, borderColor:'#27ae60', borderWidth:2, pointRadius:3, fill:false },
+    { label:'P(Patients)', data:patients, borderColor:'#e74c3c', borderWidth:2, pointRadius:3, fill:false }
+  ]}, options:{...baseOpts('Probabilidad',0,1), plugins:{legend:{display:true,labels:{font:{size:9}}}}} };
+}
+
+function outputChart() {
+  return { type:'bar', data:{
+    labels:['Healthy','Patients'],
+    datasets:[{ label:'Probabilidad Softmax', data:[0.854,0.146],
+      backgroundColor:['rgba(39,174,96,.85)','rgba(231,76,60,.85)'],
+      borderRadius:10
+    }]
+  }, options:{...baseOpts('Probabilidad',0,1), plugins:{legend:{display:false}}} };
+}
+
+let chartInst = null;
+
+function sel(key) {
+  if (!DATA[key]) return;
+  // reset visuals
+  ['WAV','Prep','HuBERT','Embed','Scaler','ONNX','Output'].forEach(k=>{
+    const el=document.getElementById('node-'+k);
+    if(el) el.classList.remove('active');
+  });
+  document.getElementById('node-'+key).classList.add('active');
+
+  const d = DATA[key];
+
+  // info panel
+  document.getElementById('placeholder').style.display='none';
+  const c=document.getElementById('info-content');
+  c.style.display='flex';
+  c.innerHTML=`
+    <span class="tag ${d.tagClass}">${d.tagText}</span>
+    <div class="info-name">${d.name}</div>
+    <div class="info-desc">${d.desc}</div>
+    <div class="info-detail">${d.detail}</div>
+    <div class="code-badge">${d.code}</div>
+  `;
+
+  // chart
+  document.getElementById('chart-empty').style.display='none';
+  document.getElementById('chart-container').style.display='block';
+  document.getElementById('chart-title').textContent = 'Visualización — ' + d.name.split('—')[0].trim();
+
+  if(chartInst){chartInst.destroy();chartInst=null;}
+  chartInst=new Chart(document.getElementById('myChart').getContext('2d'), d.chartFn());
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquitectura Neural - Diagnóstico por Audio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; color: #222; }
+
+  header {
+    background: #1a1a2e;
+    color: white;
+    padding: 18px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  header span { color: #7ec8e3; }
+
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 28px 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ── DIAGRAM ── */
+  .diagram-wrapper {
+    background: white;
+    border-radius: 12px;
+    padding: 28px 20px 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+
+  .diagram {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 130px;
+    flex: 1;
+  }
+
+  .stage-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 22px;
+    text-align: center;
+  }
+
+  .nodes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+  }
+
+  .node-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+
+  .node {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #e8eaf0;
+    border: 2.5px solid #ccd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s ease;
+    position: relative;
+  }
+
+  .node.bold-border { border: 3.5px solid #222; }
+  .node.active { background: #1a1a2e !important; border-color: #1a1a2e !important; }
+  .node.active .node-inner { background: white; }
+  .node:hover { transform: scale(1.12); box-shadow: 0 4px 16px rgba(26,26,46,.25); }
+
+  .node-inner {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #d0d4e0;
+    transition: background .2s;
+  }
+
+  .node-label {
+    font-size: 0.72rem;
+    color: #444;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* connector lines between stages */
+  .connector {
+    flex: 0 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 62px; /* align with first node */
+    opacity: 0.35;
+  }
+  .connector svg { width: 40px; height: 4px; }
+
+  /* ── BOTTOM AREA ── */
+  .bottom {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 24px;
+  }
+
+  /* Info panel */
+  .info-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .info-panel h2 {
+    font-size: 1rem;
+    color: #1a1a2e;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: #e8f4fd;
+    color: #1a6fa0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  .info-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+
+  .info-desc {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: #555;
+  }
+
+  .info-detail {
+    background: #f5f7fa;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  .info-detail strong { color: #1a1a2e; }
+
+  .placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    gap: 10px;
+  }
+  .placeholder svg { opacity: 0.3; }
+  .placeholder p { font-size: 0.85rem; }
+
+  /* Chart panel */
+  .chart-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .chart-panel h2 {
+    font-size: 1rem;
+    color: #1a1a2e;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+  }
+
+  .chart-container {
+    position: relative;
+    flex: 1;
+    min-height: 220px;
+  }
+
+  .chart-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+<header>Arquitectura Neural · <span>Diagnóstico de Voz</span> &nbsp;— haz clic en cualquier nodo para ver su descripción</header>
+
+<div class="main">
+
+  <!-- DIAGRAM -->
+  <div class="diagram-wrapper">
+    <div class="diagram" id="diagram">
+
+      <!-- INPUT -->
+      <div class="stage">
+        <div class="stage-title">Input</div>
+        <div class="nodes">
+          <div class="node-wrap" onclick="select('Audio')">
+            <div class="node bold-border" id="node-Audio"><div class="node-inner"></div></div>
+            <div class="node-label">Audio</div>
+          </div>
+          <div class="node-wrap" onclick="select('Wave')">
+            <div class="node" id="node-Wave"><div class="node-inner"></div></div>
+            <div class="node-label">Wave</div>
+          </div>
+          <div class="node-wrap" onclick="select('Frames')">
+            <div class="node" id="node-Frames"><div class="node-inner"></div></div>
+            <div class="node-label">Frames</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENCODER -->
+      <div class="stage">
+        <div class="stage-title">Encoder + Layer Mix</div>
+        <div class="nodes">
+          <div class="node-wrap" onclick="select('HuBERT')">
+            <div class="node bold-border" id="node-HuBERT"><div class="node-inner"></div></div>
+            <div class="node-label">HuBERT</div>
+          </div>
+          <div class="node-wrap" onclick="select('L1L4')">
+            <div class="node" id="node-L1L4"><div class="node-inner"></div></div>
+            <div class="node-label">L1-L4</div>
+          </div>
+          <div class="node-wrap" onclick="select('L5L8')">
+            <div class="node" id="node-L5L8"><div class="node-inner"></div></div>
+            <div class="node-label">L5-L8</div>
+          </div>
+          <div class="node-wrap" onclick="select('L9L12')">
+            <div class="node" id="node-L9L12"><div class="node-inner"></div></div>
+            <div class="node-label">L9-L12</div>
+          </div>
+          <div class="node-wrap" onclick="select('Mix')">
+            <div class="node bold-border" id="node-Mix"><div class="node-inner"></div></div>
+            <div class="node-label">Mix</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEQUENCE MODEL -->
+      <div class="stage">
+        <div class="stage-title">Sequence Model</div>
+        <div class="nodes">
+          <div class="node-wrap" onclick="select('Seq')">
+            <div class="node bold-border" id="node-Seq"><div class="node-inner"></div></div>
+            <div class="node-label">Seq</div>
+          </div>
+          <div class="node-wrap" onclick="select('Bi')">
+            <div class="node" id="node-Bi"><div class="node-inner"></div></div>
+            <div class="node-label">Bi</div>
+          </div>
+          <div class="node-wrap" onclick="select('LSTM')">
+            <div class="node" id="node-LSTM"><div class="node-inner"></div></div>
+            <div class="node-label">LSTM</div>
+          </div>
+          <div class="node-wrap" onclick="select('Attn')">
+            <div class="node" id="node-Attn"><div class="node-inner"></div></div>
+            <div class="node-label">Attn</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLASSIFIER -->
+      <div class="stage">
+        <div class="stage-title">Classifier</div>
+        <div class="nodes">
+          <div class="node-wrap" onclick="select('Ctx')">
+            <div class="node bold-border" id="node-Ctx"><div class="node-inner"></div></div>
+            <div class="node-label">Ctx</div>
+          </div>
+          <div class="node-wrap" onclick="select('FC128')">
+            <div class="node" id="node-FC128"><div class="node-inner"></div></div>
+            <div class="node-label">FC128</div>
+          </div>
+          <div class="node-wrap" onclick="select('Logit')">
+            <div class="node" id="node-Logit"><div class="node-inner"></div></div>
+            <div class="node-label">Logit</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div class="stage">
+        <div class="stage-title">Output</div>
+        <div class="nodes">
+          <div class="node-wrap" onclick="select('Healthy')">
+            <div class="node bold-border" id="node-Healthy"><div class="node-inner"></div></div>
+            <div class="node-label">Healthy</div>
+          </div>
+          <div class="node-wrap" onclick="select('Patients')">
+            <div class="node" id="node-Patients"><div class="node-inner"></div></div>
+            <div class="node-label">Patients</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bottom">
+
+    <!-- INFO PANEL -->
+    <div class="info-panel" id="info-panel">
+      <h2>Descripción de la capa</h2>
+      <div class="placeholder" id="placeholder">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r=".5" fill="#999"/>
+        </svg>
+        <p>Selecciona un nodo en el diagrama</p>
+      </div>
+      <div id="info-content" style="display:none; display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+
+    <!-- CHART PANEL -->
+    <div class="chart-panel">
+      <h2 id="chart-title">Gráfica de activaciones</h2>
+      <div class="chart-empty" id="chart-empty">Selecciona un nodo para ver su gráfica</div>
+      <div class="chart-container" id="chart-container" style="display:none">
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── NODE DATA ──────────────────────────────────────────────────────────────
+const nodes = {
+  Audio: {
+    stage: 'Input',
+    title: 'Audio (Señal de entrada)',
+    desc: 'Señal de voz cruda capturada por micrófono. Es el punto de entrada principal del sistema; contiene toda la información prosódica, acústica y articulatoria del hablante.',
+    detail: '<strong>Formato:</strong> Archivo WAV/MP3 · <strong>Frecuencia típica:</strong> 16 kHz · <strong>Canal:</strong> Mono',
+    chartType: 'waveform',
+    chartLabel: 'Amplitud de la señal de audio (muestra)',
+  },
+  Wave: {
+    stage: 'Input',
+    title: 'Wave (Forma de onda)',
+    desc: 'Representación temporal de la señal de audio como secuencia de amplitudes. Permite capturar variaciones finas en la energía y el ritmo del habla.',
+    detail: '<strong>Tipo:</strong> Serie temporal · <strong>Rango:</strong> -1.0 a 1.0 · <strong>Longitud:</strong> variable',
+    chartType: 'wave',
+    chartLabel: 'Forma de onda normalizada',
+  },
+  Frames: {
+    stage: 'Input',
+    title: 'Frames (Ventanas de análisis)',
+    desc: 'La señal se divide en pequeñas ventanas (frames) superpuestas para análisis local. Cada frame representa ~20-25 ms de audio, capturando características estacionarias.',
+    detail: '<strong>Tamaño de ventana:</strong> 25 ms · <strong>Paso:</strong> 10 ms · <strong>Tipo:</strong> Ventana Hann',
+    chartType: 'frames',
+    chartLabel: 'Energía por frame',
+  },
+  HuBERT: {
+    stage: 'Encoder',
+    title: 'HuBERT (Encoder principal)',
+    desc: 'Modelo transformer pre-entrenado (Hidden Unit BERT) para audio. Extrae representaciones contextuales profundas de la voz mediante aprendizaje auto-supervisado sobre millones de horas de audio.',
+    detail: '<strong>Parámetros:</strong> ~94M · <strong>Capas:</strong> 12 · <strong>Dimensión:</strong> 768 · <strong>Pre-entrenado en:</strong> LibriSpeech 960h',
+    chartType: 'embedding',
+    chartLabel: 'Distribución de representaciones HuBERT',
+  },
+  L1L4: {
+    stage: 'Encoder',
+    title: 'L1-L4 (Capas bajas del encoder)',
+    desc: 'Las primeras 4 capas del transformer HuBERT. Estas capas capturan características acústicas de bajo nivel: fonética, energía, tono y características espectrales locales.',
+    detail: '<strong>Capas:</strong> 1 a 4 de HuBERT · <strong>Especialización:</strong> Fonética y acústica · <strong>Receptive field:</strong> corto',
+    chartType: 'layers',
+    chartLabel: 'Activaciones medias L1-L4',
+  },
+  L5L8: {
+    stage: 'Encoder',
+    title: 'L5-L8 (Capas medias del encoder)',
+    desc: 'Capas intermedias del transformer. Integran información local y semi-global, capturando características como prosodia, duración de fonemas y patrones de entonación.',
+    detail: '<strong>Capas:</strong> 5 a 8 de HuBERT · <strong>Especialización:</strong> Prosodia y ritmo · <strong>Receptive field:</strong> medio',
+    chartType: 'layers',
+    chartLabel: 'Activaciones medias L5-L8',
+  },
+  L9L12: {
+    stage: 'Encoder',
+    title: 'L9-L12 (Capas altas del encoder)',
+    desc: 'Últimas capas del transformer HuBERT. Producen representaciones semánticas y lingüísticas de alto nivel, muy útiles para detectar patrones patológicos en la voz.',
+    detail: '<strong>Capas:</strong> 9 a 12 de HuBERT · <strong>Especialización:</strong> Semántica y patología · <strong>Receptive field:</strong> largo',
+    chartType: 'layers',
+    chartLabel: 'Activaciones medias L9-L12',
+  },
+  Mix: {
+    stage: 'Encoder',
+    title: 'Mix (Mezcla de capas)',
+    desc: 'Combina las representaciones de diferentes grupos de capas (L1-L4, L5-L8, L9-L12) mediante pesos aprendibles. Permite al modelo seleccionar automáticamente qué nivel de abstracción es más informativo para la tarea.',
+    detail: '<strong>Operación:</strong> Suma ponderada aprendible · <strong>Parámetros extra:</strong> 12 pesos softmax · <strong>Inspirado en:</strong> WavLM layer weighting',
+    chartType: 'mix',
+    chartLabel: 'Pesos por capa en Mix',
+  },
+  Seq: {
+    stage: 'Sequence',
+    title: 'Seq (Modelo de secuencia)',
+    desc: 'Módulo que modela las dependencias temporales en la secuencia de embeddings extraídos. Permite entender el habla como un proceso dinámico a lo largo del tiempo.',
+    detail: '<strong>Entrada:</strong> Secuencia de embeddings · <strong>Propósito:</strong> Contexto temporal · <strong>Alternativas:</strong> Bi-LSTM, Attn',
+    chartType: 'seq',
+    chartLabel: 'Activaciones temporales Seq',
+  },
+  Bi: {
+    stage: 'Sequence',
+    title: 'Bi (Bi-direccional)',
+    desc: 'Procesamiento bidireccional de la secuencia: recorre el audio de izquierda a derecha Y de derecha a izquierda. Permite que cada paso tenga contexto tanto pasado como futuro.',
+    detail: '<strong>Tipo:</strong> Bidireccional · <strong>Estados:</strong> Forward + Backward concatenados · <strong>Ventaja:</strong> Contexto completo',
+    chartType: 'bi',
+    chartLabel: 'Activaciones forward vs backward',
+  },
+  LSTM: {
+    stage: 'Sequence',
+    title: 'LSTM (Long Short-Term Memory)',
+    desc: 'Red recurrente con celdas de memoria especializadas en recordar dependencias a largo plazo. Usa compuertas (input, forget, output) para controlar qué información retener o descartar.',
+    detail: '<strong>Tipo:</strong> LSTM · <strong>Unidades:</strong> 256 · <strong>Compuertas:</strong> Input, Forget, Output · <strong>Cell state:</strong> persistente',
+    chartType: 'lstm',
+    chartLabel: 'Estado de compuertas LSTM',
+  },
+  Attn: {
+    stage: 'Sequence',
+    title: 'Attn (Mecanismo de Atención)',
+    desc: 'Calcula pesos de atención sobre todos los frames del audio para enfocarse en los momentos más informativos. Permite al modelo "atender" selectivamente a partes clave de la señal.',
+    detail: '<strong>Tipo:</strong> Self-attention · <strong>Heads:</strong> 4-8 · <strong>Output:</strong> Weighted sum de frames',
+    chartType: 'attn',
+    chartLabel: 'Pesos de atención sobre el tiempo',
+  },
+  Ctx: {
+    stage: 'Classifier',
+    title: 'Ctx (Vector de contexto)',
+    desc: 'Representación comprimida de toda la secuencia de audio, generada por el modelo de secuencia. Resume la información temporal en un único vector de contexto para clasificación.',
+    detail: '<strong>Dimensión:</strong> 256-512 · <strong>Origen:</strong> Último estado oculto o pooling · <strong>Contiene:</strong> Resumen del habla completa',
+    chartType: 'ctx',
+    chartLabel: 'Distribución del vector de contexto',
+  },
+  FC128: {
+    stage: 'Classifier',
+    title: 'FC128 (Capa Fully Connected)',
+    desc: 'Capa densa con 128 neuronas y activación ReLU. Transforma el vector de contexto para separar las clases de salida. Actúa como la cabeza de clasificación del modelo.',
+    detail: '<strong>Neuronas:</strong> 128 · <strong>Activación:</strong> ReLU · <strong>Dropout:</strong> 0.3-0.5 · <strong>Tipo:</strong> Fully connected',
+    chartType: 'fc',
+    chartLabel: 'Activaciones ReLU en FC128',
+  },
+  Logit: {
+    stage: 'Classifier',
+    title: 'Logit (Capa de salida)',
+    desc: 'Última capa lineal que produce puntuaciones (logits) para cada clase. Aplicando Softmax o Sigmoid se obtienen probabilidades finales de clasificación.',
+    detail: '<strong>Neuronas:</strong> 2 (Healthy / Patients) · <strong>Activación:</strong> Softmax · <strong>Loss:</strong> Cross-Entropy',
+    chartType: 'logit',
+    chartLabel: 'Probabilidades de salida (Logit → Softmax)',
+  },
+  Healthy: {
+    stage: 'Output',
+    title: 'Healthy (Sano)',
+    desc: 'Clase de salida que indica que el hablante no presenta indicios de patología vocal o neurológica. El modelo asigna una probabilidad alta a esta clase cuando el habla es fluida y regular.',
+    detail: '<strong>Clase:</strong> 0 (Negativo) · <strong>Representa:</strong> Habla normal · <strong>Umbral típico:</strong> > 0.5',
+    chartType: 'output',
+    chartLabel: 'Distribución de confianza — Clase Healthy',
+  },
+  Patients: {
+    stage: 'Output',
+    title: 'Patients (Paciente)',
+    desc: 'Clase de salida que indica posible patología detectada en la voz (ej. Parkinson, disartria, disfonia). El modelo detecta irregularidades en el habla para asignar esta clase.',
+    detail: '<strong>Clase:</strong> 1 (Positivo) · <strong>Representa:</strong> Posible patología · <strong>Umbral típico:</strong> > 0.5',
+    chartType: 'output',
+    chartLabel: 'Distribución de confianza — Clase Patients',
+  },
+};
+
+// ── CHART DATA GENERATORS ─────────────────────────────────────────────────
+function getChartConfig(node) {
+  const t = node.chartType;
+  const label = node.chartLabel;
+  const rand = (min, max, n) => Array.from({length:n}, () => +(Math.random()*(max-min)+min).toFixed(3));
+  const labels20 = Array.from({length:20}, (_,i) => i+1);
+  const labels12 = ['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11','L12'];
+
+  const base = {
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { enabled: true } },
+      scales: {
+        x: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 } } },
+        y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 } } }
+      }
+    }
+  };
+
+  if (t === 'waveform' || t === 'wave') {
+    const d = rand(-1, 1, 60);
+    return { ...base, type: 'line', data: {
+      labels: Array.from({length:60},(_,i)=>i),
+      datasets: [{ label, data: d, borderColor:'#1a6fa0', borderWidth:1.5, pointRadius:0, fill:true, backgroundColor:'rgba(26,111,160,.1)' }]
+    }};
+  }
+  if (t === 'frames') {
+    return { ...base, type: 'bar', data: {
+      labels: Array.from({length:20},(_,i)=>`F${i+1}`),
+      datasets: [{ label, data: rand(0.1, 1, 20), backgroundColor:'rgba(26,26,46,.7)', borderRadius:3 }]
+    }};
+  }
+  if (t === 'embedding' || t === 'ctx') {
+    return { ...base, type: 'line', data: {
+      labels: Array.from({length:30},(_,i)=>i+1),
+      datasets: [{ label, data: rand(-2, 2, 30), borderColor:'#6c5ce7', borderWidth:1.5, pointRadius:2, pointBackgroundColor:'#6c5ce7', fill:false }]
+    }};
+  }
+  if (t === 'layers') {
+    return { ...base, type: 'bar', data: {
+      labels: labels20,
+      datasets: [{ label, data: rand(0, 1, 20), backgroundColor:'rgba(108,92,231,.6)', borderRadius:3 }]
+    }};
+  }
+  if (t === 'mix') {
+    const w = rand(0, 1, 12); const s = w.reduce((a,b)=>a+b,0);
+    return { ...base, type: 'bar', data: {
+      labels: labels12,
+      datasets: [{ label, data: w.map(v=>+(v/s).toFixed(3)), backgroundColor:'rgba(26,111,160,.7)', borderRadius:3 }]
+    }, options: { ...base.options, scales: { ...base.options.scales, y: { ...base.options.scales.y, min:0, max:0.25 }}}};
+  }
+  if (t === 'seq' || t === 'bi') {
+    return { ...base, type: 'line', data: {
+      labels: labels20,
+      datasets: [
+        { label:'Forward', data: rand(-1,1,20), borderColor:'#00b894', borderWidth:1.5, pointRadius:2, fill:false },
+        { label:'Backward', data: rand(-1,1,20), borderColor:'#e17055', borderWidth:1.5, pointRadius:2, fill:false }
+      ]
+    }, options: { ...base.options, plugins: { legend: { display: true, labels: { font: { size: 10 } } } } }};
+  }
+  if (t === 'lstm') {
+    const gates = ['Input','Forget','Output','Cell'];
+    return { ...base, type: 'bar', data: {
+      labels: Array.from({length:12},(_,i)=>`t${i+1}`),
+      datasets: gates.map((g,i) => ({
+        label: g, data: rand(0,1,12),
+        backgroundColor: ['rgba(26,111,160,.7)','rgba(108,92,231,.7)','rgba(0,184,148,.7)','rgba(225,112,85,.7)'][i],
+        borderRadius: 2
+      }))
+    }, options: { ...base.options, plugins: { legend: { display: true, labels: { font: { size: 10 } } } }, scales: { ...base.options.scales, x: { ...base.options.scales.x, stacked: true }, y: { ...base.options.scales.y, stacked: true }}}};
+  }
+  if (t === 'attn') {
+    const d = rand(0, 1, 30); const s = d.reduce((a,b)=>a+b,0);
+    return { ...base, type: 'bar', data: {
+      labels: Array.from({length:30},(_,i)=>`t${i+1}`),
+      datasets: [{ label, data: d.map(v=>+(v/s).toFixed(3)), backgroundColor: d.map(v=>`rgba(26,26,46,${(v/s*30*0.8+0.1).toFixed(2)})`), borderRadius:2 }]
+    }};
+  }
+  if (t === 'fc') {
+    const d = rand(0, 2, 30).map(v => Math.max(0, v - 0.5));
+    return { ...base, type: 'bar', data: {
+      labels: Array.from({length:30},(_,i)=>`N${i+1}`),
+      datasets: [{ label, data: d, backgroundColor:'rgba(0,184,148,.7)', borderRadius:3 }]
+    }};
+  }
+  if (t === 'logit') {
+    const h = Math.random(); const p = 1 - h;
+    return { ...base, type: 'bar', data: {
+      labels: ['Healthy', 'Patients'],
+      datasets: [{ label, data: [+h.toFixed(3), +p.toFixed(3)], backgroundColor:['rgba(0,184,148,.8)','rgba(225,112,85,.8)'], borderRadius:6 }]
+    }, options: { ...base.options, scales: { ...base.options.scales, y: { ...base.options.scales.y, min:0, max:1 }}}};
+  }
+  if (t === 'output') {
+    const isHealthy = node.title.includes('Healthy');
+    const conf = rand(0.5, 0.99, 20);
+    return { ...base, type: 'line', data: {
+      labels: Array.from({length:20},(_,i)=>`Muestra ${i+1}`),
+      datasets: [{ label, data: isHealthy ? conf : conf.map(v=>+(1-v+Math.random()*0.1).toFixed(3)), borderColor: isHealthy ? '#00b894' : '#e17055', borderWidth:2, pointRadius:3, fill:true, backgroundColor: isHealthy ? 'rgba(0,184,148,.1)':'rgba(225,112,85,.1)' }]
+    }, options: { ...base.options, scales: { ...base.options.scales, y: { ...base.options.scales.y, min:0, max:1 }}}};
+  }
+  return null;
+}
+
+// ── CHART INSTANCE ────────────────────────────────────────────────────────
+let chartInstance = null;
+
+// ── SELECT NODE ───────────────────────────────────────────────────────────
+let currentNode = null;
+
+function select(key) {
+  const data = nodes[key];
+  if (!data) return;
+
+  // reset all nodes
+  Object.keys(nodes).forEach(k => {
+    const el = document.getElementById('node-' + k);
+    if (el) el.classList.remove('active');
+  });
+  const el = document.getElementById('node-' + key);
+  if (el) el.classList.add('active');
+
+  // info panel
+  document.getElementById('placeholder').style.display = 'none';
+  const content = document.getElementById('info-content');
+  content.style.display = 'flex';
+  content.innerHTML = `
+    <span class="tag">${data.stage}</span>
+    <div class="info-title">${data.title}</div>
+    <div class="info-desc">${data.desc}</div>
+    <div class="info-detail">${data.detail}</div>
+  `;
+
+  // chart
+  document.getElementById('chart-empty').style.display = 'none';
+  document.getElementById('chart-container').style.display = 'block';
+  document.getElementById('chart-title').textContent = data.chartLabel;
+
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  const ctx = document.getElementById('myChart').getContext('2d');
+  const cfg = getChartConfig(data);
+  if (cfg) chartInstance = new Chart(ctx, cfg);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1109 @@
+{
+  "config": {
+    "checkpoint": "research\\checkpoints\\v3_final\\noise_std003\\v3_noise0.03_fold2_of_10.pt",
+    "method": "standardize",
+    "level": "embedding",
+    "czech_threshold": 0.2,
+    "n_source": 3853,
+    "n_target": 55,
+    "frames_source": 381447,
+    "frames_target": 5445
+  },
+  "note": "Alineacion sin etiquetas EN; test EN limpio.",
+  "raw_zero_shot": {
+    "sample_at_czech_threshold": {
+      "n_samples": 55,
+      "threshold": 0.2,
+      "accuracy": 0.4909090909090909,
+      "balanced_accuracy": 0.513262599469496,
+      "precision": 0.48,
+      "recall": 0.9230769230769231,
+      "f1": 0.631578947368421,
+      "auc": 0.7785145888594165
+    },
+    "sample_best_sweep": {
+      "n_samples": 55,
+      "threshold": 0.95,
+      "accuracy": 0.5454545454545454,
+      "balanced_accuracy": 0.5629973474801061,
+      "precision": 0.5111111111111111,
+      "recall": 0.8846153846153846,
+      "f1": 0.647887323943662,
+      "auc": 0.7785145888594165
+    },
+    "sample_sweep": [
+      {
+        "n_samples": 55,
+        "threshold": 0.05,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.513262599469496,
+        "precision": 0.48,
+        "recall": 0.9230769230769231,
+        "f1": 0.631578947368421,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.1,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.513262599469496,
+        "precision": 0.48,
+        "recall": 0.9230769230769231,
+        "f1": 0.631578947368421,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.15,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.513262599469496,
+        "precision": 0.48,
+        "recall": 0.9230769230769231,
+        "f1": 0.631578947368421,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.2,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.513262599469496,
+        "precision": 0.48,
+        "recall": 0.9230769230769231,
+        "f1": 0.631578947368421,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.25,
+        "accuracy": 0.509090909090909,
+        "balanced_accuracy": 0.5305039787798409,
+        "precision": 0.4897959183673469,
+        "recall": 0.9230769230769231,
+        "f1": 0.64,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.3,
+        "accuracy": 0.509090909090909,
+        "balanced_accuracy": 0.5305039787798409,
+        "precision": 0.4897959183673469,
+        "recall": 0.9230769230769231,
+        "f1": 0.64,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.35,
+        "accuracy": 0.509090909090909,
+        "balanced_accuracy": 0.5305039787798409,
+        "precision": 0.4897959183673469,
+        "recall": 0.9230769230769231,
+        "f1": 0.64,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.4,
+        "accuracy": 0.509090909090909,
+        "balanced_accuracy": 0.5305039787798409,
+        "precision": 0.4897959183673469,
+        "recall": 0.9230769230769231,
+        "f1": 0.64,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.45,
+        "accuracy": 0.509090909090909,
+        "balanced_accuracy": 0.5305039787798409,
+        "precision": 0.4897959183673469,
+        "recall": 0.9230769230769231,
+        "f1": 0.64,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.5,
+        "accuracy": 0.509090909090909,
+        "balanced_accuracy": 0.5305039787798409,
+        "precision": 0.4897959183673469,
+        "recall": 0.9230769230769231,
+        "f1": 0.64,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.55,
+        "accuracy": 0.509090909090909,
+        "balanced_accuracy": 0.5305039787798409,
+        "precision": 0.4897959183673469,
+        "recall": 0.9230769230769231,
+        "f1": 0.64,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.6,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.5112732095490716,
+        "precision": 0.4791666666666667,
+        "recall": 0.8846153846153846,
+        "f1": 0.6216216216216216,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.65,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.5112732095490716,
+        "precision": 0.4791666666666667,
+        "recall": 0.8846153846153846,
+        "f1": 0.6216216216216216,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.7,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.5112732095490716,
+        "precision": 0.4791666666666667,
+        "recall": 0.8846153846153846,
+        "f1": 0.6216216216216216,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.75,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.5112732095490716,
+        "precision": 0.4791666666666667,
+        "recall": 0.8846153846153846,
+        "f1": 0.6216216216216216,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.8,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.5112732095490716,
+        "precision": 0.4791666666666667,
+        "recall": 0.8846153846153846,
+        "f1": 0.6216216216216216,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.85,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.5112732095490716,
+        "precision": 0.4791666666666667,
+        "recall": 0.8846153846153846,
+        "f1": 0.6216216216216216,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.9,
+        "accuracy": 0.509090909090909,
+        "balanced_accuracy": 0.5285145888594165,
+        "precision": 0.48936170212765956,
+        "recall": 0.8846153846153846,
+        "f1": 0.6301369863013698,
+        "auc": 0.7785145888594165
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.95,
+        "accuracy": 0.5454545454545454,
+        "balanced_accuracy": 0.5629973474801061,
+        "precision": 0.5111111111111111,
+        "recall": 0.8846153846153846,
+        "f1": 0.647887323943662,
+        "auc": 0.7785145888594165
+      }
+    ],
+    "scores": [
+      {
+        "sample_id": "english_external_401_401_chi",
+        "subject_id": 401,
+        "label": 0.0,
+        "score_patients": 0.997329831123352
+      },
+      {
+        "sample_id": "english_external_402_402_chi",
+        "subject_id": 402,
+        "label": 0.0,
+        "score_patients": 0.008495651185512543
+      },
+      {
+        "sample_id": "english_external_403_403_chi",
+        "subject_id": 403,
+        "label": 0.0,
+        "score_patients": 0.9796128273010254
+      },
+      {
+        "sample_id": "english_external_404_404_chi",
+        "subject_id": 404,
+        "label": 0.0,
+        "score_patients": 0.9961279034614563
+      },
+      {
+        "sample_id": "english_external_405_405_chi",
+        "subject_id": 405,
+        "label": 0.0,
+        "score_patients": 0.9895620942115784
+      },
+      {
+        "sample_id": "english_external_406_406_chi",
+        "subject_id": 406,
+        "label": 0.0,
+        "score_patients": 0.9784823060035706
+      },
+      {
+        "sample_id": "english_external_409_409_chi",
+        "subject_id": 409,
+        "label": 0.0,
+        "score_patients": 0.9886921644210815
+      },
+      {
+        "sample_id": "english_external_410_410_chi",
+        "subject_id": 410,
+        "label": 0.0,
+        "score_patients": 0.9919514656066895
+      },
+      {
+        "sample_id": "english_external_411_411_chi",
+        "subject_id": 411,
+        "label": 0.0,
+        "score_patients": 0.992262601852417
+      },
+      {
+        "sample_id": "english_external_412_412_chi",
+        "subject_id": 412,
+        "label": 0.0,
+        "score_patients": 0.016754833981394768
+      },
+      {
+        "sample_id": "english_external_415_415_chi",
+        "subject_id": 415,
+        "label": 0.0,
+        "score_patients": 0.9492804408073425
+      },
+      {
+        "sample_id": "english_external_417_417_chi",
+        "subject_id": 417,
+        "label": 0.0,
+        "score_patients": 0.9935182929039001
+      },
+      {
+        "sample_id": "english_external_418_418_chi",
+        "subject_id": 418,
+        "label": 0.0,
+        "score_patients": 0.8564935326576233
+      },
+      {
+        "sample_id": "english_external_419_419_chi",
+        "subject_id": 419,
+        "label": 0.0,
+        "score_patients": 0.9658308625221252
+      },
+      {
+        "sample_id": "english_external_421_421_chi",
+        "subject_id": 421,
+        "label": 0.0,
+        "score_patients": 0.0034858002327382565
+      },
+      {
+        "sample_id": "english_external_425_425_chi",
+        "subject_id": 425,
+        "label": 0.0,
+        "score_patients": 0.9870529770851135
+      },
+      {
+        "sample_id": "english_external_429_429_chi",
+        "subject_id": 429,
+        "label": 0.0,
+        "score_patients": 0.9895323514938354
+      },
+      {
+        "sample_id": "english_external_439_439_chi",
+        "subject_id": 439,
+        "label": 0.0,
+        "score_patients": 0.9808103442192078
+      },
+      {
+        "sample_id": "english_external_443_443_chi",
+        "subject_id": 443,
+        "label": 0.0,
+        "score_patients": 0.9976750016212463
+      },
+      {
+        "sample_id": "english_external_446_446_chi",
+        "subject_id": 446,
+        "label": 0.0,
+        "score_patients": 0.982399046421051
+      },
+      {
+        "sample_id": "english_external_450_450_chi",
+        "subject_id": 450,
+        "label": 0.0,
+        "score_patients": 0.9773225784301758
+      },
+      {
+        "sample_id": "english_external_452_452_chi",
+        "subject_id": 452,
+        "label": 0.0,
+        "score_patients": 0.2035987675189972
+      },
+      {
+        "sample_id": "english_external_455_455_chi",
+        "subject_id": 455,
+        "label": 0.0,
+        "score_patients": 0.9680603742599487
+      },
+      {
+        "sample_id": "english_external_456_456_chi",
+        "subject_id": 456,
+        "label": 0.0,
+        "score_patients": 0.9938386082649231
+      },
+      {
+        "sample_id": "english_external_457_457_chi",
+        "subject_id": 457,
+        "label": 0.0,
+        "score_patients": 0.9966217279434204
+      },
+      {
+        "sample_id": "english_external_458_458_chi",
+        "subject_id": 458,
+        "label": 0.0,
+        "score_patients": 0.9914354681968689
+      },
+      {
+        "sample_id": "english_external_459_459_chi",
+        "subject_id": 459,
+        "label": 0.0,
+        "score_patients": 0.9353086948394775
+      },
+      {
+        "sample_id": "english_external_460_460_chi",
+        "subject_id": 460,
+        "label": 0.0,
+        "score_patients": 0.9600561857223511
+      },
+      {
+        "sample_id": "english_external_463_463_chi",
+        "subject_id": 463,
+        "label": 0.0,
+        "score_patients": 0.9964916110038757
+      },
+      {
+        "sample_id": "english_external_413_413_chi",
+        "subject_id": 413,
+        "label": 1.0,
+        "score_patients": 0.9975530505180359
+      },
+      {
+        "sample_id": "english_external_427_427_chi",
+        "subject_id": 427,
+        "label": 1.0,
+        "score_patients": 0.9966842532157898
+      },
+      {
+        "sample_id": "english_external_479_479_chi",
+        "subject_id": 479,
+        "label": 1.0,
+        "score_patients": 0.995431661605835
+      },
+      {
+        "sample_id": "english_external_480_480_chi",
+        "subject_id": 480,
+        "label": 1.0,
+        "score_patients": 0.9974697828292847
+      },
+      {
+        "sample_id": "english_external_527_527_chi",
+        "subject_id": 527,
+        "label": 1.0,
+        "score_patients": 0.9966599941253662
+      },
+      {
+        "sample_id": "english_external_529_529_chi",
+        "subject_id": 529,
+        "label": 1.0,
+        "score_patients": 0.9973199963569641
+      },
+      {
+        "sample_id": "english_external_531_531_chi",
+        "subject_id": 531,
+        "label": 1.0,
+        "score_patients": 0.9947617650032043
+      },
+      {
+        "sample_id": "english_external_535_535_chi",
+        "subject_id": 535,
+        "label": 1.0,
+        "score_patients": 0.9968252182006836
+      },
+      {
+        "sample_id": "english_external_567_567_chi",
+        "subject_id": 567,
+        "label": 1.0,
+        "score_patients": 0.9958672523498535
+      },
+      {
+        "sample_id": "english_external_570_570_chi",
+        "subject_id": 570,
+        "label": 1.0,
+        "score_patients": 0.980205774307251
+      },
+      {
+        "sample_id": "english_external_572_572_chi",
+        "subject_id": 572,
+        "label": 1.0,
+        "score_patients": 0.5594003200531006
+      },
+      {
+        "sample_id": "english_external_574_574_chi",
+        "subject_id": 574,
+        "label": 1.0,
+        "score_patients": 0.015507075004279613
+      },
+      {
+        "sample_id": "english_external_576_576_chi",
+        "subject_id": 576,
+        "label": 1.0,
+        "score_patients": 0.011919344775378704
+      },
+      {
+        "sample_id": "english_external_607_607_chi",
+        "subject_id": 607,
+        "label": 1.0,
+        "score_patients": 0.9941091537475586
+      },
+      {
+        "sample_id": "english_external_609_609_chi",
+        "subject_id": 609,
+        "label": 1.0,
+        "score_patients": 0.9966427087783813
+      },
+      {
+        "sample_id": "english_external_611_611_chi",
+        "subject_id": 611,
+        "label": 1.0,
+        "score_patients": 0.9963358640670776
+      },
+      {
+        "sample_id": "english_external_617_617_chi",
+        "subject_id": 617,
+        "label": 1.0,
+        "score_patients": 0.9971362352371216
+      },
+      {
+        "sample_id": "english_external_667_667_chi",
+        "subject_id": 667,
+        "label": 1.0,
+        "score_patients": 0.9970979690551758
+      },
+      {
+        "sample_id": "english_external_679_679_chi",
+        "subject_id": 679,
+        "label": 1.0,
+        "score_patients": 0.9949493408203125
+      },
+      {
+        "sample_id": "english_external_680_680_chi",
+        "subject_id": 680,
+        "label": 1.0,
+        "score_patients": 0.9876345992088318
+      },
+      {
+        "sample_id": "english_external_721_721_chi",
+        "subject_id": 721,
+        "label": 1.0,
+        "score_patients": 0.9975548386573792
+      },
+      {
+        "sample_id": "english_external_723_723_chi",
+        "subject_id": 723,
+        "label": 1.0,
+        "score_patients": 0.9978083968162537
+      },
+      {
+        "sample_id": "english_external_727_727_chi",
+        "subject_id": 727,
+        "label": 1.0,
+        "score_patients": 0.9973205924034119
+      },
+      {
+        "sample_id": "english_external_729_729_chi",
+        "subject_id": 729,
+        "label": 1.0,
+        "score_patients": 0.9970723390579224
+      },
+      {
+        "sample_id": "english_external_731_731_chi",
+        "subject_id": 731,
+        "label": 1.0,
+        "score_patients": 0.9964883327484131
+      },
+      {
+        "sample_id": "english_external_733_733_chi",
+        "subject_id": 733,
+        "label": 1.0,
+        "score_patients": 0.9951629638671875
+      }
+    ]
+  },
+  "domain_aligned": {
+    "sample_at_czech_threshold": {
+      "n_samples": 55,
+      "threshold": 0.2,
+      "accuracy": 0.45454545454545453,
+      "balanced_accuracy": 0.4807692307692308,
+      "precision": 0.46296296296296297,
+      "recall": 0.9615384615384616,
+      "f1": 0.625,
+      "auc": 0.6883289124668436
+    },
+    "sample_best_sweep": {
+      "n_samples": 55,
+      "threshold": 0.95,
+      "accuracy": 0.6,
+      "balanced_accuracy": 0.6107427055702918,
+      "precision": 0.5526315789473685,
+      "recall": 0.8076923076923077,
+      "f1": 0.65625,
+      "auc": 0.6883289124668436
+    },
+    "sample_sweep": [
+      {
+        "n_samples": 55,
+        "threshold": 0.05,
+        "accuracy": 0.4727272727272727,
+        "balanced_accuracy": 0.5,
+        "precision": 0.4727272727272727,
+        "recall": 1.0,
+        "f1": 0.6419753086419753,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.1,
+        "accuracy": 0.45454545454545453,
+        "balanced_accuracy": 0.4807692307692308,
+        "precision": 0.46296296296296297,
+        "recall": 0.9615384615384616,
+        "f1": 0.625,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.15,
+        "accuracy": 0.45454545454545453,
+        "balanced_accuracy": 0.4807692307692308,
+        "precision": 0.46296296296296297,
+        "recall": 0.9615384615384616,
+        "f1": 0.625,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.2,
+        "accuracy": 0.45454545454545453,
+        "balanced_accuracy": 0.4807692307692308,
+        "precision": 0.46296296296296297,
+        "recall": 0.9615384615384616,
+        "f1": 0.625,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.25,
+        "accuracy": 0.45454545454545453,
+        "balanced_accuracy": 0.4807692307692308,
+        "precision": 0.46296296296296297,
+        "recall": 0.9615384615384616,
+        "f1": 0.625,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.3,
+        "accuracy": 0.45454545454545453,
+        "balanced_accuracy": 0.4807692307692308,
+        "precision": 0.46296296296296297,
+        "recall": 0.9615384615384616,
+        "f1": 0.625,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.35,
+        "accuracy": 0.45454545454545453,
+        "balanced_accuracy": 0.4807692307692308,
+        "precision": 0.46296296296296297,
+        "recall": 0.9615384615384616,
+        "f1": 0.625,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.4,
+        "accuracy": 0.4727272727272727,
+        "balanced_accuracy": 0.4980106100795756,
+        "precision": 0.4716981132075472,
+        "recall": 0.9615384615384616,
+        "f1": 0.6329113924050633,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.45,
+        "accuracy": 0.4727272727272727,
+        "balanced_accuracy": 0.4980106100795756,
+        "precision": 0.4716981132075472,
+        "recall": 0.9615384615384616,
+        "f1": 0.6329113924050633,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.5,
+        "accuracy": 0.4727272727272727,
+        "balanced_accuracy": 0.4980106100795756,
+        "precision": 0.4716981132075472,
+        "recall": 0.9615384615384616,
+        "f1": 0.6329113924050633,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.55,
+        "accuracy": 0.4727272727272727,
+        "balanced_accuracy": 0.4980106100795756,
+        "precision": 0.4716981132075472,
+        "recall": 0.9615384615384616,
+        "f1": 0.6329113924050633,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.6,
+        "accuracy": 0.4727272727272727,
+        "balanced_accuracy": 0.4980106100795756,
+        "precision": 0.4716981132075472,
+        "recall": 0.9615384615384616,
+        "f1": 0.6329113924050633,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.65,
+        "accuracy": 0.4727272727272727,
+        "balanced_accuracy": 0.4980106100795756,
+        "precision": 0.4716981132075472,
+        "recall": 0.9615384615384616,
+        "f1": 0.6329113924050633,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.7,
+        "accuracy": 0.4727272727272727,
+        "balanced_accuracy": 0.4980106100795756,
+        "precision": 0.4716981132075472,
+        "recall": 0.9615384615384616,
+        "f1": 0.6329113924050633,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.75,
+        "accuracy": 0.4727272727272727,
+        "balanced_accuracy": 0.4980106100795756,
+        "precision": 0.4716981132075472,
+        "recall": 0.9615384615384616,
+        "f1": 0.6329113924050633,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.8,
+        "accuracy": 0.4909090909090909,
+        "balanced_accuracy": 0.5152519893899205,
+        "precision": 0.4807692307692308,
+        "recall": 0.9615384615384616,
+        "f1": 0.6410256410256411,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.85,
+        "accuracy": 0.509090909090909,
+        "balanced_accuracy": 0.5305039787798409,
+        "precision": 0.4897959183673469,
+        "recall": 0.9230769230769231,
+        "f1": 0.64,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.9,
+        "accuracy": 0.5272727272727272,
+        "balanced_accuracy": 0.5457559681697612,
+        "precision": 0.5,
+        "recall": 0.8846153846153846,
+        "f1": 0.6388888888888888,
+        "auc": 0.6883289124668436
+      },
+      {
+        "n_samples": 55,
+        "threshold": 0.95,
+        "accuracy": 0.6,
+        "balanced_accuracy": 0.6107427055702918,
+        "precision": 0.5526315789473685,
+        "recall": 0.8076923076923077,
+        "f1": 0.65625,
+        "auc": 0.6883289124668436
+      }
+    ],
+    "scores": [
+      {
+        "sample_id": "english_external_401_401_chi",
+        "subject_id": 401,
+        "label": 0.0,
+        "score_patients": 0.9943594336509705
+      },
+      {
+        "sample_id": "english_external_402_402_chi",
+        "subject_id": 402,
+        "label": 0.0,
+        "score_patients": 0.9161457419395447
+      },
+      {
+        "sample_id": "english_external_403_403_chi",
+        "subject_id": 403,
+        "label": 0.0,
+        "score_patients": 0.8407760858535767
+      },
+      {
+        "sample_id": "english_external_404_404_chi",
+        "subject_id": 404,
+        "label": 0.0,
+        "score_patients": 0.98647540807724
+      },
+      {
+        "sample_id": "english_external_405_405_chi",
+        "subject_id": 405,
+        "label": 0.0,
+        "score_patients": 0.9749366044998169
+      },
+      {
+        "sample_id": "english_external_406_406_chi",
+        "subject_id": 406,
+        "label": 0.0,
+        "score_patients": 0.9863802790641785
+      },
+      {
+        "sample_id": "english_external_409_409_chi",
+        "subject_id": 409,
+        "label": 0.0,
+        "score_patients": 0.9137649536132812
+      },
+      {
+        "sample_id": "english_external_410_410_chi",
+        "subject_id": 410,
+        "label": 0.0,
+        "score_patients": 0.9864681959152222
+      },
+      {
+        "sample_id": "english_external_411_411_chi",
+        "subject_id": 411,
+        "label": 0.0,
+        "score_patients": 0.9447260499000549
+      },
+      {
+        "sample_id": "english_external_412_412_chi",
+        "subject_id": 412,
+        "label": 0.0,
+        "score_patients": 0.35469380021095276
+      },
+      {
+        "sample_id": "english_external_415_415_chi",
+        "subject_id": 415,
+        "label": 0.0,
+        "score_patients": 0.9511776566505432
+      },
+      {
+        "sample_id": "english_external_417_417_chi",
+        "subject_id": 417,
+        "label": 0.0,
+        "score_patients": 0.9632299542427063
+      },
+      {
+        "sample_id": "english_external_418_418_chi",
+        "subject_id": 418,
+        "label": 0.0,
+        "score_patients": 0.8250944018363953
+      },
+      {
+        "sample_id": "english_external_419_419_chi",
+        "subject_id": 419,
+        "label": 0.0,
+        "score_patients": 0.9929601550102234
+      },
+      {
+        "sample_id": "english_external_421_421_chi",
+        "subject_id": 421,
+        "label": 0.0,
+        "score_patients": 0.9312169551849365
+      },
+      {
+        "sample_id": "english_external_425_425_chi",
+        "subject_id": 425,
+        "label": 0.0,
+        "score_patients": 0.9860304594039917
+      },
+      {
+        "sample_id": "english_external_429_429_chi",
+        "subject_id": 429,
+        "label": 0.0,
+        "score_patients": 0.8565942645072937
+      },
+      {
+        "sample_id": "english_external_439_439_chi",
+        "subject_id": 439,
+        "label": 0.0,
+        "score_patients": 0.9647077918052673
+      },
+      {
+        "sample_id": "english_external_443_443_chi",
+        "subject_id": 443,
+        "label": 0.0,
+        "score_patients": 0.9952321648597717
+      },
+      {
+        "sample_id": "english_external_446_446_chi",
+        "subject_id": 446,
+        "label": 0.0,
+        "score_patients": 0.8757301568984985
+      },
+      {
+        "sample_id": "english_external_450_450_chi",
+        "subject_id": 450,
+        "label": 0.0,
+        "score_patients": 0.9414452910423279
+      },
+      {
+        "sample_id": "english_external_452_452_chi",
+        "subject_id": 452,
+        "label": 0.0,
+        "score_patients": 0.7586781978607178
+      },
+      {
+        "sample_id": "english_external_455_455_chi",
+        "subject_id": 455,
+        "label": 0.0,
+        "score_patients": 0.9355821013450623
+      },
+      {
+        "sample_id": "english_external_456_456_chi",
+        "subject_id": 456,
+        "label": 0.0,
+        "score_patients": 0.9642387628555298
+      },
+      {
+        "sample_id": "english_external_457_457_chi",
+        "subject_id": 457,
+        "label": 0.0,
+        "score_patients": 0.9783867597579956
+      },
+      {
+        "sample_id": "english_external_458_458_chi",
+        "subject_id": 458,
+        "label": 0.0,
+        "score_patients": 0.9537448883056641
+      },
+      {
+        "sample_id": "english_external_459_459_chi",
+        "subject_id": 459,
+        "label": 0.0,
+        "score_patients": 0.9504703283309937
+      },
+      {
+        "sample_id": "english_external_460_460_chi",
+        "subject_id": 460,
+        "label": 0.0,
+        "score_patients": 0.9615326523780823
+      },
+      {
+        "sample_id": "english_external_463_463_chi",
+        "subject_id": 463,
+        "label": 0.0,
+        "score_patients": 0.964549720287323
+      },
+      {
+        "sample_id": "english_external_413_413_chi",
+        "subject_id": 413,
+        "label": 1.0,
+        "score_patients": 0.9894094467163086
+      },
+      {
+        "sample_id": "english_external_427_427_chi",
+        "subject_id": 427,
+        "label": 1.0,
+        "score_patients": 0.993966281414032
+      },
+      {
+        "sample_id": "english_external_479_479_chi",
+        "subject_id": 479,
+        "label": 1.0,
+        "score_patients": 0.8982371687889099
+      },
+      {
+        "sample_id": "english_external_480_480_chi",
+        "subject_id": 480,
+        "label": 1.0,
+        "score_patients": 0.9932008385658264
+      },
+      {
+        "sample_id": "english_external_527_527_chi",
+        "subject_id": 527,
+        "label": 1.0,
+        "score_patients": 0.9837560653686523
+      },
+      {
+        "sample_id": "english_external_529_529_chi",
+        "subject_id": 529,
+        "label": 1.0,
+        "score_patients": 0.9901247024536133
+      },
+      {
+        "sample_id": "english_external_531_531_chi",
+        "subject_id": 531,
+        "label": 1.0,
+        "score_patients": 0.9737948775291443
+      },
+      {
+        "sample_id": "english_external_535_535_chi",
+        "subject_id": 535,
+        "label": 1.0,
+        "score_patients": 0.9950188398361206
+      },
+      {
+        "sample_id": "english_external_567_567_chi",
+        "subject_id": 567,
+        "label": 1.0,
+        "score_patients": 0.9856188297271729
+      },
+      {
+        "sample_id": "english_external_570_570_chi",
+        "subject_id": 570,
+        "label": 1.0,
+        "score_patients": 0.9893753528594971
+      },
+      {
+        "sample_id": "english_external_572_572_chi",
+        "subject_id": 572,
+        "label": 1.0,
+        "score_patients": 0.9467042088508606
+      },
+      {
+        "sample_id": "english_external_574_574_chi",
+        "subject_id": 574,
+        "label": 1.0,
+        "score_patients": 0.844555139541626
+      },
+      {
+        "sample_id": "english_external_576_576_chi",
+        "subject_id": 576,
+        "label": 1.0,
+        "score_patients": 0.08093664050102234
+      },
+      {
+        "sample_id": "english_external_607_607_chi",
+        "subject_id": 607,
+        "label": 1.0,
+        "score_patients": 0.967941403388977
+      },
+      {
+        "sample_id": "english_external_609_609_chi",
+        "subject_id": 609,
+        "label": 1.0,
+        "score_patients": 0.9820658564567566
+      },
+      {
+        "sample_id": "english_external_611_611_chi",
+        "subject_id": 611,
+        "label": 1.0,
+        "score_patients": 0.9639032483100891
+      },
+      {
+        "sample_id": "english_external_617_617_chi",
+        "subject_id": 617,
+        "label": 1.0,
+        "score_patients": 0.9932569265365601
+      },
+      {
+        "sample_id": "english_external_667_667_chi",
+        "subject_id": 667,
+        "label": 1.0,
+        "score_patients": 0.980707049369812
+      },
+      {
+        "sample_id": "english_external_679_679_chi",
+        "subject_id": 679,
+        "label": 1.0,
+        "score_patients": 0.9399317502975464
+      },
+      {
+        "sample_id": "english_external_680_680_chi",
+        "subject_id": 680,
+        "label": 1.0,
+        "score_patients": 0.9501447081565857
+      },
+      {
+        "sample_id": "english_external_721_721_chi",
+        "subject_id": 721,
+        "label": 1.0,
+        "score_patients": 0.9942466616630554
+      },
+      {
+        "sample_id": "english_external_723_723_chi",
+        "subject_id": 723,
+        "label": 1.0,
+        "score_patients": 0.9835033416748047
+      },
+      {
+        "sample_id": "english_external_727_727_chi",
+        "subject_id": 727,
+        "label": 1.0,
+        "score_patients": 0.9891659617424011
+      },
+      {
+        "sample_id": "english_external_729_729_chi",
+        "subject_id": 729,
+        "label": 1.0,
+        "score_patients": 0.9857211112976074
+      },
+      {
+        "sample_id": "english_external_731_731_chi",
+        "subject_id": 731,
+        "label": 1.0,
+        "score_patients": 0.9890978336334229
+      },
+      {
+        "sample_id": "english_external_733_733_chi",
+        "subject_id": 733,
+        "label": 1.0,
+        "score_patients": 0.971339225769043
+      }
+    ]
+  },
+  "delta_at_czech_threshold": {
+    "auc": -0.09018567639257291,
+    "balanced_accuracy": -0.03249336870026526
+  }
+}

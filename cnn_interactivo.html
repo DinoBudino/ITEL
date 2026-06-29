@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convolution Neural Network (CNN) - Interactivo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #222; min-height: 100vh; }
+
+header {
+  background: #1a1a2e;
+  color: white;
+  padding: 16px 32px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+header span { color: #7ec8e3; font-weight: 400; font-size: 0.9rem; }
+
+.main { max-width: 1500px; margin: 0 auto; padding: 28px 24px; display: flex; flex-direction: column; gap: 24px; }
+
+/* ─── DIAGRAM ─── */
+.diagram-card {
+  background: white;
+  border-radius: 14px;
+  padding: 32px 28px 24px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.08);
+}
+
+.diagram-title {
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 28px;
+  color: #1a1a2e;
+  letter-spacing: 0.3px;
+}
+
+.diagram {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  position: relative;
+}
+
+/* ─── STAGE ─── */
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 80px;
+}
+
+.stage-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #999;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* ─── ARROW ─── */
+.arrow {
+  flex: 0 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  font-size: 1.4rem;
+  margin-top: 10px;
+}
+
+/* ─── INPUT IMAGE ─── */
+.input-img {
+  width: 80px;
+  height: 90px;
+  background: linear-gradient(135deg, #f5deb3 0%, #d2b48c 100%);
+  border-radius: 6px;
+  border: 2.5px solid #b8976a;
+  position: relative;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.input-img:hover, .input-img.active { transform: scale(1.08); box-shadow: 0 6px 20px rgba(26,26,46,.3); border-color: #1a1a2e; }
+.input-img svg { opacity: 0.7; }
+.kernel-box {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid #f1c40f;
+  background: rgba(241,196,15,.15);
+}
+
+/* ─── CONV BLOCK ─── */
+.conv-block {
+  position: relative;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.conv-block:hover .layer-stack, .conv-block.active .layer-stack { transform: scale(1.07); }
+
+.layer-stack {
+  position: relative;
+  width: 58px;
+  height: 78px;
+  transition: transform .2s;
+}
+.layer-stack .sheet {
+  position: absolute;
+  border-radius: 4px;
+  background: #c8a97e;
+  border: 1.5px solid #a0825a;
+}
+.s1 { width: 50px; height: 68px; top: 0; left: 0; background: #b8926a; }
+.s2 { width: 50px; height: 68px; top: 3px; left: 4px; background: #c9a47c; }
+.s3 { width: 50px; height: 68px; top: 6px; left: 8px; background: #d9b68e; }
+
+.conv-block.active .sheet { border-color: #1a1a2e; }
+.conv-block.active .s3 { background: #c2a07a; border-color: #1a1a2e; }
+
+.pool-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #888;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.relu-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #555;
+  text-align: center;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+.relu-label em { font-style: normal; color: #e17055; }
+
+/* ─── FLATTEN ─── */
+.flatten-block {
+  cursor: pointer;
+  transition: transform .2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.flatten-block:hover .flatten-bar, .flatten-block.active .flatten-bar { background: #1a1a2e; }
+.flatten-bar {
+  width: 16px;
+  height: 6px;
+  background: #c8a97e;
+  border-radius: 2px;
+  transition: background .2s;
+  margin: 1px 0;
+}
+
+/* ─── FC NODES ─── */
+.fc-block {
+  cursor: pointer;
+  transition: transform .2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.fc-block:hover .fc-layer, .fc-block.active .fc-layer { transform: scale(1.05); }
+.fc-layer { display: flex; flex-direction: column; align-items: center; gap: 5px; transition: transform .2s; }
+.fc-node {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #5aa0c8;
+  background: #aed6f1;
+  transition: all .2s;
+}
+.fc-node.dark { background: #2471a3; border-color: #1a5276; }
+.fc-block.active .fc-node { background: #1a1a2e; border-color: #1a1a2e; }
+
+/* ─── OUTPUT ─── */
+.output-block {
+  cursor: pointer;
+  transition: transform .2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: stretch;
+  width: 90px;
+}
+.output-block:hover, .output-block.active { transform: scale(1.05); }
+.out-row {
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1.5px solid #b8862a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #e59866;
+  color: white;
+  transition: background .2s;
+}
+.out-row:first-child { border-radius: 6px 6px 0 0; }
+.out-row:last-child { border-radius: 0 0 6px 6px; }
+.out-row.highlight { background: #ca6f1e; }
+.output-block.active .out-row { background: #1a1a2e; border-color: #000; }
+.out-name { font-size: 0.7rem; font-weight: 500; }
+
+/* ─── SECTION BARS ─── */
+.section-bar {
+  display: flex;
+  gap: 0;
+  margin-top: 18px;
+}
+.sec {
+  text-align: center;
+  font-size: 0.7rem;
+  color: #777;
+  padding: 5px 10px;
+  border-top: 2px solid #ddd;
+  font-weight: 600;
+  letter-spacing: .5px;
+}
+
+/* ─── HINT ─── */
+.hint {
+  text-align: center;
+  font-size: 0.78rem;
+  color: #aaa;
+  margin-top: 8px;
+}
+
+/* ─── BOTTOM ─── */
+.bottom {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr;
+  gap: 20px;
+}
+
+.info-panel, .chart-panel {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  background: #eaf4fd;
+  color: #1a6fa0;
+}
+.tag.extraction { background: #fdf6e3; color: #b7770d; }
+.tag.classification { background: #eafaf1; color: #1e8449; }
+.tag.output-tag { background: #fdf2f8; color: #8e44ad; }
+
+.info-name { font-size: 1.3rem; font-weight: 800; color: #1a1a2e; }
+.info-desc { font-size: 0.87rem; line-height: 1.7; color: #555; }
+.info-detail {
+  background: #f7f9fc;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  color: #333;
+  line-height: 1.7;
+}
+.info-detail strong { color: #1a1a2e; }
+
+.placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  gap: 10px;
+  font-size: 0.84rem;
+}
+
+.chart-container { position: relative; flex: 1; min-height: 230px; }
+.chart-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 0.84rem; }
+</style>
+</head>
+<body>
+
+<header>
+  CNN Interactivo
+  <span>— haz clic en cualquier capa para ver su descripción y gráfica</span>
+</header>
+
+<div class="main">
+
+  <!-- DIAGRAM CARD -->
+  <div class="diagram-card">
+    <div class="diagram-title">Convolution Neural Network (CNN)</div>
+
+    <div class="diagram">
+
+      <!-- INPUT -->
+      <div class="stage">
+        <div class="stage-label">Input</div>
+        <div class="input-img" id="node-Input" onclick="selectNode('Input')" title="Input Image">
+          <!-- Simple zebra SVG sketch -->
+          <svg width="60" height="70" viewBox="0 0 60 70">
+            <rect width="60" height="70" fill="#d2b48c"/>
+            <!-- zebra stripes simplified -->
+            <ellipse cx="30" cy="38" rx="22" ry="18" fill="#555"/>
+            <ellipse cx="30" cy="36" rx="18" ry="14" fill="#eee"/>
+            <rect x="14" y="34" width="5" height="20" rx="2" fill="#555"/>
+            <rect x="41" y="34" width="5" height="20" rx="2" fill="#555"/>
+            <rect x="20" y="34" width="5" height="20" rx="2" fill="#555"/>
+            <rect x="35" y="34" width="5" height="20" rx="2" fill="#555"/>
+            <ellipse cx="30" cy="24" rx="10" ry="8" fill="#eee"/>
+            <rect x="12" y="38" width="4" height="2" rx="1" fill="#eee"/>
+            <rect x="20" y="32" width="4" height="2" rx="1" fill="#555"/>
+            <rect x="28" y="30" width="4" height="2" rx="1" fill="#555"/>
+            <rect x="36" y="32" width="4" height="2" rx="1" fill="#555"/>
+          </svg>
+          <div class="kernel-box"></div>
+        </div>
+        <div style="font-size:.72rem;color:#555;font-weight:600;margin-top:6px;">Kernel</div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- CONV 1 + POOL 1 -->
+      <div class="stage">
+        <div class="pool-label">Pooling</div>
+        <div class="conv-block" id="node-Conv1" onclick="selectNode('Conv1')">
+          <div class="layer-stack">
+            <div class="sheet s1"></div>
+            <div class="sheet s2"></div>
+            <div class="sheet s3"></div>
+          </div>
+          <div class="relu-label">Convolution<br>+ <em>ReLU</em></div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- CONV 2 + POOL 2 -->
+      <div class="stage">
+        <div class="pool-label">Pooling</div>
+        <div class="conv-block" id="node-Conv2" onclick="selectNode('Conv2')">
+          <div class="layer-stack">
+            <div class="sheet s1"></div>
+            <div class="sheet s2"></div>
+            <div class="sheet s3"></div>
+          </div>
+          <div class="relu-label">Convolution<br>+ <em>ReLU</em></div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- CONV 3 + POOL 3 -->
+      <div class="stage">
+        <div class="pool-label">Pooling</div>
+        <div class="conv-block" id="node-Conv3" onclick="selectNode('Conv3')">
+          <div class="layer-stack">
+            <div class="sheet s1"></div>
+            <div class="sheet s2"></div>
+            <div class="sheet s3"></div>
+          </div>
+          <div class="relu-label">Convolution<br>+ <em>ReLU</em></div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- FLATTEN -->
+      <div class="stage">
+        <div class="stage-label" style="margin-bottom:16px">&nbsp;</div>
+        <div class="flatten-block" id="node-Flatten" onclick="selectNode('Flatten')">
+          <div class="flatten-bar" style="width:18px"></div>
+          <div class="flatten-bar" style="width:18px"></div>
+          <div class="flatten-bar" style="width:18px"></div>
+          <div class="flatten-bar" style="width:18px"></div>
+          <div class="flatten-bar" style="width:18px"></div>
+          <div class="flatten-bar" style="width:18px"></div>
+          <div class="flatten-bar" style="width:18px"></div>
+          <div class="flatten-bar" style="width:18px"></div>
+          <div style="font-size:.68rem;color:#666;font-weight:600;margin-top:6px;text-align:center;">Flatten<br>Layer</div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- FC LAYER -->
+      <div class="stage">
+        <div class="stage-label">&nbsp;</div>
+        <div class="fc-block" id="node-FC" onclick="selectNode('FC')">
+          <div style="display:flex;gap:10px;">
+            <div class="fc-layer">
+              <div class="fc-node"></div><div class="fc-node"></div><div class="fc-node"></div>
+              <div class="fc-node"></div><div class="fc-node"></div><div class="fc-node"></div>
+              <div class="fc-node"></div>
+            </div>
+            <div class="fc-layer" style="margin-top:16px">
+              <div class="fc-node dark"></div><div class="fc-node dark"></div>
+              <div class="fc-node dark"></div><div class="fc-node dark"></div>
+              <div class="fc-node dark"></div>
+            </div>
+          </div>
+          <div style="font-size:.68rem;color:#555;font-weight:600;text-align:center;margin-top:6px;">Fully<br>Connected</div>
+        </div>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <!-- OUTPUT -->
+      <div class="stage">
+        <div class="stage-label">Output</div>
+        <div class="output-block" id="node-Output" onclick="selectNode('Output')">
+          <div class="out-row"><span>0.2</span><span class="out-name">Horse</span></div>
+          <div class="out-row highlight"><span>0.7</span><span class="out-name">Zebra</span></div>
+          <div class="out-row"><span>0.1</span><span class="out-name">Dog</span></div>
+        </div>
+        <div style="font-size:.62rem;color:#888;text-align:center;margin-top:6px;line-height:1.4">SoftMax<br>Activation</div>
+      </div>
+
+    </div>
+
+    <!-- Section bars -->
+    <div style="display:flex;margin-top:18px;gap:0;padding:0 10px;">
+      <div style="flex:3.2;text-align:center;font-size:.7rem;color:#777;padding:5px 10px;border-top:2px solid #d4a96a;font-weight:600;letter-spacing:.5px;">Feature Extraction</div>
+      <div style="flex:1.2;text-align:center;font-size:.7rem;color:#777;padding:5px 10px;border-top:2px solid #5dade2;font-weight:600;letter-spacing:.5px;">Classification</div>
+      <div style="flex:0.8;text-align:center;font-size:.7rem;color:#777;padding:5px 10px;border-top:2px solid #a569bd;font-weight:600;letter-spacing:.5px;">Probabilistic Distribution</div>
+    </div>
+
+    <div class="hint">↑ Haz clic en cualquier componente del diagrama</div>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bottom">
+
+    <!-- INFO -->
+    <div class="info-panel">
+      <div class="panel-title">Descripción de la capa</div>
+      <div class="placeholder" id="placeholder">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <circle cx="12" cy="16" r=".6" fill="#ccc"/>
+        </svg>
+        <span>Selecciona un componente</span>
+      </div>
+      <div id="info-content" style="display:none;flex-direction:column;gap:10px;"></div>
+    </div>
+
+    <!-- CHART -->
+    <div class="chart-panel">
+      <div class="panel-title" id="chart-title">Gráfica</div>
+      <div class="chart-empty" id="chart-empty">Selecciona un componente para ver su gráfica</div>
+      <div class="chart-container" id="chart-container" style="display:none;">
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const data = {
+  Input: {
+    tag: 'Feature Extraction', tagClass: 'extraction',
+    name: 'Input Image + Kernel',
+    desc: 'La imagen de entrada (ej. 224×224 píxeles) es el punto de partida de la red. El <strong>kernel</strong> (o filtro) es una pequeña matriz (ej. 3×3 o 5×5) que se desliza sobre la imagen para detectar patrones locales como bordes, texturas y gradientes.',
+    detail: '<strong>Tamaño típico:</strong> 224×224×3 (RGB) · <strong>Kernel:</strong> 3×3 o 5×5 · <strong>Operación:</strong> Producto punto entre kernel y región de imagen',
+    chartLabel: 'Intensidad de píxeles — canal R (muestra)',
+    chartFn: () => {
+      const d = Array.from({length:30}, () => Math.floor(Math.random()*255));
+      return { type:'bar', data: { labels: Array.from({length:30},(_,i)=>`p${i+1}`), datasets:[{ label:'Intensidad pixel', data: d, backgroundColor: d.map(v=>`rgba(${v},${Math.floor(v*0.6)},80,0.8)`), borderRadius:3 }] }, options: chartOpts('Intensidad (0-255)', 0, 255) };
+    }
+  },
+  Conv1: {
+    tag: 'Feature Extraction', tagClass: 'extraction',
+    name: 'Convolution 1 + ReLU + Pooling',
+    desc: 'Primera capa convolucional. Aplica múltiples filtros sobre la imagen original para detectar características de <strong>bajo nivel</strong>: bordes horizontales, verticales, diagonales y cambios de color. ReLU elimina valores negativos para introducir no-linealidad.',
+    detail: '<strong>Filtros:</strong> 32–64 · <strong>Kernel:</strong> 3×3 · <strong>Activación:</strong> ReLU · <strong>Pooling:</strong> Max 2×2, stride 2 · <strong>Salida:</strong> 112×112×32',
+    chartLabel: 'Feature maps activados — Conv1',
+    chartFn: () => featureMapChart('Conv1 - Activaciones ReLU', '#d4a96a')
+  },
+  Conv2: {
+    tag: 'Feature Extraction', tagClass: 'extraction',
+    name: 'Convolution 2 + ReLU + Pooling',
+    desc: 'Segunda capa convolucional. Con los feature maps de la capa anterior como entrada, aprende características de <strong>nivel medio</strong>: esquinas, curvas, combinaciones de bordes y texturas más complejas.',
+    detail: '<strong>Filtros:</strong> 64–128 · <strong>Kernel:</strong> 3×3 · <strong>Activación:</strong> ReLU · <strong>Pooling:</strong> Max 2×2, stride 2 · <strong>Salida:</strong> 56×56×64',
+    chartLabel: 'Feature maps activados — Conv2',
+    chartFn: () => featureMapChart('Conv2 - Activaciones ReLU', '#c49a52')
+  },
+  Conv3: {
+    tag: 'Feature Extraction', tagClass: 'extraction',
+    name: 'Convolution 3 + ReLU + Pooling',
+    desc: 'Tercera capa convolucional. Detecta características de <strong>alto nivel</strong> y abstractas: partes del objeto (orejas, patas, patrones de rayas). Cada filtro combina características de las capas anteriores para construir representaciones complejas.',
+    detail: '<strong>Filtros:</strong> 128–256 · <strong>Kernel:</strong> 3×3 · <strong>Activación:</strong> ReLU · <strong>Pooling:</strong> Max 2×2, stride 2 · <strong>Salida:</strong> 28×28×128',
+    chartLabel: 'Feature maps activados — Conv3',
+    chartFn: () => featureMapChart('Conv3 - Activaciones ReLU', '#a07840')
+  },
+  Flatten: {
+    tag: 'Classification', tagClass: 'classification',
+    name: 'Flatten Layer',
+    desc: 'Convierte el volumen 3D de feature maps (ancho × alto × canales) en un <strong>vector 1D</strong>. Es el puente entre la extracción de características convolucionales y las capas densas del clasificador. No tiene parámetros aprendibles.',
+    detail: '<strong>Entrada:</strong> 28×28×128 = 100,352 valores · <strong>Salida:</strong> Vector de 100,352 · <strong>Operación:</strong> Reshape sin transformación',
+    chartLabel: 'Vector flatten — distribución de valores',
+    chartFn: () => {
+      const d = Array.from({length:40}, () => +(Math.random()*2-0.3).toFixed(3));
+      return { type:'line', data: { labels: Array.from({length:40},(_,i)=>i*100), datasets:[{ label:'Valor flatten', data: d, borderColor:'#27ae60', borderWidth:1.5, pointRadius:2, fill:true, backgroundColor:'rgba(39,174,96,.1)' }] }, options: chartOpts('Valor de activación') };
+    }
+  },
+  FC: {
+    tag: 'Classification', tagClass: 'classification',
+    name: 'Fully Connected Layer',
+    desc: 'Capa densa donde <strong>cada neurona está conectada a todas las neuronas de la capa anterior</strong>. Aprende combinaciones globales de las características para separar las clases. Generalmente incluye Dropout para regularización.',
+    detail: '<strong>Neuronas:</strong> 512–4096 → 256 · <strong>Activación:</strong> ReLU · <strong>Dropout:</strong> 0.5 · <strong>Parámetros:</strong> miles de millones',
+    chartLabel: 'Activaciones ReLU — neuronas FC',
+    chartFn: () => {
+      const d = Array.from({length:32}, () => Math.max(0, +(Math.random()*2 - 0.6).toFixed(3)));
+      return { type:'bar', data: { labels: Array.from({length:32},(_,i)=>`N${i+1}`), datasets:[{ label:'Activación ReLU', data: d, backgroundColor:'rgba(41,128,185,.7)', borderRadius:3 }] }, options: chartOpts('Activación ReLU', 0) };
+    }
+  },
+  Output: {
+    tag: 'Probabilistic Distribution', tagClass: 'output-tag',
+    name: 'Output — SoftMax',
+    desc: 'La función <strong>SoftMax</strong> convierte los logits (puntuaciones crudas) en probabilidades que suman 1.0. El modelo asigna <strong>0.7 a Zebra</strong> (clase ganadora), 0.2 a Horse y 0.1 a Dog, indicando alta confianza en la clasificación correcta.',
+    detail: '<strong>Clases:</strong> Horse (0.2), Zebra (0.7), Dog (0.1) · <strong>Suma:</strong> 1.0 · <strong>Predicción:</strong> Zebra · <strong>Loss:</strong> Cross-Entropy',
+    chartLabel: 'Distribución de probabilidades — SoftMax',
+    chartFn: () => {
+      return { type:'bar', data: {
+        labels: ['Horse 🐴','Zebra 🦓','Dog 🐕'],
+        datasets:[{ label:'Probabilidad', data:[0.2, 0.7, 0.1], backgroundColor:['rgba(52,152,219,.75)','rgba(231,76,60,.9)','rgba(52,152,219,.75)'], borderRadius:8 }]
+      }, options: { ...chartOpts('Probabilidad',0,1), plugins:{ legend:{display:false}, tooltip:{enabled:true} } } };
+    }
+  }
+};
+
+function chartOpts(yLabel, min, max) {
+  return {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { enabled: true } },
+    scales: {
+      x: { grid:{color:'#f0f0f0'}, ticks:{font:{size:10}} },
+      y: { grid:{color:'#f0f0f0'}, ticks:{font:{size:10}}, title:{display:true, text:yLabel||'', font:{size:10}},
+           ...(min !== undefined ? {min} : {}), ...(max !== undefined ? {max} : {}) }
+    }
+  };
+}
+
+function featureMapChart(label, color) {
+  const n = 20;
+  const d = Array.from({length:n}, () => Math.max(0, +(Math.random()*1.8 - 0.3).toFixed(3)));
+  return { type:'bar', data: {
+    labels: Array.from({length:n},(_,i)=>`F${i+1}`),
+    datasets:[{ label, data: d, backgroundColor: color, borderRadius:4 }]
+  }, options: chartOpts('Activación media', 0) };
+}
+
+let chartInst = null;
+let activeKey = null;
+
+function selectNode(key) {
+  if (!data[key]) return;
+
+  // visual reset
+  ['Input','Conv1','Conv2','Conv3','Flatten','FC','Output'].forEach(k => {
+    const el = document.getElementById('node-'+k);
+    if (el) el.classList.remove('active');
+  });
+  document.getElementById('node-'+key).classList.add('active');
+
+  const d = data[key];
+
+  // info
+  document.getElementById('placeholder').style.display = 'none';
+  const content = document.getElementById('info-content');
+  content.style.display = 'flex';
+  content.innerHTML = `
+    <span class="tag ${d.tagClass}">${d.tag}</span>
+    <div class="info-name">${d.name}</div>
+    <div class="info-desc">${d.desc}</div>
+    <div class="info-detail">${d.detail}</div>
+  `;
+
+  // chart
+  document.getElementById('chart-empty').style.display = 'none';
+  document.getElementById('chart-container').style.display = 'block';
+  document.getElementById('chart-title').textContent = d.chartLabel;
+
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  const ctx = document.getElementById('myChart').getContext('2d');
+  chartInst = new Chart(ctx, d.chartFn());
+}
+</script>
+</body>
+</html>

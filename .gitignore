@@ -67,6 +67,8 @@ research/reports/CSV/**
 !research/reports/CSV/.gitkeep
 assets/models/**
 !assets/models/.gitkeep
+research/Otros Idiomas
+
 
 # Large generated binaries
 *.npy
