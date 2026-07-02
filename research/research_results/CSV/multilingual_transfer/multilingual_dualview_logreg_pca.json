@@ -1,0 +1,68 @@
+{
+  "config": {
+    "cz_natural_manifest": "D:\\Repositorios\\ITEL\\research\\processed_data\\manifests\\hubert_sequences_natural_multilingual_light.csv",
+    "cz_fixed_manifest": "D:\\Repositorios\\ITEL\\research\\processed_data\\manifests\\hubert_sequences_fixed_2s_multilingual_light.csv",
+    "en_natural_manifest": "D:\\Repositorios\\ITEL\\research\\processed_data\\manifests\\hubert_sequences_en_test_v2.csv",
+    "en_fixed_manifest": "D:\\Repositorios\\ITEL\\research\\processed_data\\manifests\\hubert_sequences_en_test_v2_fixed_2s.csv",
+    "alignment_methods": [
+      "raw",
+      "centroid_shift"
+    ],
+    "output_json": "research/research_results/CSV/multilingual_transfer/multilingual_dualview_logreg_pca.json",
+    "output_csv": "research/research_results/CSV/multilingual_transfer/multilingual_dualview_logreg_pca_predictions.csv"
+  },
+  "results": {
+    "raw": {
+      "target_english": {
+        "accuracy": 0.4375,
+        "balanced_accuracy": 0.4833333333333333,
+        "precision": 0.36363636363636365,
+        "recall": 0.6666666666666666,
+        "f1": 0.47058823529411764,
+        "auc": 0.7625,
+        "best_threshold_global": 0.3794,
+        "best_balanced_accuracy_global": 0.7666666666666666,
+        "best_recall_global": 0.8333333333333334,
+        "best_precision_global": 0.625
+      },
+      "target_czech": {
+        "accuracy": 0.8469387755102041,
+        "balanced_accuracy": 0.8442760942760943,
+        "precision": 0.8545454545454545,
+        "recall": 0.8703703703703703,
+        "f1": 0.8623853211009175,
+        "auc": 0.9903198653198653,
+        "best_threshold_global": 0.3047,
+        "best_balanced_accuracy_global": 0.9545454545454546,
+        "best_recall_global": 1.0,
+        "best_precision_global": 0.9310344827586207
+      }
+    },
+    "centroid_shift": {
+      "target_english": {
+        "accuracy": 0.4375,
+        "balanced_accuracy": 0.45,
+        "precision": 0.3333333333333333,
+        "recall": 0.5,
+        "f1": 0.4,
+        "auc": 0.7875,
+        "best_threshold_global": 0.0797,
+        "best_balanced_accuracy_global": 0.7916666666666667,
+        "best_recall_global": 0.8333333333333334,
+        "best_precision_global": 0.6666666666666666
+      },
+      "target_czech": {
+        "accuracy": 0.8469387755102041,
+        "balanced_accuracy": 0.8505892255892256,
+        "precision": 0.8979591836734694,
+        "recall": 0.8148148148148148,
+        "f1": 0.8543689320388349,
+        "auc": 0.9903198653198653,
+        "best_threshold_global": 0.5492,
+        "best_balanced_accuracy_global": 0.9473905723905723,
+        "best_recall_global": 0.9629629629629629,
+        "best_precision_global": 0.9454545454545454
+      }
+    }
+  }
+}

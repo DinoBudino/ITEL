@@ -1,5 +1,0 @@
-fold,subject_id,label,score_patients_mean,pred_label,n_samples,n_tasks,dominant_task_type,n_task_samples
-1,H29,Healthy,0.9560886,Patients,38,3,controlled_word,23
-5,H26,Healthy,0.8961246,Patients,38,3,controlled_word,23
-1,H27,Healthy,0.85051465,Patients,38,3,controlled_word,23
-2,H28,Healthy,0.6126595,Patients,38,3,controlled_word,23

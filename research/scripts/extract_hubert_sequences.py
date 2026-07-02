@@ -48,6 +48,12 @@ def parse_args() -> argparse.Namespace:
         help="Use the full natural audio duration (no 2s crop/pad).",
     )
     parser.add_argument(
+        "--preproc-profile",
+        choices=["multilingual_light", "anti_confound"],
+        default=CONFIG.audio.default_profile,
+        help="Audio preprocessing profile. Use anti_confound only for robustness/audit experiments.",
+    )
+    parser.add_argument(
         "--limit",
         type=int,
         default=None,
@@ -76,8 +82,24 @@ def main() -> None:
         duration_label = "2.0s_fixed"
         duration_s = CONFIG.audio.train_segment_s
 
+    if args.preproc_profile != CONFIG.audio.default_profile:
+        profile_suffix = args.preproc_profile
+        if args.output_manifest in {
+            str(CONFIG.paths.processed_manifest_dir / "hubert_sequences_train_default.csv"),
+            str(CONFIG.paths.processed_manifest_dir / "hubert_sequences_natural.csv"),
+        }:
+            args.output_manifest = str(
+                CONFIG.paths.processed_manifest_dir
+                / f"hubert_sequences_{duration_label}_{profile_suffix}.csv"
+            )
+        if args.output_dir in {
+            str(CONFIG.paths.processed_dir / "hubert_sequences" / "train_default"),
+            str(CONFIG.paths.processed_dir / "hubert_sequences" / "natural"),
+        }:
+            args.output_dir = str(CONFIG.paths.processed_dir / "hubert_sequences" / f"{duration_label}_{profile_suffix}")
+
     layer_label = "12layers" if args.all_layers else "last"
-    print(f"Layer mode: {layer_label}  |  Duration mode: {duration_label}")
+    print(f"Layer mode: {layer_label}  |  Duration mode: {duration_label}  |  Preproc: {args.preproc_profile}")
 
     sample_manifest = pd.read_csv(args.sample_manifest)
     output_dir = Path(args.output_dir)
@@ -108,6 +130,8 @@ def main() -> None:
                 "subject_id": row["subject_id"],
                 "sequence_length": -1,
                 "input_dim": 768,
+                "preproc_profile": args.preproc_profile,
+                "duration_policy": duration_label,
             })
             continue
 
@@ -115,7 +139,7 @@ def main() -> None:
             samples, sr = load_and_preprocess_audio(
                 audio_path,
                 duration_s=duration_s,
-                profile=CONFIG.audio.default_profile,
+                profile=args.preproc_profile,
             )
             waveform = torch.tensor(samples, dtype=torch.float32).unsqueeze(0)
 
@@ -136,6 +160,8 @@ def main() -> None:
                 "subject_id": row["subject_id"],
                 "sequence_length": int(mask.sum()),
                 "input_dim": int(seq.size(-1)),
+                "preproc_profile": args.preproc_profile,
+                "duration_policy": duration_label,
             })
         except Exception as exc:
             print(f"ERROR processing {sample_id}: {exc}")

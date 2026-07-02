@@ -1,6 +1,0 @@
-variant,task_types,mode,cz_subject_balanced_accuracy,cz_subject_auc,en_balanced_accuracy,en_auc,best_threshold,best_threshold_balanced_accuracy
-all_tasks,"controlled_vowel,controlled_consonant,controlled_word",english_test_embeddings_seg_5s,0.9545454545454546,0.9886363636363636,0.5,0.4,0.05,0.5
-word_only,controlled_word,english_test_embeddings_seg_5s,0.9545454545454546,0.9894781144781144,0.5,0.3428571428571429,0.05,0.5
-vowel_only,controlled_vowel,english_test_embeddings_seg_5s,0.904040404040404,0.9562289562289562,0.5,0.48571428571428577,0.9,0.6142857142857143
-consonant_only,controlled_consonant,english_test_embeddings_seg_5s,0.9545454545454546,0.968013468013468,0.5,0.1142857142857143,0.05,0.5
-speech_sounds_only,"controlled_vowel,controlled_consonant",english_test_embeddings_seg_5s,0.9225589225589226,0.9427609427609428,0.5,0.3142857142857143,0.05,0.5

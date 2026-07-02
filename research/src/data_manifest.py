@@ -36,6 +36,7 @@ class SampleRecord:
     n_detected_speakers: int | None = None
     qc_flag: str | None = None
     notes: str | None = None
+    articulatory_group: str | None = None
 
 
 SAMPLE_MANIFEST_COLUMNS = list(SampleRecord.__dataclass_fields__.keys())

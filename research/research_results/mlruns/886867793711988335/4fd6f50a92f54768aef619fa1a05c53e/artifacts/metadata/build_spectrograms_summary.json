@@ -1,7 +1,0 @@
-{
-  "n_rows": 3853,
-  "n_source_samples": 3853,
-  "feature_type": "logmel_64x501",
-  "n_mels": 64,
-  "n_frames": 501
-}

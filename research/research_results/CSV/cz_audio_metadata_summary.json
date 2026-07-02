@@ -1,0 +1,186 @@
+{
+  "manifest_summary": {
+    "n_total_samples": 3853,
+    "n_total_subjects": 98,
+    "samples_by_label": {
+      "Patients": 2173,
+      "Healthy": 1680
+    }
+  },
+  "by_label": {
+    "Healthy": {
+      "n_samples": 1680,
+      "n_subjects": 44,
+      "duration_s": {
+        "mean": 0.535286,
+        "std": 0.261138,
+        "median": 0.45625,
+        "min": 0.049438,
+        "max": 1.833813
+      },
+      "peak_abs": {
+        "mean": 0.360955,
+        "std": 0.224049,
+        "median": 0.303619,
+        "min": 0.053558,
+        "max": 1.0
+      },
+      "rms_mean": {
+        "mean": 0.075864,
+        "std": 0.053334,
+        "median": 0.059091,
+        "min": 0.010371,
+        "max": 0.408017
+      },
+      "rms": {
+        "mean": 0.086525,
+        "std": 0.060136,
+        "median": 0.068184,
+        "min": 0.012132,
+        "max": 0.46145
+      },
+      "silence_ratio": {
+        "mean": 0.228113,
+        "std": 0.132405,
+        "median": 0.199785,
+        "min": 0.016727,
+        "max": 0.802256
+      },
+      "zcr_mean": {
+        "mean": 0.052631,
+        "std": 0.039524,
+        "median": 0.036216,
+        "min": 0.010796,
+        "max": 0.323916
+      },
+      "zcr_std": {
+        "mean": 0.024383,
+        "std": 0.030991,
+        "median": 0.01307,
+        "min": 0.0,
+        "max": 0.238988
+      },
+      "spectral_centroid_mean": {
+        "mean": 1811.480139,
+        "std": 556.142371,
+        "median": 1767.5727,
+        "min": 538.8573,
+        "max": 5950.5919
+      },
+      "spectral_bandwidth_mean": {
+        "mean": 2789.942241,
+        "std": 1020.03643,
+        "median": 3109.4295,
+        "min": 722.4308,
+        "max": 5233.4512
+      },
+      "spectral_rolloff_mean": {
+        "mean": 3167.530829,
+        "std": 1193.670271,
+        "median": 3037.7138,
+        "min": 587.6736,
+        "max": 11567.8634
+      },
+      "spectral_flatness_mean": {
+        "mean": 0.006295,
+        "std": 0.012145,
+        "median": 0.001454,
+        "min": 7.2e-05,
+        "max": 0.165161
+      },
+      "channel_distribution": {
+        "1": 1680
+      },
+      "format_distribution": {
+        "wav": 1680
+      }
+    },
+    "Patients": {
+      "n_samples": 2173,
+      "n_subjects": 54,
+      "duration_s": {
+        "mean": 0.66058,
+        "std": 0.421123,
+        "median": 0.550952,
+        "min": 0.045215,
+        "max": 4.586667
+      },
+      "peak_abs": {
+        "mean": 0.0692,
+        "std": 0.041813,
+        "median": 0.061829,
+        "min": 0.008759,
+        "max": 0.641998
+      },
+      "rms_mean": {
+        "mean": 0.013475,
+        "std": 0.008782,
+        "median": 0.011663,
+        "min": 0.001354,
+        "max": 0.144848
+      },
+      "rms": {
+        "mean": 0.016415,
+        "std": 0.01025,
+        "median": 0.014448,
+        "min": 0.001512,
+        "max": 0.160068
+      },
+      "silence_ratio": {
+        "mean": 0.656558,
+        "std": 0.182137,
+        "median": 0.662393,
+        "min": 0.109112,
+        "max": 1.0
+      },
+      "zcr_mean": {
+        "mean": 0.035383,
+        "std": 0.020447,
+        "median": 0.030243,
+        "min": 0.010925,
+        "max": 0.20614
+      },
+      "zcr_std": {
+        "mean": 0.020905,
+        "std": 0.025544,
+        "median": 0.011363,
+        "min": 0.001337,
+        "max": 0.18159
+      },
+      "spectral_centroid_mean": {
+        "mean": 2236.911269,
+        "std": 712.687656,
+        "median": 2117.4809,
+        "min": 847.3142,
+        "max": 5627.6763
+      },
+      "spectral_bandwidth_mean": {
+        "mean": 3645.481627,
+        "std": 637.812195,
+        "median": 3620.0581,
+        "min": 1699.5321,
+        "max": 5741.1951
+      },
+      "spectral_rolloff_mean": {
+        "mean": 4149.07087,
+        "std": 1934.897837,
+        "median": 3836.1003,
+        "min": 748.7998,
+        "max": 11812.5609
+      },
+      "spectral_flatness_mean": {
+        "mean": 0.004034,
+        "std": 0.00576,
+        "median": 0.002336,
+        "min": 2.8e-05,
+        "max": 0.081229
+      },
+      "channel_distribution": {
+        "1": 2173
+      },
+      "format_distribution": {
+        "wav": 2173
+      }
+    }
+  }
+}

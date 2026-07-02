@@ -26,6 +26,15 @@ TASK_TYPE_MAP = {
     "07_vsl": "controlled_word",
 }
 
+ARTICULATORY_GROUP_MAP = {
+    "02SOUHL": "consonant",
+    "03_1SL": "one_syllable_items",
+    "04_2SL": "two_syllable_words",
+    "05_3SL": "three_syllable_words",
+    "06_4SL": "four_syllable_words",
+    "07_VSL": "difficult_words",
+}
+
 SUPPORTED_AUDIO_EXTENSIONS = {".wav", ".mp3", ".flac", ".m4a"}
 
 
@@ -36,6 +45,11 @@ def _build_processed_path(subject_id: str, file_name: str) -> Path:
 def _task_type_from_folder(folder_name: str) -> str:
     normalized = folder_name.strip().lower()
     return TASK_TYPE_MAP.get(normalized, "")
+
+
+def _articulatory_group_from_folder(folder_name: str) -> str | None:
+    normalized = folder_name.strip().upper()
+    return ARTICULATORY_GROUP_MAP.get(normalized)
 
 
 def _iter_audio_files(raw_root: Path) -> list[Path]:
@@ -78,6 +92,7 @@ def build_manifest(raw_root: Path, output_csv: Path) -> Path:
                 diarization_status="not_required",
                 qc_flag=None,
                 notes=task_folder,
+                articulatory_group=_articulatory_group_from_folder(task_folder),
             )
         )
 

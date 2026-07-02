@@ -4,7 +4,7 @@
     "random_state": 42,
     "grouping": "subject_id",
     "cv_strategy": "StratifiedGroupKFold",
-    "feature_cache": "C:\\Users\\Zahir\\Desktop\\ITEL\\research\\processed_data\\manifests\\cz_main_recording_proxy_features.csv",
+    "feature_cache": "D:\\Repositorios\\ITEL\\research\\processed_data\\manifests\\cz_main_recording_proxy_features.csv",
     "preproc_profile": "anti_confound"
   },
   "dataset": {
@@ -137,8 +137,8 @@
           "max": 0.265968
         }
       },
-      "single_feature_auc": 0.46627084565993915,
-      "single_feature_auc_abs_distance_from_half": 0.03372915434006085
+      "single_feature_auc": 0.46627084565993904,
+      "single_feature_auc_abs_distance_from_half": 0.03372915434006096
     },
     "spectral_centroid_mean": {
       "by_label": {

@@ -21,9 +21,11 @@ itel-audio-tel/
 ├─ assets/
 │  └─ models/                # Modelo ONNX, scaler y artefactos
 ├─ research/
-│  ├─ notebooks/             # Cuadernos del trabajo experimental
-│  ├─ reports/               # Figuras y reportes
-│  ├─ processed_data/        # Datos procesados del pipeline
+│  ├─ README.md              # Modelos finales y guia de investigacion
+│  ├─ scripts/               # Entrenamiento, evaluacion y generacion de figuras
+│  ├─ src/                   # Codigo compartido del pipeline experimental
+│  ├─ research_results/      # CSV, visualizaciones y artefactos de investigacion
+│  ├─ reports/               # Figuras y reportes de tesis
 │  └─ requirements.txt       # Dependencias del entorno de investigacion
 ├─ scripts/
 ├─ docker-compose.yml
@@ -35,6 +37,21 @@ itel-audio-tel/
 La ruta oficial de inferencia se mantiene sin reescribir la logica principal:
 
 `WAV -> preprocessing -> HuBERT embeddings -> scaler -> ONNX classifier -> JSON`
+
+## Modelos finales
+
+La linea de investigacion activa mantiene dos modelos finales documentados en `research/README.md`.
+
+| Modelo | Dominio | Rol | Metricas clave |
+| --- | --- | --- | --- |
+| `V3 LayerMix` | Czech (LANNA) | Modelo final del dominio cerrado | Sample BalAcc `0.8783`, Subject BalAcc `0.9432`, Subject AUC `0.9739` |
+| `Unified Multilingual` (`logreg_pca` + `raw`) | Czech + English | Modelo final unificado bilingue | EN BalAcc `0.8500`, EN AUC `0.9250`, CZ BalAcc `0.8927`, CZ AUC `0.9798` |
+
+Referencias rapidas:
+- Documentacion de investigacion: `research/README.md`
+- Comparativa maestra: `research/research_results/CSV/final_comparison/master_model_comparison.csv`
+- Metricas V3 LayerMix: `research/research_results/CSV/metrics_v3_layermix.json`
+- Metricas multilingues: `research/research_results/CSV/multilingual_transfer/multilingual_bidirectional_logreg_pca_raw.json`
 
 ### Backend
 
@@ -217,7 +234,7 @@ Valor por defecto importante:
 ## Dependencias por contexto
 
 - `apps/api/requirements.txt`: dependencias para servir la API
-- `research/requirements.txt`: dependencias del entorno de investigacion y notebooks
+- `research/requirements.txt`: dependencias del entorno de investigacion
 
 ## Seguimiento de experimentos con MLflow
 
@@ -227,7 +244,7 @@ Valor por defecto importante:
 Ejemplos:
 
 ```bash
-python research/scripts/train_baseline.py --model-type xgboost --task-variant speech_sounds_only
+python research/scripts/train_optimized_v3.py
 python research/scripts/evaluate_internal_cz.py --model-type logreg --n-splits 5
 ```
 
@@ -243,6 +260,8 @@ mlflow ui --backend-store-uri research/research_results/mlruns
 - paquete reusable: `packages/inference_engine`
 - activos del modelo: `assets/models`
 - material academico: `research/`
+
+Dentro de `research/`, la referencia vigente para scripts, resultados y modelos finales es `research/README.md`.
 
 ## Nota de uso academico
 

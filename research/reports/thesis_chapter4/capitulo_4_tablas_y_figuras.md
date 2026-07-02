@@ -1,138 +1,117 @@
-# Capitulo 4 - Tablas y figuras de resultados
+# Capitulo 4 - Tablas, figuras y ajustes finales
 
-Este archivo reune las tablas y notas de figuras generadas para el Capitulo 4, utilizando como fuentes `metrics_v3.json`, `metrics_v3_layermix.json`, `predictions_v3.csv`, `predictions_v3_layermix.csv` y `metadata.json` del checkpoint final `v3_final/layermix`.
+Este archivo reune las tablas, notas de figuras y textos breves sugeridos para el Capitulo 4. La version actual distingue solo entre el modelo base y el modelo refinado final, dejando el analisis en ingles como complemento exploratorio.
 
-Ubicacion sugerida de la Figura 1: 4.2.3 Objetivo especifico 3, despues del parrafo que presenta la arquitectura V3 LayerMix y antes de la tabla de arquitectura e hiperparametros.
+## Figuras recomendadas
 
-Figuras generadas
+No se recomienda agregar mas figuras. Para mantener claridad, las figuras centrales del capitulo deberian ser:
 
-Figura 1.
-Arquitectura del modelo V3 LayerMix
-
-Nota. La figura muestra el diseño general del modelo propuesto, compuesto por la entrada de audio, extraccion de representaciones mediante HuBERT, fusion de capas con LayerMix, procesamiento secuencial mediante Bi-LSTM, mecanismo de atencion y clasificador binario para la salida Healthy/Patient. Elaboracion propia.
-
-Figura 2.
-Matriz de confusion del modelo V3 LayerMix
-
-Nota. La matriz de confusion se calculo a partir de las predicciones reales del modelo V3 LayerMix: TN=899, FP=367, FN=6, TP=1703. Elaboracion propia.
-
-Figura 3.
-Curva ROC del modelo V3 LayerMix
-
-Nota. La curva ROC se calculo con los scores reales del archivo predictions_v3_layermix.csv. AUC = 0.9451. Elaboracion propia.
-
-Figura 4.
-Comparacion grafica de metricas sample-level
-
-Nota. Compara Accuracy, Balanced Accuracy, Precision, Recall, F1-Score y AUC-ROC entre V3 Control y V3 LayerMix. Elaboracion propia.
-
-Figura 5.
-Comparacion grafica de metricas subject-level
-
-Nota. Compara Subject Accuracy, Subject Balanced Accuracy, Subject Precision, Subject Recall, Subject F1-Score y Subject AUC entre V3 Control y V3 LayerMix. Elaboracion propia.
-
-Tabla 2.
-Caracteristicas de las representaciones extraidas con HuBERT
-
-| Parametro | Valor |
-| --- | --- |
-| Modelo extractor | HuBERT-base |
-| Estado del extractor | Congelado |
-| Capas extraidas | 12 |
-| Dimension por capa | 768 |
-| Formato de representacion | [12, T, 768] |
-| Muestras totales | 2975 |
-| Muestras Patient | 1709 |
-| Muestras Healthy | 1266 |
-| Sujetos | 98 |
-| Estrategia temporal | Natural-length |
-
-Nota. Elaboracion propia.
-
-Tabla 3.
-Arquitectura e hiperparametros del modelo V3 LayerMix
-
-| Parametro | Valor |
-| --- | --- |
-| Extractor acustico | HuBERT-base congelado |
-| Capas utilizadas | 12 capas de HuBERT |
-| Fusion de capas | LayerMix / ScalarMix |
-| Normalizacion | LayerNorm |
-| Modelo secuencial | Bi-LSTM bidireccional |
-| Capas Bi-LSTM | 2 |
-| Tamano oculto | 256 |
-| Salida Bi-LSTM | 512 dimensiones |
-| Mecanismo de atencion | Single-Head Attention |
-| Clasificador | Linear(512->128) -> ReLU -> Linear(128->1) |
-| Funcion de perdida | BCE + Supervised Contrastive Loss |
-| Optimizador | Adam |
-| Learning rate | 0.001 |
-| Weight decay | 1e-4 |
-| Batch size | 16 |
-| Epocas de entrenamiento | 30 |
-
-Nota. Elaboracion propia.
-
-Tabla 4.
-Modelos evaluados
-
-| Modelo | Descripcion |
-| --- | --- |
-| V3 Control | Utiliza unicamente la ultima capa de HuBERT como entrada para la Bi-LSTM. |
-| V3 LayerMix | Utiliza una combinacion aprendible de las 12 capas de HuBERT. |
-
-Nota. Elaboracion propia.
-
-Tabla 5.
-Rendimiento del modelo en validacion cruzada a nivel de muestra
-
-| Metrica | V3 Control | V3 LayerMix | Diferencia |
-| --- | --- | --- | --- |
-| Accuracy | 0.8316 | 0.8948 | +0.0632 |
-| Balanced Accuracy | 0.8089 | 0.8783 | +0.0694 |
-| Precision | 0.7907 | 0.8518 | +0.0612 |
-| Recall | 0.9614 | 0.9889 | +0.0275 |
-| F1-Score | 0.8677 | 0.9152 | +0.0475 |
-| AUC-ROC | 0.9033 | 0.9451 | +0.0418 |
-
-Nota. Elaboracion propia.
-
-Tabla 6.
-Rendimiento del modelo en validacion cruzada a nivel de sujeto
-
-| Metrica | V3 Control | V3 LayerMix | Diferencia |
-| --- | --- | --- | --- |
-| Subject Accuracy | 0.9082 | 0.9490 | +0.0408 |
-| Subject Balanced Accuracy | 0.8977 | 0.9432 | +0.0455 |
-| Subject Precision | 0.8571 | 0.9153 | +0.0581 |
-| Subject Recall | 1.0000 | 1.0000 | +0.0000 |
-| Subject F1-Score | 0.9231 | 0.9558 | +0.0327 |
-| Subject AUC | 0.9621 | 0.9739 | +0.0118 |
-
-Nota. Elaboracion propia.
-
-Tabla 7.
-Estabilidad del modelo entre folds
-
-| Metrica | V3 Control | V3 LayerMix |
+| Seccion | Figura | Uso sugerido |
 | --- | --- | --- |
-| Mean Fold Balanced Accuracy | 0.7310 ± 0.1108 | 0.8591 ± 0.0680 |
-| Mean Fold AUC | 0.9417 ± 0.0363 | 0.9657 ± 0.0394 |
-| Mean Fold F1 | 0.8302 ± 0.0749 | 0.9001 ± 0.0595 |
-| Mean Fold Recall | 0.9874 ± 0.0116 | 0.9962 ± 0.0043 |
+| 4.1 | Arquitectura general del sistema | Presentar el flujo completo de la propuesta. |
+| 4.2.2 | Modulo de extraccion acustica con HuBERT | Explicar la obtencion de representaciones acusticas. |
+| 4.2.3 | Modelo de clasificacion secuencial | Explicar la arquitectura del clasificador. |
+| 4.2.3 | Proceso de construccion del modelo final | Mostrar el paso del modelo base al modelo refinado final. |
+| 4.2.3 | Rendimiento por pronunciacion | Justificar que algunas pronunciaciones aportan mas informacion discriminativa. |
+| 4.2.4 | Matriz de confusion del modelo refinado final | Mostrar aciertos y errores de clasificacion. |
+| 4.2.4 | Curva ROC del modelo refinado final | Mostrar capacidad discriminativa global. |
+| 4.2.4 | Metricas sample-level | Comparar modelo base y modelo refinado final a nivel de muestra. |
+| 4.2.4 | Metricas subject-level | Comparar modelo base y modelo refinado final a nivel de sujeto. |
 
-Nota. Elaboracion propia.
+Si el documento queda muy cargado, se pueden retirar figuras intermedias que repitan la arquitectura o la separacion de datos, especialmente si ya estan explicadas en los diagramas principales.
 
-Tabla 8.
-Comparacion del modelo propuesto con modelos del estado del arte
+## Figuras 13-16 generadas
 
-| Autor / Estudio | Enfoque | Metrica principal |
+Los archivos finales estan en `research/reports/thesis_chapter4/`:
+
+| Figura | Archivo | Titulo sugerido |
+| --- | --- | --- |
+| Figura 13 | `figura_13_matriz_confusion_modelo_final.png` | Matriz de confusion del modelo refinado final |
+| Figura 14 | `figura_14_curva_roc_modelo_final.png` | Curva ROC del modelo refinado final |
+| Figura 15 | `figura_15_metricas_sample_level_modelo_final.png` | Comparacion de metricas a nivel de muestra |
+| Figura 16 | `figura_16_metricas_subject_level_modelo_final.png` | Comparacion de metricas a nivel de sujeto |
+
+### Figura 13
+
+Matriz de confusion del modelo refinado final.
+
+Nota. La matriz de confusion muestra los aciertos y errores del modelo refinado final en la clasificacion de registros Healthy y Patients. Se obtuvieron 1187 verdaderos negativos, 79 falsos positivos, 60 falsos negativos y 1649 verdaderos positivos. Elaboracion propia.
+
+### Figura 14
+
+Curva ROC del modelo refinado final.
+
+Nota. La curva ROC se calculo a partir de los puntajes de salida del modelo refinado final. El area bajo la curva fue de 0.9806, lo que evidencia una alta capacidad discriminativa entre los grupos Healthy y Patients. Elaboracion propia.
+
+### Figura 15
+
+Comparacion de metricas a nivel de muestra.
+
+Nota. La figura compara el desempeno del modelo base y del modelo refinado final a nivel de muestra, considerando Accuracy, Balanced Accuracy, Precision, Recall, F1-Score y AUC-ROC. Elaboracion propia.
+
+### Figura 16
+
+Comparacion de metricas a nivel de sujeto.
+
+Nota. La figura compara el desempeno del modelo base y del modelo refinado final a nivel de sujeto, considerando Accuracy, Balanced Accuracy, Precision, Recall, F1-Score y AUC. Elaboracion propia.
+
+## Tabla de metricas sample-level
+
+| Metrica | Modelo base | Modelo refinado final | Diferencia |
+| --- | ---: | ---: | ---: |
+| Accuracy | 89.48% | 94.59% | +5.11 pp |
+| Balanced Accuracy | 87.83% | 94.34% | +6.50 pp |
+| Precision | 85.18% | 94.64% | +9.46 pp |
+| Recall | 98.89% | 96.02% | -2.87 pp |
+| F1-Score | 91.52% | 95.32% | +3.80 pp |
+| AUC-ROC | 94.51% | 98.06% | +3.55 pp |
+
+Nota. Las metricas a nivel de muestra muestran que el modelo refinado final mejora el desempeno global del modelo base, especialmente en precision, balanced accuracy y AUC-ROC. Elaboracion propia.
+
+## Tabla de metricas subject-level
+
+| Metrica | Modelo base | Modelo refinado final | Diferencia |
+| --- | ---: | ---: | ---: |
+| Accuracy | 94.90% | 97.96% | +3.06 pp |
+| Balanced Accuracy | 94.32% | 97.73% | +3.41 pp |
+| Precision | 91.53% | 96.43% | +4.90 pp |
+| Recall | 100.00% | 100.00% | 0.00 pp |
+| F1-Score | 95.58% | 98.18% | +2.61 pp |
+| AUC | 97.39% | 100.00% | +2.61 pp |
+
+Nota. Las metricas a nivel de sujeto indican que el modelo refinado final mantiene una sensibilidad completa y mejora la precision general de la clasificacion por participante. Elaboracion propia.
+
+## Tabla de comparacion con literatura
+
+| Autor / estudio | Enfoque | Metrica principal reportada |
 | --- | --- | --- |
 | Hasib et al. | DCNN | 90.47% Accuracy |
 | Kaushik et al. | 2D-CNN | 99.09% Accuracy |
 | Kotarba & Kotarba | ResNet-18 | 99.48% Accuracy |
 | Reddy et al. | FFNN + caracteristicas glotales | 98.82% Accuracy |
 | Sharma et al. | LBP + caracteristicas acusticas | 97.36% Accuracy |
-| Modelo propuesto | HuBERT + LayerMix + Bi-LSTM + Attention | 89.48% Sample Accuracy / 94.90% Subject Accuracy |
+| Modelo refinado final | HuBERT + fusion multicapa + Bi-LSTM + atencion | 94.59% sample-level Accuracy / 97.96% subject-level Accuracy |
 
-Nota. Elaboracion propia.
+Nota. La comparacion debe interpretarse con cautela, debido a diferencias entre corpus, idiomas, tareas de habla, criterios de evaluacion y particiones experimentales. Elaboracion propia.
+
+## Analisis complementario en ingles
+
+Texto sugerido para la nota de la tabla correspondiente:
+
+Nota. Los resultados corresponden a una evaluacion exploratoria en ingles y se presentan como analisis complementario. Debido al tamano reducido del conjunto de datos y a las diferencias de idioma y protocolo, estos resultados no sustituyen la evaluacion principal realizada sobre el corpus en espanol.
+
+## Docimasia de hipotesis
+
+Texto sugerido para reemplazar `No aplica`:
+
+De acuerdo con los resultados obtenidos, se rechaza la hipotesis nula y se acepta la hipotesis general de investigacion. El modelo refinado final alcanzo un desempeno elevado tanto a nivel de muestra como a nivel de sujeto, con 94.59% de accuracy, 94.34% de balanced accuracy, 95.32% de F1-Score y 98.06% de AUC-ROC a nivel de muestra. Asimismo, a nivel de sujeto alcanzo 97.96% de accuracy, 97.73% de balanced accuracy, 98.18% de F1-Score y 100.00% de AUC.
+
+Estos resultados evidencian que las representaciones acusticas extraidas mediante HuBERT, combinadas con un modelo secuencial de clasificacion, permiten discriminar entre registros Healthy y Patients con un rendimiento consistente. Por tanto, la evidencia experimental respalda la viabilidad de la propuesta como herramienta computacional de apoyo para la deteccion temprana del trastorno especifico del lenguaje.
+
+## Correcciones pendientes en Word o PDF
+
+- Actualizar el indice de tablas y figuras para que no conserve referencias antiguas a MLP, PCA o versiones previas del modelo.
+- Sustituir cualquier aparicion de `MSFM` por `modelo base` o `modelo refinado final`, segun corresponda.
+- Corregir el error tipografico `os resultados` por `Los resultados`.
+- Revisar que el valor de Precision del estudio de ResNet coincida con la fuente real antes de dejar la tabla final.
+- Mantener la denominacion `modelo refinado final` en la discusion, conclusiones y docimasia para evitar mezclar siglas innecesarias.

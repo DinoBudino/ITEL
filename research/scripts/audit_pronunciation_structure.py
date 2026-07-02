@@ -24,7 +24,7 @@ PLOT_DIR = CONFIG.paths.reports_dir / "attention_viz" / "pronunciation_audit"
 
 SYLLABLE_MAP = {
     "02SOUHL": ("consonant", "consonant", "medium"),
-    "03_1SL": ("word", "word_1syll", "low"),
+    "03_1SL": ("one_syllable", "one_syllable_items", "low"),
     "04_2SL": ("word", "word_2syll", "medium"),
     "05_3SL": ("word", "word_3syll", "high"),
     "06_4SL": ("word", "word_4syll", "high"),
