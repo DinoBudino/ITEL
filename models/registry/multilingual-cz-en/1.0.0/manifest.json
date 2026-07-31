@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "model_id": "multilingual-cz-en",
+  "display_name": "Unified Multilingual CZ/EN",
+  "version": "1.0.0",
+  "family": "multilingual_logreg_pca",
+  "status": "promoted",
+  "prediction_unit": "subject",
+  "languages": [
+    "cs",
+    "en"
+  ],
+  "classes": [
+    "Healthy",
+    "Patients"
+  ],
+  "positive_class": "Patients",
+  "encoder": {
+    "bundle": "HUBERT_BASE",
+    "layer_policy": "last",
+    "hidden_size": 768
+  },
+  "feature_recipe": {
+    "id": "hubert-base-last-temporal-stats-v1",
+    "dimension": 4608,
+    "aggregation": "subject_mean"
+  },
+  "preprocessing": {
+    "sample_rate": 16000,
+    "highpass_hz": 100,
+    "target_rms": 0.08,
+    "max_peak": 0.99,
+    "min_duration_seconds": 0.3
+  },
+  "language_heads": {
+    "cs": "target-cs.npz",
+    "en": "target-en.npz"
+  },
+  "artifacts": [
+    {
+      "file": "target-cs.npz",
+      "sha256": "ed0a7d365cacf849520be2d2e8c9b14c948689dc4d990a7d92234c5d01d04dbe"
+    },
+    {
+      "file": "target-en.npz",
+      "sha256": "a460b4b919aca92ddf46a147c954f723afaa28df811cfe5a4d00d2f410fe3e85"
+    }
+  ],
+  "validation": {
+    "target_cs": {
+      "threshold": 0.2642,
+      "oof_balanced_accuracy": 0.9246632996632996
+    },
+    "target_en": {
+      "threshold": 0.8723,
+      "oof_balanced_accuracy": 0.875
+    }
+  },
+  "limitations": [
+    "Supervised adaptation for LANNA Czech and ENNI English only",
+    "Not validated as zero-shot transfer",
+    "Threshold selected from out-of-fold predictions; no independent deployment cohort"
+  ]
+}

@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1900" viewBox="0 0 1200 1900">
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 14 5 L 0 10 z" fill="#000000" />
+    </marker>
+    <style>
+      .bg { fill: #ffffff; }
+      .box { fill: #ffffff; stroke: #000000; stroke-width: 2.8; }
+      .text { font-family: Arial, Helvetica, sans-serif; font-size: 34px; font-weight: 400; fill: #000000; text-anchor: middle; }
+      .line { stroke: #000000; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="1900" />
+
+  <!-- Top parallel sources -->
+  <rect class="box" x="120" y="90" width="360" height="90" rx="6" />
+  <text class="text" x="300" y="145">LANNA — Checo</text>
+
+  <rect class="box" x="720" y="90" width="360" height="90" rx="6" />
+  <text class="text" x="900" y="145">ENNI — Inglés</text>
+
+  <!-- Convergence -->
+  <path class="line" d="M 300 180 L 300 240 L 560 240 L 560 308" />
+  <path class="line" d="M 900 180 L 900 240 L 640 240 L 640 308" />
+
+  <rect class="box" x="360" y="310" width="480" height="90" rx="6" />
+  <text class="text" x="600" y="365">Preprocesamiento del audio</text>
+
+  <path class="line" d="M 600 400 L 600 470" />
+
+  <rect class="box" x="390" y="472" width="420" height="120" rx="6" />
+  <text class="text" x="600" y="528">
+    <tspan x="600" dy="0">HuBERT Base</tspan>
+    <tspan x="600" dy="42">Última capa</tspan>
+  </text>
+
+  <path class="line" d="M 600 592 L 600 662" />
+
+  <rect class="box" x="360" y="664" width="480" height="120" rx="6" />
+  <text class="text" x="600" y="720">
+    <tspan x="600" dy="0">Estadísticas globales</tspan>
+    <tspan x="600" dy="42">y temporales</tspan>
+  </text>
+
+  <path class="line" d="M 600 784 L 600 854" />
+
+  <rect class="box" x="330" y="856" width="540" height="90" rx="6" />
+  <text class="text" x="600" y="911">Agregación a nivel de sujeto</text>
+
+  <path class="line" d="M 600 946 L 600 1016" />
+
+  <rect class="box" x="320" y="1018" width="560" height="120" rx="6" />
+  <text class="text" x="600" y="1074">
+    <tspan x="600" dy="0">Adaptación entre dominios</tspan>
+    <tspan x="600" dy="42">centroid_shift</tspan>
+  </text>
+
+  <path class="line" d="M 600 1138 L 600 1208" />
+
+  <rect class="box" x="410" y="1210" width="380" height="90" rx="6" />
+  <text class="text" x="600" y="1265">StandardScaler</text>
+
+  <path class="line" d="M 600 1300 L 600 1370" />
+
+  <rect class="box" x="480" y="1372" width="240" height="90" rx="6" />
+  <text class="text" x="600" y="1427">PCA</text>
+
+  <path class="line" d="M 600 1462 L 600 1532" />
+
+  <rect class="box" x="320" y="1534" width="560" height="120" rx="6" />
+  <text class="text" x="600" y="1590">
+    <tspan x="600" dy="0">Regresión logística</tspan>
+    <tspan x="600" dy="42">Ponderación balanceada</tspan>
+  </text>
+
+  <path class="line" d="M 600 1654 L 600 1724" />
+
+  <rect class="box" x="270" y="1726" width="660" height="90" rx="6" />
+  <text class="text" x="600" y="1781">Predicción a nivel de participante</text>
+
+  <path class="line" d="M 600 1816 L 600 1860" />
+
+  <rect class="box" x="170" y="1760" width="860" height="110" rx="6" transform="translate(0,70)" />
+  <text class="text" x="600" y="1888">
+    <tspan x="600" dy="0">Evaluación cross-lingual bidireccional</tspan>
+    <tspan x="600" dy="42">Checo ↔ Inglés</tspan>
+  </text>
+</svg>

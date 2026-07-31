@@ -1,9 +1,9 @@
 import React from 'react'
 import { jsPDF } from 'jspdf'
-import { FaFilePdf, FaFileCode, FaFileAlt, FaDownload } from 'react-icons/fa'
-import { formatPercent, formatMs } from '../../utils/formatters'
+import { FaFilePdf, FaFileCode, FaFileAlt } from 'react-icons/fa'
+import { formatPercent } from '../../utils/formatters'
 
-export function ExportPanel({ prediction, probabilityEntries, selectedFile }) {
+export function ExportPanel({ prediction, probabilityEntries }) {
   const handleExportPDF = () => {
     if (!prediction) return
 
@@ -42,18 +42,18 @@ export function ExportPanel({ prediction, probabilityEntries, selectedFile }) {
     })
     y += 10
 
-    doc.setFontSize(14)
-    doc.text('Metadatos del Audio', 20, y)
-    y += 10
-
     doc.setFontSize(11)
-    doc.text(`Archivo: ${prediction.metadata?.filename || '-'}`, 20, y)
+    doc.text(`Modelo: ${prediction.model_id}`, 20, y)
     y += 7
-    doc.text(`Duración: ${prediction.metadata?.duration_seconds || '-'} s`, 20, y)
+    doc.text(`Idioma: ${prediction.language}`, 20, y)
     y += 7
-    doc.text(`Sample rate: ${prediction.metadata?.sample_rate || '-'}`, 20, y)
-    y += 7
-    doc.text(`Modelo: ${prediction.metadata?.model_version || 'itelv5'}`, 20, y)
+    doc.text(`Archivos analizados: ${prediction.file_count}`, 20, y)
+    if (prediction.reference_label != null) {
+      y += 7
+      doc.text(`Sujeto demo: ${prediction.demo_subject_display_id}`, 20, y)
+      y += 7
+      doc.text(`Referencia: ${prediction.reference_label} (${prediction.reference_match ? 'coincide' : 'no coincide'})`, 20, y)
+    }
     y += 15
 
     doc.setFontSize(10)
@@ -77,10 +77,20 @@ export function ExportPanel({ prediction, probabilityEntries, selectedFile }) {
         confidence_percent: formatPercent(prediction.confidence),
       },
       probabilities: Object.fromEntries(probabilityEntries || []),
-      metadata: {
-        ...prediction.metadata,
-        model_version: prediction.metadata?.model_version || 'itelv5',
-      },
+      model_id: prediction.model_id,
+      model_version: prediction.model_version,
+      model_digest: prediction.model_digest,
+      language: prediction.language,
+      file_count: prediction.file_count,
+      threshold: prediction.threshold,
+      feature_source: prediction.feature_source,
+      cache_hits: prediction.cache_hits,
+      cache_misses: prediction.cache_misses,
+      device: prediction.device,
+      demo_subject_display_id: prediction.demo_subject_display_id,
+      reference_label: prediction.reference_label,
+      reference_match: prediction.reference_match,
+      warnings: prediction.warnings,
       timings_ms: prediction.timings_ms,
       generated_at: new Date().toISOString(),
     }
@@ -102,12 +112,22 @@ export function ExportPanel({ prediction, probabilityEntries, selectedFile }) {
       ['Predicción', prediction.predicted_label],
       ['Confianza', prediction.confidence],
       ['Confianza %', formatPercent(prediction.confidence)],
-      ['Nivel de confianza', prediction.confidence >= 0.85 ? 'Alta' : prediction.confidence >= 0.65 ? 'Media' : 'Exploratoria'],
       ...probabilityEntries?.map(([label, score]) => [label, score]) || [],
-      ['Archivo', prediction.metadata?.filename || '-'],
-      ['Duración (s)', prediction.metadata?.duration_seconds || '-'],
-      ['Sample rate', prediction.metadata?.sample_rate || '-'],
-      ['Modelo', prediction.metadata?.model_version || 'itelv5'],
+      ['Modelo', prediction.model_id],
+      ['Versión', prediction.model_version],
+      ['Digest', prediction.model_digest],
+      ['Idioma', prediction.language],
+      ['Archivos', prediction.file_count],
+      ['Threshold', prediction.threshold],
+      ['Fuente de features', prediction.feature_source],
+      ['Cache hits', prediction.cache_hits],
+      ['Cache misses', prediction.cache_misses],
+      ['Dispositivo', prediction.device],
+      ...(prediction.reference_label != null ? [
+        ['Sujeto demo', prediction.demo_subject_display_id],
+        ['Referencia', prediction.reference_label],
+        ['Coincidencia', prediction.reference_match ? 'Sí' : 'No'],
+      ] : []),
       ['Tiempo total (ms)', prediction.timings_ms?.total || '-'],
       ['Fecha', new Date().toISOString()],
     ]

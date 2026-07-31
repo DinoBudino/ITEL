@@ -1,5 +1,5 @@
 export const pipelineSteps = [
-  ['Ingreso de muestra', 'Recepción y validación de un archivo WAV para el análisis de indicadores vocales asociados al TEL.'],
+  ['Ingreso de muestras', 'Recepción y validación de uno o más archivos WAV para el análisis de indicadores vocales asociados al TEL.'],
   ['Preprocesamiento', 'Remuestreo, filtrado, normalización y ajuste temporal para obtener una señal consistente.'],
   ['Embeddings acústicos', 'Extracción de representaciones con HuBERT para capturar patrones relevantes de la producción vocal.'],
   ['Identificación TEL', 'Escalado y clasificación final con ONNX para estimar la clase y su nivel de confianza.'],
@@ -8,12 +8,13 @@ export const pipelineSteps = [
 export const statusLabels = {
   idle: 'Listo',
   processing: 'Procesando',
+  cancelled: 'Cancelado',
   success: 'Completado',
   error: 'Error',
 }
 
 export const summaryItems = [
-  ['Entrada', 'Audio WAV'],
+  ['Entrada', 'Uno o más audios WAV'],
   ['Salida', 'Clase y confianza'],
   ['Motor', 'HuBERT + ONNX'],
   ['Modo', 'Dashboard clínico'],
@@ -26,7 +27,7 @@ export const telHighlights = [
 ]
 
 export const heroNotes = [
-  ['Muestra', 'Archivo WAV individual'],
+  ['Muestra', 'Archivos WAV por sujeto'],
   ['Resultado', 'Clase, confianza y tiempos'],
   ['Lectura', 'Dashboard resumido del caso'],
 ]
@@ -38,7 +39,7 @@ export const evidenceSignals = [
 ]
 
 export const inputRequirements = [
-  ['Formato esperado', 'El sistema recibe una muestra individual en formato WAV para mantener compatibilidad con el flujo de procesamiento.'],
+  ['Formato esperado', 'El sistema recibe uno o más archivos WAV correspondientes al mismo sujeto.'],
   ['Condición de la grabación', 'Se recomienda una señal estable, con poco ruido y sin superposición de voces para evitar lecturas distorsionadas.'],
   ['Resultado de la carga', 'Una vez cargado el archivo, el workspace prepara la muestra para ejecutar la inferencia y mostrar los resultados.'],
 ]

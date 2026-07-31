@@ -422,6 +422,10 @@
   background: var(--danger);
 }
 
+.status-dot--cancelled {
+  background: var(--muted);
+}
+
 .message {
   padding: 12px 14px;
   margin-top: 14px;

@@ -4,8 +4,9 @@ from io import BytesIO
 import wave
 
 import numpy as np
+import pytest
 
-from packages.inference_engine.preprocessing import AudioPreprocessor
+from packages.audio_pipeline.preprocessing import AudioPreprocessor
 
 
 def make_wav_bytes(duration_seconds: float = 0.5, sample_rate: int = 22050) -> bytes:
@@ -20,11 +21,15 @@ def make_wav_bytes(duration_seconds: float = 0.5, sample_rate: int = 22050) -> b
     return buffer.getvalue()
 
 
-def test_process_bytes_normalizes_audio_to_target_shape():
-    preprocessor = AudioPreprocessor(target_sr=16000, target_duration=2.0)
-    processed = preprocessor.process_bytes(make_wav_bytes())
+def test_process_bytes_uses_natural_duration_and_rms_profile():
+    processed = AudioPreprocessor().process_bytes(make_wav_bytes())
 
     assert processed.sample_rate == 16000
-    assert len(processed.samples) == 32000
-    assert processed.duration_seconds == 2.0
-    assert np.max(np.abs(processed.samples)) <= 1.0
+    assert 7900 <= len(processed.samples) <= 8100
+    assert processed.source_duration_seconds == pytest.approx(0.5)
+    assert np.sqrt(np.mean(processed.samples.astype(np.float64) ** 2)) == pytest.approx(0.08, abs=0.002)
+
+
+def test_process_bytes_rejects_too_short_audio():
+    with pytest.raises(ValueError, match="at least"):
+        AudioPreprocessor().process_bytes(make_wav_bytes(duration_seconds=0.1))

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "model_id": "czech-layermix",
+  "display_name": "Czech V3 LayerMix",
+  "version": "1.0.0",
+  "family": "czech_layermix",
+  "status": "promoted",
+  "prediction_unit": "subject",
+  "languages": [
+    "cs"
+  ],
+  "classes": [
+    "Healthy",
+    "Patients"
+  ],
+  "positive_class": "Patients",
+  "threshold": 0.9219,
+  "encoder": {
+    "bundle": "HUBERT_BASE",
+    "layer_policy": "all_12",
+    "hidden_size": 768
+  },
+  "preprocessing": {
+    "sample_rate": 16000,
+    "highpass_hz": 100,
+    "target_rms": 0.08,
+    "max_peak": 0.99,
+    "min_duration_seconds": 0.3
+  },
+  "model_config": {
+    "input_dim": 768,
+    "lstm_hidden": 256,
+    "lstm_layers": 2,
+    "dropout": 0.3,
+    "fc_hidden": 128,
+    "num_heads": 1,
+    "use_layer_mix": true,
+    "num_hubert_layers": 12,
+    "embedding_noise_std": 0.0,
+    "attention_entropy_lambda": 0.0
+  },
+  "checkpoint_file": "model.pt",
+  "artifacts": [
+    {
+      "file": "model.pt",
+      "sha256": "3bd62003e630686081082d4cf7e1c36920870015997793c473fa1b835c13c252"
+    }
+  ],
+  "limitations": [
+    "Validated on the Czech LANNA domain",
+    "Not a clinical diagnostic device"
+  ]
+}

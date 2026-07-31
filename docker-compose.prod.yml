@@ -4,15 +4,16 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
     container_name: itel-audio-backend
-    volumes:
-      - ./data:/service/data:ro
     environment:
       ITEL_CORS_ORIGINS: http://localhost,http://127.0.0.1
+      ITEL_ENABLE_SAMPLE_LIBRARY: "false"
+    volumes:
+      - ./artifacts/serving_cache:/service/artifacts/serving_cache:ro
     expose:
       - "8000"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/live')"]
       interval: 20s
       timeout: 5s
       retries: 5

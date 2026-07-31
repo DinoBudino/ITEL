@@ -98,7 +98,7 @@ Nota. La comparacion debe interpretarse con cautela, debido a diferencias entre 
 
 Texto sugerido para la nota de la tabla correspondiente:
 
-Nota. Los resultados corresponden a una evaluacion exploratoria en ingles y se presentan como analisis complementario. Debido al tamano reducido del conjunto de datos y a las diferencias de idioma y protocolo, estos resultados no sustituyen la evaluacion principal realizada sobre el corpus en espanol.
+Nota. Los resultados corresponden a una evaluacion exploratoria en ingles y se presentan como analisis complementario. En la version actual del proyecto se trabajo con 48 sujetos ingleses (24 Healthy y 24 Patients). El mejor modelo unificado fue `logreg_pca + centroid_shift`, con 85.42% de balanced accuracy y 93.23% de AUC en English, y 91.75% de balanced accuracy con 97.10% de AUC en Czech. Debido a las diferencias de idioma, tamano muestral y protocolo de habla, estos resultados no sustituyen la evaluacion principal realizada sobre el corpus en espanol.
 
 ## Docimasia de hipotesis
 

@@ -10,7 +10,11 @@ if str(ROOT_DIR) not in sys.path:
 
 import pandas as pd
 import torch
-from tqdm import tqdm
+try:
+    from tqdm import tqdm
+except ModuleNotFoundError:  # pragma: no cover - optional dependency for local runs
+    def tqdm(iterable, **_kwargs):
+        return iterable
 
 from research.src.config import CONFIG
 from research.src.preprocessing import load_and_preprocess_audio

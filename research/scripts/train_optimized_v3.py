@@ -168,14 +168,7 @@ def _train_fold(model, train_loader, val_loader, device, epochs, lr, weight_deca
         Path(checkpoint_path).parent.mkdir(parents=True, exist_ok=True)
         torch.save({
             "state_dict": best_state,
-            "model_config": {
-                "input_dim": 768, "lstm_hidden": 256, "lstm_layers": 2,
-                "dropout": 0.3, "fc_hidden": 128, "num_heads": 1,
-                "use_layer_mix": model.use_layer_mix,
-                "num_hubert_layers": 12,
-                "embedding_noise_std": model.embedding_noise_std,
-                "attention_entropy_lambda": model.attention_entropy_lambda,
-            },
+            "model_config": model.model_config,
             "best_threshold": float(best_threshold),
             "best_recall": float(best_recall),
             "training_config": {
@@ -255,6 +248,10 @@ def _build_tag(args) -> str:
 
 def main() -> None:
     args = parse_args()
+    np.random.seed(args.random_state)
+    torch.manual_seed(args.random_state)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.random_state)
     device = torch.device(args.device or ("cuda" if torch.cuda.is_available() else "cpu"))
     tag = _build_tag(args)
     print(f"=== V3 Training: {tag} ===")
@@ -405,7 +402,13 @@ def main() -> None:
             "max_peak_after_rms": CONFIG.audio.max_peak_after_rms,
             "default_profile": CONFIG.audio.default_profile,
         },
-        "model_config": {"input_dim": 768, "lstm_hidden": 256, "lstm_layers": 2, "dropout": 0.3, "fc_hidden": 128, "num_heads": 1},
+        "model_config": {
+            "input_dim": 768, "lstm_hidden": args.lstm_hidden, "lstm_layers": args.lstm_layers,
+            "dropout": args.dropout, "fc_hidden": args.fc_hidden, "num_heads": args.num_heads,
+            "use_layer_mix": args.use_layer_mix, "num_hubert_layers": 12,
+            "embedding_noise_std": args.embedding_noise_std,
+            "attention_entropy_lambda": args.attention_entropy_lambda,
+        },
         "training_config": {"lambda_contrastive": args.lambda_contrastive, "temperature": args.temperature, "epochs": args.epochs, "lr": args.lr, "weight_decay": args.weight_decay, "pos_weight": args.pos_weight},
         "source_manifest": args.sequence_manifest,
     }

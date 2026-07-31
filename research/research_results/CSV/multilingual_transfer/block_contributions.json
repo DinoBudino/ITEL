@@ -1,0 +1,96 @@
+{
+  "block_names": [
+    "Media temporal",
+    "Desviaci\u00f3n est\u00e1ndar",
+    "Media primer cuarto",
+    "Media \u00faltimo cuarto",
+    "Diferencia primero-\u00faltimo",
+    "Pendiente temporal"
+  ],
+  "all_folds": {
+    "means": [
+      19.914593970316442,
+      28.18046862929307,
+      17.384512336696424,
+      14.282310234866102,
+      14.150353969907528,
+      6.087760858920456
+    ],
+    "stds": [
+      0.1601802398077318,
+      0.2908124227501611,
+      0.16848819241552937,
+      0.14312372888022673,
+      0.18180989435430703,
+      0.06341132264848487
+    ],
+    "n_folds": 146
+  },
+  "en_target": {
+    "means": [
+      19.918632474224996,
+      28.114091398345337,
+      17.257261338459266,
+      14.363990014789557,
+      14.246090220555324,
+      6.099934553625517
+    ],
+    "stds": [
+      0.17382929532880245,
+      0.2537192459293644,
+      0.16682698505578528,
+      0.10330682133744593,
+      0.16171364455360182,
+      0.06827443480273844
+    ],
+    "n_folds": 48
+  },
+  "cz_target": {
+    "means": [
+      19.912615927585705,
+      28.212979926083776,
+      17.44683935624115,
+      14.242303812046462,
+      14.103462745100442,
+      6.081798232942466
+    ],
+    "stds": [
+      0.1530126479456689,
+      0.3020760988023586,
+      0.12978932246003996,
+      0.142905912449302,
+      0.17247661830489852,
+      0.05999324261835265
+    ],
+    "n_folds": 98
+  },
+  "domain_comparison": {
+    "same_importance_order": true,
+    "en_target_order": [
+      "Desviaci\u00f3n est\u00e1ndar",
+      "Media temporal",
+      "Media primer cuarto",
+      "Media \u00faltimo cuarto",
+      "Diferencia primero-\u00faltimo",
+      "Pendiente temporal"
+    ],
+    "cz_target_order": [
+      "Desviaci\u00f3n est\u00e1ndar",
+      "Media temporal",
+      "Media primer cuarto",
+      "Media \u00faltimo cuarto",
+      "Diferencia primero-\u00faltimo",
+      "Pendiente temporal"
+    ],
+    "en_minus_cz_percentage_points": [
+      0.006016546639290965,
+      -0.09888852773843837,
+      -0.18957801778188355,
+      0.1216862027430956,
+      0.14262747545488175,
+      0.018136320683050933
+    ],
+    "max_absolute_difference_percentage_points": 0.18957801778188355
+  },
+  "figure_scope": "all_folds_combined"
+}

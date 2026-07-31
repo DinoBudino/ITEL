@@ -1,272 +1,354 @@
 from __future__ import annotations
 
-import base64
+import asyncio
 import json
 import logging
 import math
-import re
+import threading
+from contextlib import asynccontextmanager
+from dataclasses import asdict
 from functools import lru_cache
-from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
-from packages.inference_engine.config import Settings
-from packages.inference_engine.exceptions import ITELServingError, ValidationError
-from packages.inference_engine.inference import ITELInferenceService
-from packages.inference_engine.schemas import ErrorResponse, HealthResponse, ModelInfoResponse, PredictResponse, SampleAudioItem, SampleAudioListResponse
+from packages.model_runtime import ModelRegistry
+
+from .config import ApiSettings
+from .demo_library import DemoLibrary, DemoSubject
+from .sample_library import load_catalog
+from .schemas import (
+    CapabilitiesResponse,
+    DemoAudioSummary,
+    DemoSubjectDetail,
+    DemoSubjectListResponse,
+    DemoSubjectSummary,
+    LiveResponse,
+    ModelListResponse,
+    ReadyResponse,
+    SampleAudioListResponse,
+    SubjectPredictionResponse,
+)
 
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 LOGGER = logging.getLogger("itel.api")
 
 
-MAIN_SAMPLE_PATTERN = re.compile(r"_[aeiou]{1,2}\d+$", re.IGNORECASE)
-SAMPLE_AUDIO_MANIFEST = ".sample_audio_catalog.json"
+@lru_cache(maxsize=1)
+def get_settings() -> ApiSettings:
+    return ApiSettings()
 
 
 @lru_cache(maxsize=1)
-def get_settings() -> Settings:
-    return Settings()
-
-
-@lru_cache(maxsize=1)
-def get_service() -> ITELInferenceService:
-    service = ITELInferenceService(get_settings())
-    service.warmup()
-    return service
-
-
-def make_sample_id(relative_path: Path) -> str:
-    return base64.urlsafe_b64encode(relative_path.as_posix().encode("utf-8")).decode("ascii").rstrip("=")
-
-
-def decode_sample_id(sample_id: str) -> Path:
-    padding = '=' * (-len(sample_id) % 4)
-    return Path(base64.urlsafe_b64decode(f"{sample_id}{padding}").decode("utf-8"))
-
-
-@lru_cache(maxsize=1)
-def get_sample_audio_catalog() -> tuple[list[SampleAudioItem], dict[str, Path]]:
+def get_registry() -> ModelRegistry:
     settings = get_settings()
-    base_dir = settings.sample_audio_dir
-
-    if not base_dir.exists():
-        LOGGER.warning("Sample audio directory does not exist: %s", base_dir)
-        return [], {}
-
-    manifest_path = base_dir / SAMPLE_AUDIO_MANIFEST
-    manifest_catalog = load_sample_audio_catalog_from_manifest(base_dir, manifest_path)
-    if manifest_catalog is not None:
-        return manifest_catalog
-
-    catalog = build_sample_audio_catalog(base_dir)
-    write_sample_audio_manifest(manifest_path, catalog[0])
-    return catalog
+    return ModelRegistry(
+        settings.registry_path,
+        feature_cache_dir=settings.feature_cache_path,
+        memory_cache_entries=settings.memory_cache_entries,
+    )
 
 
-def load_sample_audio_catalog_from_manifest(base_dir: Path, manifest_path: Path) -> tuple[list[SampleAudioItem], dict[str, Path]] | None:
-    if not manifest_path.exists():
-        return None
+@lru_cache(maxsize=1)
+def get_demo_library() -> DemoLibrary:
+    settings = get_settings()
+    return DemoLibrary(settings.demo_catalog_path, settings.demo_czech_path, settings.demo_english_path)
 
+
+async def read_upload_payloads(files: list[UploadFile], settings: ApiSettings) -> list[bytes]:
+    if not files:
+        raise HTTPException(status_code=400, detail="At least one WAV file is required.")
+    if len(files) > settings.max_files_per_subject:
+        raise HTTPException(status_code=400, detail=f"A maximum of {settings.max_files_per_subject} files is allowed.")
+    payloads: list[bytes] = []
+    total_size = 0
+    for file in files:
+        if not file.filename or not file.filename.lower().endswith(".wav"):
+            raise HTTPException(status_code=400, detail="All files must use the .wav extension.")
+        payload = await file.read(settings.max_upload_size_bytes + 1)
+        if len(payload) > settings.max_upload_size_bytes:
+            raise HTTPException(status_code=413, detail=f"Each file must be at most {settings.max_upload_size_mb} MB.")
+        total_size += len(payload)
+        if total_size > settings.max_total_upload_size_bytes:
+            raise HTTPException(status_code=413, detail="Combined upload is too large.")
+        payloads.append(payload)
+    return payloads
+
+
+def resolve_runtime(model_id: str):
     try:
-        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-        items = [SampleAudioItem.model_validate(item) for item in payload]
-    except Exception as exc:
-        LOGGER.warning("Failed to load sample audio manifest %s: %s", manifest_path, exc)
-        return None
-
-    path_map = {item.id: base_dir / item.relative_path for item in items}
-    LOGGER.info("Loaded %s sample audios from manifest %s", len(items), manifest_path)
-    return items, path_map
+        return get_registry().get_runtime(model_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
-def write_sample_audio_manifest(manifest_path: Path, items: list[SampleAudioItem]) -> None:
-    payload = [item.model_dump() for item in items]
+async def prediction_event_stream(runtime, payloads: list[bytes], language: str, demo_subject: DemoSubject | None = None):
+    queue: asyncio.Queue[dict | None] = asyncio.Queue()
+    cancel_event = threading.Event()
+    loop = asyncio.get_running_loop()
 
-    try:
-        manifest_path.write_text(json.dumps(payload, ensure_ascii=True), encoding="utf-8")
-        LOGGER.info("Wrote sample audio manifest %s with %s items", manifest_path, len(items))
-    except OSError as exc:
-        LOGGER.warning("Failed to write sample audio manifest %s: %s", manifest_path, exc)
+    def enqueue(event: dict | None) -> None:
+        loop.call_soon_threadsafe(queue.put_nowait, event)
 
-
-def build_sample_audio_catalog(base_dir: Path) -> tuple[list[SampleAudioItem], dict[str, Path]]:
-    items: list[SampleAudioItem] = []
-    path_map: dict[str, Path] = {}
-
-    for audio_path in sorted(base_dir.rglob("*.wav")):
-        if not audio_path.is_file():
-            continue
-
-        if MAIN_SAMPLE_PATTERN.search(audio_path.stem):
-            continue
-
+    def run_prediction() -> None:
         try:
-            relative_path = audio_path.relative_to(base_dir)
-        except ValueError:
-            continue
+            result = runtime.predict_subject(
+                payloads,
+                language,
+                progress_callback=enqueue,
+                cancel_event=cancel_event,
+            )
+            data = asdict(result)
+            if demo_subject is not None:
+                data.update({
+                    "reference_label": demo_subject.reference_label,
+                    "reference_match": data["predicted_label"] == demo_subject.reference_label,
+                    "demo_subject_display_id": demo_subject.display_id,
+                })
+            enqueue({"type": "result", "progress": 100, "data": data})
+        except InterruptedError as exc:
+            enqueue({"type": "error", "detail": str(exc)})
+        except ValueError as exc:
+            enqueue({"type": "error", "detail": str(exc)})
+        except Exception:
+            LOGGER.exception("Streamed subject prediction failed")
+            enqueue({"type": "error", "detail": "Prediction failed unexpectedly."})
+        finally:
+            enqueue(None)
 
-        parts = relative_path.parts
-        if len(parts) < 4:
-            continue
-
-        class_label, subject_id, task_code = parts[0], parts[1], parts[2]
-        sample_id = make_sample_id(relative_path)
-        item = SampleAudioItem(
-            id=sample_id,
-            class_label=class_label,
-            subject_id=subject_id,
-            task_code=task_code,
-            filename=audio_path.name,
-            relative_path=relative_path.as_posix(),
-        )
-        items.append(item)
-        path_map[sample_id] = audio_path
-
-    LOGGER.info("Indexed %s sample audios from %s", len(items), base_dir)
-    return items, path_map
-
-
-def get_sample_audio_path(sample_id: str) -> Path:
-    settings = get_settings()
-    _, path_map = get_sample_audio_catalog()
-    sample_path = path_map.get(sample_id)
-    if not sample_path:
-        raise HTTPException(status_code=404, detail="No se encontro la muestra solicitada.")
-
+    worker = asyncio.create_task(asyncio.to_thread(run_prediction))
     try:
-        sample_path.relative_to(settings.sample_audio_dir)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail="La muestra solicitada no es valida.") from exc
-
-    return sample_path
+        yield json.dumps({
+            "type": "progress", "stage": "accepted", "progress": 5,
+            "indeterminate": False, "message": "Archivos recibidos y validados.",
+            "file_index": 0, "file_count": len(payloads), "elapsed_ms": 0,
+            "cache_hits": 0, "cache_misses": 0,
+        }) + "\n"
+        while True:
+            event = await queue.get()
+            if event is None:
+                break
+            yield json.dumps(event, ensure_ascii=True) + "\n"
+    finally:
+        cancel_event.set()
+        if not worker.done():
+            worker.cancel()
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    app = FastAPI(
-        title="ITEL Audio TEL API",
-        version="1.0.0",
-        description="API de inferencia para clasificacion de voz Healthy vs Patients.",
-    )
 
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI):
+        registry = get_registry()
+        if hasattr(registry, "warmup"):
+            await asyncio.to_thread(registry.warmup)
+        yield
+
+    app = FastAPI(
+        title="ITEL Subject-level Audio API",
+        version="2.0.0",
+        description="Research API for subject-level Czech and English speech analysis. Not a diagnostic device.",
+        lifespan=lifespan,
+    )
     if settings.cors_origins:
         app.add_middleware(
             CORSMiddleware,
             allow_origins=settings.cors_origins,
             allow_credentials=True,
-            allow_methods=["*"],
+            allow_methods=["GET", "POST"],
             allow_headers=["*"],
         )
 
-    @app.get("/health", response_model=HealthResponse)
-    def health() -> HealthResponse:
-        service = get_service()
-        return HealthResponse(model_version=service.settings.model_version)
+    @app.get("/live", response_model=LiveResponse)
+    @app.get("/health", response_model=LiveResponse, include_in_schema=False)
+    def live() -> LiveResponse:
+        return LiveResponse()
 
-    @app.get("/model-info", response_model=ModelInfoResponse)
-    def model_info() -> ModelInfoResponse:
-        return ModelInfoResponse(
-            model_version=settings.model_version,
-            model_path=str(settings.final_model_path),
-            scaler_path=str(settings.final_scaler_path),
-            hubert_bundle=settings.hubert_bundle,
-            target_sample_rate=settings.target_sr,
-            target_duration_seconds=settings.target_duration,
-        )
+    @app.get("/ready", response_model=ReadyResponse)
+    def ready():
+        errors = get_registry().readiness_errors()
+        response = ReadyResponse(status="ready" if not errors else "not_ready", models=errors)
+        return response if not errors else JSONResponse(status_code=503, content=response.model_dump())
 
-    @app.get("/sample-audios", response_model=SampleAudioListResponse)
-    def list_sample_audios(
-        page: int = Query(default=1, ge=1),
-        page_size: int = Query(default=25, ge=1, le=100),
-        class_label: str | None = Query(default=None),
-        query: str | None = Query(default=None),
-    ) -> SampleAudioListResponse:
-        catalog, _ = get_sample_audio_catalog()
-        filtered = catalog
+    @app.get("/v1/models", response_model=ModelListResponse)
+    def list_models() -> ModelListResponse:
+        return ModelListResponse(models=get_registry().catalog())
 
-        if class_label:
-            filtered = [item for item in filtered if item.class_label.lower() == class_label.lower()]
+    @app.get("/v1/models/{model_id}")
+    def model_info(model_id: str):
+        models = {model["id"]: model for model in get_registry().catalog()}
+        if model_id not in models:
+            raise HTTPException(status_code=404, detail="Unknown model.")
+        return models[model_id]
 
-        if query:
-            normalized_query = query.strip().lower()
-            filtered = [
-                item
-                for item in filtered
-                if normalized_query in item.filename.lower()
-                or normalized_query in item.subject_id.lower()
-                or normalized_query in item.task_code.lower()
-            ]
+    @app.get("/v1/capabilities", response_model=CapabilitiesResponse)
+    def capabilities() -> CapabilitiesResponse:
+        return CapabilitiesResponse(demo_library_enabled=settings.enable_demo_library)
 
-        total = len(filtered)
-        total_pages = math.ceil(total / page_size) if total else 0
-        start = (page - 1) * page_size
-        end = start + page_size
-        items = filtered[start:end] if start < total else []
-
-        return SampleAudioListResponse(
-            items=items,
-            page=page,
-            page_size=page_size,
-            total=total,
-            total_pages=total_pages,
-        )
-
-    @app.get("/sample-audios/{sample_id}/stream")
-    def stream_sample_audio(sample_id: str) -> FileResponse:
-        sample_path = get_sample_audio_path(sample_id)
-        return FileResponse(sample_path, media_type="audio/wav", filename=sample_path.name)
-
-    @app.post("/predict-sample/{sample_id}", response_model=PredictResponse, responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
-    def predict_sample(sample_id: str) -> PredictResponse:
-        sample_path = get_sample_audio_path(sample_id)
-
+    @app.post("/v1/predictions/subject", response_model=SubjectPredictionResponse)
+    async def predict_subject(
+        model_id: str = Form(...),
+        language: str = Form(...),
+        files: list[UploadFile] = File(...),
+    ) -> SubjectPredictionResponse:
+        model_id = model_id.strip()
+        language = language.strip().lower()
+        payloads = await read_upload_payloads(files, settings)
+        runtime = resolve_runtime(model_id)
         try:
-            payload = sample_path.read_bytes()
-            result = get_service().predict_from_bytes(payload, filename=sample_path.name)
-        except ValidationError as exc:
+            result = await asyncio.to_thread(runtime.predict_subject, payloads, language)
+        except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
-        except ITELServingError as exc:
-            raise HTTPException(status_code=500, detail=str(exc)) from exc
-        except Exception as exc:  # pragma: no cover
-            raise HTTPException(status_code=500, detail="Ocurrio un error inesperado durante la inferencia.") from exc
+        except Exception as exc:
+            LOGGER.exception("Subject prediction failed")
+            raise HTTPException(status_code=500, detail="Prediction failed unexpectedly.") from exc
+        return SubjectPredictionResponse(**asdict(result))
 
-        return PredictResponse(
-            predicted_label=result.predicted_label,
-            confidence=result.confidence,
-            probabilities=result.probabilities,
-            model_version=result.model_version,
-            timings_ms=result.timings_ms,
-            metadata=result.metadata,
+    @app.post("/v1/predictions/subject/stream")
+    async def predict_subject_stream(
+        model_id: str = Form(...),
+        language: str = Form(...),
+        files: list[UploadFile] = File(...),
+    ):
+        model_id = model_id.strip()
+        language = language.strip().lower()
+        payloads = await read_upload_payloads(files, settings)
+        runtime = resolve_runtime(model_id)
+        return StreamingResponse(
+            prediction_event_stream(runtime, payloads, language),
+            media_type="application/x-ndjson",
+            headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
         )
 
-    @app.post("/predict", response_model=PredictResponse, responses={400: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
-    async def predict(file: UploadFile = File(...)) -> PredictResponse:
-        if not file.filename:
-            raise HTTPException(status_code=400, detail="Debes enviar un archivo WAV.")
-        if not file.filename.lower().endswith(".wav"):
-            raise HTTPException(status_code=400, detail="Solo se aceptan archivos .wav.")
+    if settings.enable_demo_library:
+        library = get_demo_library()
 
-        payload = await file.read()
-        try:
-            result = get_service().predict_from_bytes(payload, filename=file.filename)
-        except ValidationError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-        except ITELServingError as exc:
-            raise HTTPException(status_code=500, detail=str(exc)) from exc
-        except Exception as exc:  # pragma: no cover
-            raise HTTPException(status_code=500, detail="Ocurrio un error inesperado durante la inferencia.") from exc
+        def ensure_model_language(model_id: str, language: str) -> None:
+            registry = get_registry()
+            manifest = registry.manifests.get(model_id)
+            if manifest is None:
+                raise HTTPException(status_code=404, detail="Unknown model.")
+            if language not in manifest.languages:
+                raise HTTPException(status_code=400, detail=f"Model {model_id} does not support language {language}.")
 
-        return PredictResponse(
-            predicted_label=result.predicted_label,
-            confidence=result.confidence,
-            probabilities=result.probabilities,
-            model_version=result.model_version,
-            timings_ms=result.timings_ms,
-            metadata=result.metadata,
-        )
+        def subject_summary(subject: DemoSubject) -> DemoSubjectSummary:
+            return DemoSubjectSummary(
+                token=subject.token,
+                display_id=subject.display_id,
+                language=subject.language,
+                reference_label=subject.reference_label,
+                audio_count=subject.audio_count,
+                task_types=list(subject.task_types),
+                total_duration_seconds=subject.total_duration_seconds,
+            )
+
+        @app.get("/v1/demo/subjects", response_model=DemoSubjectListResponse)
+        def list_demo_subjects(
+            model_id: str = Query(...),
+            language: str = Query(..., pattern="^(cs|en)$"),
+            reference_label: str | None = Query(default=None, pattern="^(Healthy|Patients)$"),
+            page: int = Query(default=1, ge=1),
+            page_size: int = Query(default=20, ge=1, le=100),
+        ) -> DemoSubjectListResponse:
+            ensure_model_language(model_id, language)
+            subjects = library.list_subjects(language)
+            if reference_label is not None:
+                subjects = [subject for subject in subjects if subject.reference_label == reference_label]
+            total = len(subjects)
+            start = (page - 1) * page_size
+            return DemoSubjectListResponse(
+                items=[subject_summary(subject) for subject in subjects[start:start + page_size]],
+                page=page,
+                page_size=page_size,
+                total=total,
+                total_pages=math.ceil(total / page_size) if total else 0,
+            )
+
+        @app.get("/v1/demo/subjects/{subject_token}", response_model=DemoSubjectDetail)
+        def get_demo_subject(subject_token: str) -> DemoSubjectDetail:
+            try:
+                subject = library.get_subject(subject_token)
+            except KeyError as exc:
+                raise HTTPException(status_code=404, detail=str(exc)) from exc
+            return DemoSubjectDetail(
+                **subject_summary(subject).model_dump(),
+                audios=[
+                    DemoAudioSummary(
+                        token=audio.token,
+                        display_name=audio.display_name,
+                        task_type=audio.task_type,
+                        duration_seconds=audio.duration_seconds,
+                        stream_url=f"/v1/demo/audios/{audio.token}/stream",
+                    )
+                    for audio in subject.audios
+                ],
+            )
+
+        @app.get("/v1/demo/audios/{audio_token}/stream")
+        def stream_demo_audio(audio_token: str) -> FileResponse:
+            try:
+                audio = library.get_audio(audio_token)
+            except KeyError as exc:
+                raise HTTPException(status_code=404, detail=str(exc)) from exc
+            return FileResponse(
+                audio.path,
+                media_type="audio/wav",
+                filename=f"{audio.display_name.replace(' ', '-').lower()}.wav",
+                headers={"Cache-Control": "private, no-store"},
+            )
+
+        @app.post("/v1/demo/subjects/{subject_token}/predict/stream")
+        async def predict_demo_subject(subject_token: str, model_id: str = Form(...)):
+            try:
+                subject = library.get_subject(subject_token)
+            except KeyError as exc:
+                raise HTTPException(status_code=404, detail=str(exc)) from exc
+            model_id = model_id.strip()
+            ensure_model_language(model_id, subject.language)
+            runtime = resolve_runtime(model_id)
+            payloads = await asyncio.gather(*(asyncio.to_thread(audio.path.read_bytes) for audio in subject.audios))
+            return StreamingResponse(
+                prediction_event_stream(runtime, list(payloads), subject.language, demo_subject=subject),
+                media_type="application/x-ndjson",
+                headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+            )
+
+    if settings.enable_sample_library:
+        @app.get("/sample-audios", response_model=SampleAudioListResponse)
+        def list_sample_audios(
+            page: int = Query(default=1, ge=1),
+            page_size: int = Query(default=25, ge=1, le=100),
+            class_label: str | None = Query(default=None),
+            query: str | None = Query(default=None),
+        ) -> SampleAudioListResponse:
+            items, _ = load_catalog(settings.sample_audio_path)
+            filtered = items
+            if class_label:
+                filtered = [item for item in filtered if item.class_label.lower() == class_label.lower()]
+            if query:
+                term = query.strip().lower()
+                filtered = [item for item in filtered if term in item.filename.lower() or term in item.subject_id.lower() or term in item.task_code.lower()]
+            total = len(filtered)
+            start = (page - 1) * page_size
+            return SampleAudioListResponse(
+                items=filtered[start:start + page_size],
+                page=page,
+                page_size=page_size,
+                total=total,
+                total_pages=math.ceil(total / page_size) if total else 0,
+            )
+
+        @app.get("/sample-audios/{sample_id}/stream")
+        def stream_sample(sample_id: str) -> FileResponse:
+            _, paths = load_catalog(settings.sample_audio_path)
+            path = paths.get(sample_id)
+            if path is None:
+                raise HTTPException(status_code=404, detail="Sample not found.")
+            return FileResponse(path, media_type="audio/wav", filename=path.name)
 
     return app
 

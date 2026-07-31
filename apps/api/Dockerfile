@@ -15,9 +15,14 @@ RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r ./
 
 COPY apps/api/app ./app
 COPY packages ./packages
-COPY assets ./assets
+COPY models ./models
 
-RUN python -c "import os; import torchaudio; bundle_name=os.environ.get('ITEL_HUBERT_BUNDLE', 'HUBERT_BASE'); bundle=getattr(torchaudio.pipelines, bundle_name); bundle.get_model(); print(f'Preloaded {bundle_name} into {os.environ.get(\"TORCH_HOME\")}')"
+RUN python -c "import torchaudio; torchaudio.pipelines.HUBERT_BASE.get_model(); print('Preloaded HUBERT_BASE')"
+
+RUN useradd --create-home --uid 10001 itel \
+    && chown -R itel:itel /service
+
+USER itel
 
 EXPOSE 8000
 

@@ -1,0 +1,186 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="900" viewBox="0 0 2400 900">
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 14 5 L 0 10 z" fill="#000000" />
+    </marker>
+    <style>
+      .bg { fill: #ffffff; }
+      .phase { fill: #f2f2f2; stroke: #d9d9d9; stroke-width: 1.5; }
+      .box { fill: #ffffff; stroke: #000000; stroke-width: 2.4; }
+      .bigbox { fill: #ffffff; stroke: #000000; stroke-width: 2.8; }
+      .phase-label { font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: 700; fill: #000000; letter-spacing: 0.4px; }
+      .text { font-family: Arial, Helvetica, sans-serif; font-size: 23px; font-weight: 400; fill: #000000; text-anchor: middle; }
+      .text-small { font-family: Arial, Helvetica, sans-serif; font-size: 21px; font-weight: 400; fill: #000000; text-anchor: middle; }
+      .text-bold { font-family: Arial, Helvetica, sans-serif; font-size: 23px; font-weight: 700; fill: #000000; text-anchor: middle; }
+      .line { stroke: #000000; stroke-width: 2.6; fill: none; marker-end: url(#arrow); }
+      .line-thin { stroke: #000000; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .divider { stroke: #000000; stroke-width: 2.2; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="2400" height="900" />
+
+  <rect class="phase" x="40" y="40" width="720" height="820" rx="8" />
+  <rect class="phase" x="840" y="40" width="700" height="820" rx="8" />
+  <rect class="phase" x="1620" y="40" width="740" height="820" rx="8" />
+
+  <text class="phase-label" x="400" y="88">FASE 1: FUENTES Y PREPARACIÓN DE DATOS</text>
+  <text class="phase-label" x="1190" y="88">FASE 2: DISEÑO Y SELECCIÓN DEL ARTEFACTO</text>
+  <text class="phase-label" x="1990" y="88">FASE 3: VALIDACIÓN CROSS-LINGUAL</text>
+
+  <!-- Fase 1 -->
+  <rect class="box" x="90" y="150" width="260" height="110" rx="6" />
+  <text class="text" x="220" y="188">
+    <tspan x="220" dy="0">LANNA — Checo</tspan>
+    <tspan x="220" dy="30">98 participantes</tspan>
+    <tspan x="220" dy="30">2975 registros elegibles</tspan>
+  </text>
+
+  <rect class="box" x="450" y="150" width="260" height="110" rx="6" />
+  <text class="text" x="580" y="188">
+    <tspan x="580" dy="0">ENNI — Inglés</tspan>
+    <tspan x="580" dy="30">48 participantes seleccionados</tspan>
+    <tspan x="580" dy="30">Diarización previa</tspan>
+  </text>
+
+  <path class="line" d="M 220 260 L 220 310 L 380 310 L 380 358" />
+  <path class="line" d="M 580 260 L 580 310 L 420 310 L 420 358" />
+
+  <rect class="box" x="190" y="360" width="420" height="105" rx="6" />
+  <text class="text" x="400" y="398">
+    <tspan x="400" dy="0">Preprocesamiento del audio</tspan>
+    <tspan x="400" dy="30">Mono · 16 kHz · filtro pasa-altos</tspan>
+    <tspan x="400" dy="30">Normalización RMS</tspan>
+  </text>
+
+  <path class="line" d="M 400 465 L 400 520" />
+
+  <rect class="box" x="245" y="522" width="310" height="92" rx="6" />
+  <text class="text" x="400" y="560">
+    <tspan x="400" dy="0">HuBERT Base</tspan>
+    <tspan x="400" dy="30">Última capa</tspan>
+    <tspan x="400" dy="30">768 dimensiones</tspan>
+  </text>
+
+  <path class="line" d="M 400 614 L 400 666" />
+
+  <rect class="box" x="245" y="668" width="310" height="88" rx="6" />
+  <text class="text" x="400" y="715">
+    <tspan x="400" dy="0">6 bloques estadísticos</tspan>
+    <tspan x="400" dy="30">globales y temporales</tspan>
+  </text>
+
+  <path class="line" d="M 400 756 L 400 808" />
+
+  <rect class="box" x="245" y="810" width="310" height="66" rx="6" />
+  <text class="text" x="400" y="850">Agregación a nivel de sujeto</text>
+
+  <!-- Fase 2 -->
+  <path class="line" d="M 555 843 L 905 843 L 905 180" />
+
+  <rect class="bigbox" x="915" y="140" width="550" height="340" rx="8" />
+  <text class="text-bold" x="1190" y="184">Benchmark experimental</text>
+  <line class="divider" x1="1190" y1="215" x2="1190" y2="450" />
+
+  <text class="text-bold" x="1045" y="250">Adaptación entre dominios</text>
+  <text class="text-small" x="1045" y="300">
+    <tspan x="1045" dy="0">raw</tspan>
+    <tspan x="1045" dy="34">centroid_shift</tspan>
+    <tspan x="1045" dy="34">coral_shift</tspan>
+  </text>
+
+  <text class="text-bold" x="1335" y="250">Clasificadores</text>
+  <text class="text-small" x="1335" y="300">
+    <tspan x="1335" dy="0">Logistic Regression</tspan>
+    <tspan x="1335" dy="34">Linear SVM</tspan>
+    <tspan x="1335" dy="34">LogReg + PCA</tspan>
+    <tspan x="1335" dy="34">MLP Small</tspan>
+    <tspan x="1335" dy="34">MLP Medium</tspan>
+  </text>
+
+  <path class="line" d="M 1190 480 L 1190 545" />
+
+  <rect class="box" x="955" y="548" width="470" height="126" rx="6" />
+  <text class="text" x="1190" y="588">
+    <tspan x="1190" dy="0">Configuración final</tspan>
+    <tspan x="1190" dy="30">centroid_shift</tspan>
+    <tspan x="1190" dy="30">+ StandardScaler</tspan>
+    <tspan x="1190" dy="30">+ PCA + Logistic Regression</tspan>
+  </text>
+
+  <path class="line" d="M 1425 611 L 1680 611" />
+
+  <!-- Fase 3 -->
+  <rect class="box" x="1710" y="130" width="560" height="66" rx="6" />
+  <text class="text" x="1990" y="170">Seleccionar dominio objetivo</text>
+
+  <path class="line" d="M 1990 196 L 1990 238" />
+
+  <rect class="box" x="1710" y="240" width="560" height="66" rx="6" />
+  <text class="text" x="1990" y="280">Retener un participante</text>
+  <text class="text-small" x="1990" y="302">Leave-One-Subject-Out</text>
+
+  <path class="line" d="M 1990 306 L 1990 348" />
+
+  <rect class="box" x="1710" y="350" width="560" height="66" rx="6" />
+  <text class="text" x="1990" y="390">Fold de entrenamiento objetivo</text>
+  <text class="text-small" x="1990" y="412">Sin el sujeto retenido</text>
+
+  <path class="line" d="M 1990 416 L 1990 458" />
+
+  <rect class="box" x="1710" y="460" width="560" height="66" rx="6" />
+  <text class="text" x="1990" y="500">Estimar centroide Healthy</text>
+  <text class="text-small" x="1990" y="522">del dominio objetivo</text>
+
+  <path class="line" d="M 1990 526 L 1990 568" />
+
+  <rect class="box" x="1710" y="570" width="560" height="66" rx="6" />
+  <text class="text" x="1990" y="610">Aplicar centroid_shift</text>
+
+  <path class="line" d="M 1990 636 L 1990 678" />
+
+  <rect class="box" x="1710" y="680" width="560" height="82" rx="6" />
+  <text class="text" x="1990" y="717">
+    <tspan x="1990" dy="0">StandardScaler → PCA</tspan>
+    <tspan x="1990" dy="30">→ Logistic Regression</tspan>
+  </text>
+
+  <path class="line" d="M 1990 762 L 1990 804" />
+
+  <rect class="box" x="1710" y="806" width="560" height="66" rx="6" />
+  <text class="text" x="1990" y="846">Predecir participante retenido</text>
+
+  <!-- Iteration lane -->
+  <rect class="box" x="1710" y="885" width="260" height="0" rx="0" style="display:none;"/>
+
+  <rect class="box" x="1750" y="760" width="480" height="0" rx="0" style="display:none;"/>
+
+  <path class="line-thin" d="M 2270 839 L 2315 839 L 2315 273 L 2278 273" />
+
+  <rect class="box" x="1730" y="890" width="0" height="0" rx="0" style="display:none;"/>
+
+  <!-- Bottom final chain -->
+  <path class="line" d="M 1710 839 L 1560 839 L 1560 720 L 1625 720" />
+
+  <rect class="box" x="1420" y="690" width="260" height="92" rx="6" />
+  <text class="text" x="1550" y="727">
+    <tspan x="1550" dy="0">Repetir para todos</tspan>
+    <tspan x="1550" dy="30">los participantes</tspan>
+  </text>
+
+  <path class="line" d="M 1420 736 L 1325 736" />
+
+  <rect class="box" x="1035" y="690" width="250" height="92" rx="6" />
+  <text class="text" x="1160" y="727">
+    <tspan x="1160" dy="0">Checo → Inglés</tspan>
+    <tspan x="1160" dy="30">Inglés → Checo</tspan>
+  </text>
+
+  <path class="line" d="M 1035 736 L 900 736" />
+
+  <rect class="box" x="540" y="690" width="320" height="92" rx="6" />
+  <text class="text" x="700" y="722">
+    <tspan x="700" dy="0">Accuracy · Precision · Recall</tspan>
+    <tspan x="700" dy="30">F1-Score · Balanced Accuracy · AUC-ROC</tspan>
+  </text>
+</svg>

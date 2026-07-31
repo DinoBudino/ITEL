@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaCheck, FaPlay, FaSearch, FaTable, FaTimes, FaUpload } from 'react-icons/fa'
 
 import { statusLabels } from '../../constants/ui'
@@ -92,51 +92,133 @@ function SampleAudioTable({ selectedSample, sampleAudios, sampleState, onSampleS
   )
 }
 
+export function ProcessingPanel({ progress, onCancel }) {
+  const [elapsedMs, setElapsedMs] = useState(0)
+
+  useEffect(() => {
+    const updateElapsed = () => setElapsedMs(Date.now() - progress.startedAt)
+    updateElapsed()
+    const timer = window.setInterval(updateElapsed, 250)
+    return () => window.clearInterval(timer)
+  }, [progress.startedAt])
+
+  const percent = typeof progress.progress === 'number' ? Math.max(0, Math.min(100, progress.progress)) : null
+  const isIndeterminate = progress.indeterminate || percent == null
+  const displayedElapsed = Math.max(elapsedMs, progress.elapsed_ms || 0)
+  const cacheKnown = progress.cache_hits != null || progress.cache_misses != null
+
+  return (
+    <div className="processing-panel" aria-live="polite">
+      <div className="processing-panel__heading">
+        <div>
+          <span className="processing-panel__stage">{progress.stage || 'Procesando'}</span>
+          <strong>{progress.message || 'Procesando grabaciones...'}</strong>
+        </div>
+        <span className="processing-panel__percent">{isIndeterminate ? 'En curso' : `${Math.round(percent)}%`}</span>
+      </div>
+
+      <div
+        className={`processing-bar${isIndeterminate ? ' processing-bar--indeterminate' : ''}`}
+        role="progressbar"
+        aria-label="Progreso de la inferencia"
+        aria-valuemin={isIndeterminate ? undefined : 0}
+        aria-valuemax={isIndeterminate ? undefined : 100}
+        aria-valuenow={isIndeterminate ? undefined : percent}
+      >
+        <span style={isIndeterminate ? undefined : { width: `${percent}%` }} />
+      </div>
+
+      <div className="processing-panel__meta">
+        <span>Archivos: {progress.file_count == null ? 'Pendiente' : `${progress.file_index ?? 'Pendiente'} / ${progress.file_count}`}</span>
+        <span>Tiempo: {(displayedElapsed / 1000).toFixed(1)} s</span>
+        <span>Cache: {cacheKnown ? `${progress.cache_hits || 0} hits / ${progress.cache_misses || 0} misses` : 'Pendiente'}</span>
+      </div>
+
+      <button className="button button--ghost processing-panel__cancel" type="button" onClick={onCancel}>
+        <FaTimes /> Cancelar
+      </button>
+    </div>
+  )
+}
+
 export function PredictionForm({
   inputMode,
-  selectedFile,
+  selectedFiles,
   selectedSample,
+  models,
+  modelState,
+  selectedModelId,
+  selectedLanguage,
+  availableLanguages,
+  modelAvailable,
   audioUrl,
   predictionState,
+  streamProgress,
   errorMessage,
   onInputModeChange,
   onFileChange,
+  onModelChange,
+  onLanguageChange,
   onPredict,
+  onCancel,
   onClear,
 }) {
-  const hasSelection = inputMode === 'upload' ? Boolean(selectedFile) : Boolean(selectedSample)
-  const selectedLabel = inputMode === 'upload' ? selectedFile?.name : selectedSample?.filename
+  const hasSelection = inputMode === 'upload' ? selectedFiles.length > 0 : Boolean(selectedSample)
+  const selectedLabel = inputMode === 'upload'
+    ? `${selectedFiles.length} archivo${selectedFiles.length === 1 ? '' : 's'} WAV`
+    : selectedSample?.filename
 
   return (
     <div className="analysis-card analysis-upload" id="sample-upload">
       <div className="analysis-card__header">
         <span className="eyebrow">Entrada</span>
-        <h3>Subir audio o elegir de LANNA</h3>
+        <h3>Analizar grabaciones de un sujeto</h3>
       </div>
 
-      <div className="input-mode-tabs" role="tablist" aria-label="Modo de entrada">
-        <button
-          className={`input-mode-tab ${inputMode === 'upload' ? 'is-active' : ''}`}
-          onClick={() => onInputModeChange('upload')}
-          type="button"
-        >
-          <FaUpload /> Subir audio
-        </button>
-        <button
-          className={`input-mode-tab ${inputMode === 'samples' ? 'is-active' : ''}`}
-          onClick={() => onInputModeChange('samples')}
-          type="button"
-        >
-          <FaTable /> Elegir de LANNA
-        </button>
+      <div className="prediction-options">
+        <label className="prediction-options__field">
+          <span>Modelo</span>
+          <select value={selectedModelId} onChange={(event) => onModelChange(event.target.value)} disabled={modelState !== 'ready' || predictionState === 'processing'}>
+            {models.map((model) => (
+              <option key={model.id} value={model.id}>{model.name}{model.available ? '' : ' (artefactos pendientes)'}</option>
+            ))}
+          </select>
+        </label>
+
+        <label className="prediction-options__field">
+          <span>Idioma</span>
+          <select
+            value={selectedLanguage}
+            onChange={(event) => onLanguageChange(event.target.value)}
+            disabled={modelState !== 'ready' || availableLanguages.length === 0 || predictionState === 'processing'}
+          >
+            {availableLanguages.map((language) => (
+              <option key={language} value={language}>{language.toUpperCase()}</option>
+            ))}
+          </select>
+        </label>
       </div>
+
+      {modelState === 'loading' && <div className="model-catalog-note">Consultando modelos disponibles...</div>}
+      {modelState === 'error' && (
+        <div className="model-catalog-note model-catalog-note--error">
+          Catálogo no disponible. La selección se muestra como referencia, pero el análisis requiere conexión con la API.
+        </div>
+      )}
+      {modelState === 'ready' && !modelAvailable && (
+        <div className="model-catalog-note model-catalog-note--error">
+          Este modelo está registrado, pero su bundle no está disponible o no pasó la validación de integridad.
+        </div>
+      )}
 
       {inputMode === 'upload' ? (
         <label className="upload-zone">
-          <input type="file" accept=".wav,audio/wav" onChange={onFileChange} className="upload-zone__input" />
+          <input type="file" accept=".wav,audio/wav" multiple onChange={onFileChange} className="upload-zone__input" disabled={predictionState === 'processing'} />
           <div className="upload-zone__content">
             <FaUpload size={28} className="upload-zone__icon" />
-            <span className="upload-zone__text">{selectedFile ? selectedFile.name : 'Seleccionar archivo WAV'}</span>
+            <span className="upload-zone__text">
+              {selectedFiles.length > 0 ? selectedFiles.map((file) => file.name).join(', ') : 'Seleccionar uno o más archivos WAV'}
+            </span>
           </div>
         </label>
       ) : (
@@ -150,11 +232,19 @@ export function PredictionForm({
 
       {audioUrl && <audio controls src={audioUrl} className="audio-player" />}
 
+      {predictionState === 'processing' && streamProgress && (
+        <ProcessingPanel progress={streamProgress} onCancel={onCancel} />
+      )}
+
       <div className="analysis-actions">
-        <button className="button button--primary" onClick={onPredict} disabled={predictionState === 'processing' || !hasSelection}>
+        <button
+          className="button button--primary"
+          onClick={onPredict}
+          disabled={predictionState === 'processing' || !hasSelection || modelState !== 'ready' || !modelAvailable || !selectedLanguage}
+        >
           <FaPlay /> Analizar
         </button>
-        {hasSelection && (
+        {hasSelection && predictionState !== 'processing' && (
           <button className="button button--ghost" onClick={onClear}>
             <FaTimes />
           </button>

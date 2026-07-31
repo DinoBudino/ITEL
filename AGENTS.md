@@ -2,7 +2,7 @@
 
 ## Repo Shape
 - No root task runner or workspace config. Work directly in the package you are changing.
-- `apps/api/app/main.py` is the FastAPI entrypoint. Core serving logic lives in `packages/inference_engine/`.
+- `apps/api/app/main.py` is the FastAPI entrypoint. Core serving logic lives in `packages/audio_pipeline/` and `packages/model_runtime/`.
 - `apps/web/src/main.jsx` boots the React app. Routes are defined in `apps/web/src/App.jsx`.
 - `research/scripts/*.py` are the main research CLIs; shared research code lives in `research/src/`.
 
@@ -23,22 +23,23 @@
 
 ## Backend Notes
 - Backend tests are intentionally lightweight: `apps/api/tests/conftest.py` injects repo paths into `sys.path`, and tests monkeypatch the service so they do not require real model artifacts.
-- `GET /health` is not a cheap ping. It calls `get_service()`, which runs `warmup()` and loads the scaler, ONNX model, and torchaudio bundle.
-- Serving defaults come from `packages/inference_engine/config.py`. Important paths are relative to repo root, not `apps/api/`.
-- The code expects `assets/models/final_mlp_model.onnx` and `assets/models/final_mlp_scaler.joblib`. The scaler exists locally; the ONNX file is not present in this checkout, so the real service will fail unless you provide it or override `ITEL_MODEL_DIR`.
+- `GET /live` (and the compatibility alias `/health`) is a cheap process ping. `GET /ready` validates registered model bundles and returns 503 while artifacts are missing or invalid.
+- Active serving code lives in `packages/audio_pipeline/` and `packages/model_runtime/`; `packages/inference_engine/` and `assets/models/` are legacy and are not imported by the API.
+- Versioned manifests live under `models/registry/`. Binary artifacts remain ignored and are generated with the promotion scripts under `research/scripts/`.
+- Optional content-addressed serving caches live under ignored `artifacts/serving_cache/`; they contain embeddings only and do not change model manifests or model digests.
 
 ## Local-Only Artifacts
 - `assets/models/**` is gitignored except for `.gitkeep`. Do not assume model binaries are versioned or available on another machine.
-- `data/Healthy/` and `data/Patients/` are gitignored. The repo only keeps `data/.sample_audio_catalog.json` under version control.
+- `data/**` is gitignored except for `.gitkeep`; generated sample catalogs and audio must not be committed.
 - Treat `.env.telegram.local` as a secret local file used by the Cloudflare Telegram helper; do not print or commit its contents.
 
 ## Data And Caching Gotchas
-- Sample-library endpoints read from `ITEL_SAMPLE_AUDIO_DIR` (default `data/`).
-- `apps/api/app/main.py` caches the sample catalog with `@lru_cache` and also persists `data/.sample_audio_catalog.json`.
-- If files under `data/` change, restart the API; if the manifest is stale, delete `data/.sample_audio_catalog.json` so it can be rebuilt.
+- Sample-library endpoints are disabled by default. Enabling `ITEL_ENABLE_SAMPLE_LIBRARY=true` is only appropriate in an authorized private environment with a prebuilt local `data/.sample_audio_catalog.json`.
 
 ## Docker And Demo Flow
-- `docker-compose.yml` exposes backend on `8000` and frontend on `5173`; it mounts `./data` into the backend as read-only `/service/data`.
+- `docker-compose.yml` exposes backend on `8000` and frontend on `5173`; datasets are not mounted into containers by default.
+- Compose mounts only `artifacts/serving_cache` read-only. The API preloads one shared HuBERT resource and should run with one worker per GPU.
+- `docker-compose.demo.yml` is an explicit temporary overlay that mounts the eligible Czech/English corpora and ignored `artifacts/demo_catalog` read-only behind nginx Basic Auth. Do not merge those mounts into normal production compose.
 - `docker-compose.prod.yml` adds an nginx proxy on `http://127.0.0.1` and builds the frontend with `VITE_API_BASE_URL=/api`.
 - `scripts/start_cloudflare_tunnel*.bat` are thin wrappers around PowerShell scripts that first run `docker compose -f docker-compose.prod.yml up -d --build` and then wait for `http://127.0.0.1` before launching `cloudflared`.
 

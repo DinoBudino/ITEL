@@ -1,0 +1,47 @@
+{
+  "config": {
+    "model_type": "linear_svm",
+    "alignment_method": "raw",
+    "layer_policy": "last",
+    "cz_sequence_manifest": "D:\\Repositorios\\ITEL\\research\\processed_data\\manifests\\hubert_sequences_natural_multilingual_light.csv",
+    "en_sequence_manifest": "D:\\Repositorios\\ITEL\\research\\processed_data\\manifests\\hubert_sequences_en_test_v2.csv"
+  },
+  "datasets": {
+    "cz_subjects": 98,
+    "cz_labels": {
+      "Patients": 54,
+      "Healthy": 44
+    },
+    "en_subjects": 48,
+    "en_labels": {
+      "Patients": 24,
+      "Healthy": 24
+    }
+  },
+  "target_english": {
+    "n_rows": 48,
+    "accuracy": 0.625,
+    "balanced_accuracy": 0.625,
+    "precision": 0.6153846153846154,
+    "recall": 0.6666666666666666,
+    "f1": 0.64,
+    "auc": 0.9149305555555556,
+    "best_threshold_global": 0.3315,
+    "best_balanced_accuracy_global": 0.8541666666666666,
+    "best_recall_global": 0.9166666666666666,
+    "best_precision_global": 0.8148148148148148
+  },
+  "target_czech": {
+    "n_rows": 98,
+    "accuracy": 0.7346938775510204,
+    "balanced_accuracy": 0.7276936026936027,
+    "precision": 0.7413793103448276,
+    "recall": 0.7962962962962963,
+    "f1": 0.7678571428571429,
+    "auc": 0.9890572390572391,
+    "best_threshold_global": 0.431,
+    "best_balanced_accuracy_global": 0.9473905723905723,
+    "best_recall_global": 0.9629629629629629,
+    "best_precision_global": 0.9454545454545454
+  }
+}

@@ -4,7 +4,10 @@ import argparse
 from pathlib import Path
 import sys
 
-import mlflow
+try:
+    import mlflow
+except ModuleNotFoundError:  # pragma: no cover - optional dependency for data prep runs
+    mlflow = None
 import pandas as pd
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -107,8 +110,19 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    tracking_uri = configure_tracking(args.mlflow_tracking_uri, args.mlflow_experiment)
     exclude_patterns = tuple(args.exclude_patterns)
+    tracking_uri = None
+    if mlflow is not None:
+        tracking_uri = configure_tracking(args.mlflow_tracking_uri, args.mlflow_experiment)
+
+    if mlflow is None:
+        output = build_manifest(Path(args.input_dir), Path(args.output), exclude_patterns)
+        frame = pd.read_csv(output)
+
+        print(f"Saved English test manifest to: {output}")
+        print("MLflow not installed; manifest generated without experiment tracking.")
+        print(f"Rows: {len(frame)}  Subjects: {0 if frame.empty else int(frame['subject_id'].nunique())}")
+        return
 
     with mlflow.start_run(run_name=args.mlflow_run_name):
         output = build_manifest(Path(args.input_dir), Path(args.output), exclude_patterns)

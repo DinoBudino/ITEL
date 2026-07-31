@@ -183,6 +183,18 @@ class AttentionBiLSTMClassifierV3(nn.Module):
         self.use_layer_mix = use_layer_mix
         self.embedding_noise_std = embedding_noise_std
         self.attention_entropy_lambda = attention_entropy_lambda
+        self.model_config = {
+            "input_dim": input_dim,
+            "lstm_hidden": lstm_hidden,
+            "lstm_layers": lstm_layers,
+            "dropout": dropout,
+            "fc_hidden": fc_hidden,
+            "num_heads": num_heads,
+            "use_layer_mix": use_layer_mix,
+            "num_hubert_layers": num_hubert_layers,
+            "embedding_noise_std": embedding_noise_std,
+            "attention_entropy_lambda": attention_entropy_lambda,
+        }
 
         if use_layer_mix:
             self.layer_mix = ScalarMix(num_layers=num_hubert_layers)
@@ -354,8 +366,7 @@ class SequenceV3Dataset(torch.utils.data.Dataset):
 
 
 def collate_sequences(batch: list[dict]) -> dict:
-    max_len = max(item["sequence"].size(-1) if item["sequence"].dim() == 3
-                  else item["sequence"].size(0) for item in batch)
+    max_len = max(item["sequence"].size(-2) for item in batch)
     has_layers = any(item["sequence"].dim() == 3 for item in batch)
     feat_dim = batch[0]["sequence"].size(-1)
     B = len(batch)

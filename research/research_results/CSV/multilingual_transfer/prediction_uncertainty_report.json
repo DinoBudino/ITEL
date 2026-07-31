@@ -1,0 +1,105 @@
+{
+  "config": {
+    "positive_class": "Patients",
+    "confidence_level": 0.95,
+    "bootstrap_repetitions": 10000,
+    "bootstrap_seed": 42,
+    "final_predictions": "D:\\Repositorios\\ITEL\\research\\research_results\\CSV\\multilingual_transfer\\multilingual_bidirectional_logreg_pca_centroid_predictions.csv",
+    "raw_predictions": "D:\\Repositorios\\ITEL\\research\\research_results\\CSV\\multilingual_transfer\\multilingual_bidirectional_logreg_pca_raw_predictions.csv",
+    "english_only_predictions": "D:\\Repositorios\\ITEL\\research\\research_results\\CSV\\language_shift\\language_shift_transfer_subject_predictions.csv"
+  },
+  "czech_final": {
+    "n_subjects": 98,
+    "n_patients": 54,
+    "n_healthy": 44,
+    "accuracy": {
+      "estimate": 0.9183673469387755,
+      "ci_lower": 0.8471171284576644,
+      "ci_upper": 0.9580559410323579,
+      "method": "Wilson score interval"
+    },
+    "f1_patients": {
+      "estimate": 0.9259259259259259,
+      "ci_lower": 0.8737599293909976,
+      "ci_upper": 0.9724770642201835,
+      "method": "Stratified percentile bootstrap"
+    },
+    "auc_roc": {
+      "estimate": 0.970959595959596,
+      "ci_lower": 0.9428774919766469,
+      "ci_upper": 0.9990416999425451,
+      "standard_error": 0.014327867350858031,
+      "method": "DeLong normal-approximation interval"
+    }
+  },
+  "english_final": {
+    "n_subjects": 48,
+    "n_patients": 24,
+    "n_healthy": 24,
+    "accuracy": {
+      "estimate": 0.8541666666666666,
+      "ci_lower": 0.7283282347525372,
+      "ci_upper": 0.9275175067339628,
+      "method": "Wilson score interval"
+    },
+    "f1_patients": {
+      "estimate": 0.8679245283018868,
+      "ci_lower": 0.7857142857142857,
+      "ci_upper": 0.9411764705882353,
+      "method": "Stratified percentile bootstrap"
+    },
+    "auc_roc": {
+      "estimate": 0.9322916666666666,
+      "ci_lower": 0.8618028425295499,
+      "ci_upper": 1.0,
+      "standard_error": 0.035964346637552345,
+      "method": "DeLong normal-approximation interval"
+    }
+  },
+  "english_paired_comparisons": {
+    "final_vs_raw": {
+      "n_subjects": 48,
+      "positive_class": "Patients",
+      "first_model": "centroid_shift + logreg_pca",
+      "second_model": "raw + logreg_pca",
+      "delong": {
+        "auc_first": 0.9322916666666666,
+        "auc_second": 0.9253472222222222,
+        "auc_difference_first_minus_second": 0.00694444444444442,
+        "difference_standard_error": 0.010136117349996691,
+        "difference_ci_lower": -0.012921980504620664,
+        "difference_ci_upper": 0.026810869393509504,
+        "z": 0.6851187890446717,
+        "p_value_two_sided": 0.49326896471997506
+      },
+      "mcnemar": {
+        "first_only_correct": 4,
+        "second_only_correct": 1,
+        "discordant_pairs": 5,
+        "p_value_two_sided_exact": 0.375
+      }
+    },
+    "final_vs_english_only": {
+      "n_subjects": 48,
+      "positive_class": "Patients",
+      "first_model": "centroid_shift + logreg_pca",
+      "second_model": "English-only",
+      "delong": {
+        "auc_first": 0.9322916666666666,
+        "auc_second": 0.607638888888889,
+        "auc_difference_first_minus_second": 0.3246527777777777,
+        "difference_standard_error": 0.08781568073839682,
+        "difference_ci_lower": 0.1525372062526522,
+        "difference_ci_upper": 0.49676834930290314,
+        "z": 3.6969795718479856,
+        "p_value_two_sided": 0.00021817989163741558
+      },
+      "mcnemar": {
+        "first_only_correct": 16,
+        "second_only_correct": 4,
+        "discordant_pairs": 20,
+        "p_value_two_sided_exact": 0.01181793212890625
+      }
+    }
+  }
+}

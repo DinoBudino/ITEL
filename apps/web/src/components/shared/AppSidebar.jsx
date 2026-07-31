@@ -35,7 +35,7 @@ export function AppSidebar({ health }) {
         <strong className={health.status === 'ready' ? 'text-success' : health.status === 'error' ? 'text-danger' : ''}>
           {health.message}
         </strong>
-        <small>{health.modelVersion ? `Modelo ${health.modelVersion}` : 'Versión de modelo pendiente'}</small>
+        <small>Modelos verificados por el catálogo</small>
       </div>
 
       <Link className={`button ${isAnalysisView ? 'button--outline' : 'button--primary'} sidebar-cta`} to={currentSection.ctaTo}>

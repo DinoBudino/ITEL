@@ -3,7 +3,9 @@
 Esta carpeta concentra el trabajo experimental de la tesis y documenta la linea activa de investigacion del proyecto. La referencia vigente se organiza alrededor de dos modelos finales:
 
 - `V3 LayerMix (Czech)`: modelo secuencial principal para el dominio cerrado sobre LANNA.
-- `Unified Multilingual (logreg_pca + raw)`: modelo ligero unificado para evaluar robustez bilingue Czech-English.
+- `Unified Multilingual (logreg_pca + centroid_shift)`: modelo ligero unificado para evaluar robustez bilingue Czech-English.
+
+En este documento, "modelo final" identifica la configuracion experimental seleccionada. La evaluacion LOSO reajusta scaler, PCA, clasificador, centroides y threshold en cada fold; por tanto, sus folds no son un modelo unico desplegable. La promocion a bundles congelados es una etapa posterior documentada en `docs/architecture/model-lifecycle.md`.
 
 ## Estructura
 
@@ -320,7 +322,7 @@ Auditar pronunciacion:
 python research/scripts/audit_pronunciation_structure.py
 ```
 
-## Modelo 2: Unified Multilingual (`logreg_pca` + `raw`)
+## Modelo 2: Unified Multilingual (`logreg_pca` + `centroid_shift`)
 
 ### Objetivo
 
@@ -342,7 +344,7 @@ Secuencias HuBERT CZ (.pt) ---\
                               -> feature engineering temporal
 Secuencias HuBERT EN (.pt) ---/
                               -> pooling por sujeto
-                              -> alineacion raw
+                              -> alineacion centroid_shift
                               -> StandardScaler
                               -> PCA
                               -> LogisticRegression
@@ -398,7 +400,7 @@ Se probaron tres estrategias dentro de la linea experimental:
 - `centroid_shift`
 - `coral_shift`
 
-El modelo final unificado conserva **raw**.
+El modelo final unificado conserva **centroid_shift**.
 
 ##### `raw`
 
@@ -427,7 +429,7 @@ El benchmark comparo cinco familias de cabezas:
 
 El ganador final fue:
 - `logreg_pca`
-- alineacion `raw`
+- alineacion `centroid_shift`
 
 Pipeline final:
 
@@ -455,8 +457,8 @@ Esto es clave porque la decision final no se tomo solo por English. Se busco una
 
 ### Resultados oficiales
 
-- Metricas bidireccionales: `research/research_results/CSV/multilingual_transfer/multilingual_bidirectional_logreg_pca_raw.json`
-- Predicciones bidireccionales: `research/research_results/CSV/multilingual_transfer/multilingual_bidirectional_logreg_pca_raw_predictions.csv`
+- Metricas bidireccionales: `research/research_results/CSV/multilingual_transfer/multilingual_bidirectional_logreg_pca_centroid.json`
+- Predicciones bidireccionales: `research/research_results/CSV/multilingual_transfer/multilingual_bidirectional_logreg_pca_centroid_predictions.csv`
 - Benchmark CZ+EN: `research/research_results/CSV/multilingual_transfer/multilingual_cz_en_heads_natural.json`
 - Reporte de shift: `research/research_results/CSV/language_shift/language_shift_transfer_report.json`
 
@@ -466,8 +468,8 @@ Esto es clave porque la decision final no se tomo solo por English. Se busco una
 
 | Dominio objetivo | Accuracy | Balanced Accuracy | Precision | Recall | F1 | AUC |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| English | 0.8750 | 0.8500 | 0.9000 | 0.7500 | 0.8182 | 0.9250 |
-| Czech | 0.8980 | 0.8927 | 0.8793 | 0.9444 | 0.9107 | 0.9798 |
+| English | 0.8542 | 0.8542 | 0.7931 | 0.9583 | 0.8679 | 0.9323 |
+| Czech | 0.9184 | 0.9175 | 0.9259 | 0.9259 | 0.9259 | 0.9710 |
 
 Lectura:
 - English conserva un AUC alto pese al tamano reducido del dataset
@@ -476,12 +478,13 @@ Lectura:
 
 #### 2. Hallazgo central del benchmark
 
-En `multilingual_cz_en_heads_natural.json`, el ranking final favorece a `logreg_pca + raw`.
+En `multilingual_cz_en_heads_natural.json`, el ranking final actualizado con `48` sujetos ingleses favorece a `logreg_pca + centroid_shift`.
 
 Razon tecnica:
-- mejor `balanced_accuracy` global en English entre las configuraciones comparadas
-- mejor `AUC`
-- mejor precision entre las soluciones competitivas
+- mejor `balanced_accuracy` en English entre las configuraciones comparadas
+- mejor `AUC` en English
+- mejor `recall` en English sin deteriorar Czech en la evaluacion bidireccional
+- mejora ligera tambien en `balanced_accuracy` Czech frente a `raw`
 - menor complejidad y mayor interpretabilidad que un `MLP`
 
 En otras palabras, el experimento mostro que una cabeza lineal bien regularizada sobre una proyeccion PCA era mas estable que arquitecturas mas complejas.
@@ -491,8 +494,8 @@ En otras palabras, el experimento mostro que una cabeza lineal bien regularizada
 El reporte `language_shift_transfer_report.json` muestra un hallazgo decisivo:
 
 - norma del centroide `Healthy` en Czech: aproximadamente `20.32`
-- norma del centroide `Healthy` en English: aproximadamente `13.94`
-- distancia entre centroides: **`15.14`**
+- norma del centroide `Healthy` en English: aproximadamente `13.72`
+- distancia entre centroides: **`15.32`**
 
 Interpretacion:
 - el cambio de idioma y protocolo no es pequeno ni superficial
@@ -502,30 +505,40 @@ Interpretacion:
 #### 4. Baseline English-only casi al azar
 
 El experimento English-only LOSO reporta aproximadamente:
-- `balanced_accuracy = 0.4917`
-- `auc = 0.6167`
+- `balanced_accuracy = 0.6042`
+- `auc = 0.6076`
 
 Hallazgo:
-- el dataset English por si solo es demasiado pequeno para sostener un clasificador fiable
+- el dataset English por si solo sigue siendo limitado para sostener un clasificador plenamente robusto
 - la mejora en English aparece cuando se aprovecha informacion estructural aprendida desde Czech
 
 Esto justifica toda la linea de transferencia multilingue.
 
-#### 5. Por que se descarto `centroid_shift` como modelo final
+#### 5. Por que el modelo final paso de `raw` a `centroid_shift`
 
-`centroid_shift` fue util como diagnostico y en algunos heads mejora recall o balanced accuracy localmente. Sin embargo, se descarto como solucion final unificada por tres razones:
+La version anterior del proyecto habia dejado `logreg_pca + raw` como mejor compromiso. Sin embargo, al actualizar el dominio ingles a `48` sujetos (`24 Healthy`, `24 Patients`) y recalcular tanto el benchmark como la evaluacion bidireccional, la evidencia cambio.
 
-1. **Degrada `logreg_pca`.**
-   - `logreg_pca + raw`: English BalAcc `0.8500`, AUC `0.9250`
-   - `logreg_pca + centroid_shift`: peor balanced accuracy y peor precision
+Comparacion bidireccional actualizada:
 
-2. **PCA ya absorbe suficiente variacion de idioma.**
-   La proyeccion PCA reduce la varianza no esencial y hace innecesario deformar explicitamente el espacio con un shift de centroides.
+- `logreg_pca + raw`
+  - English: BalAcc `0.7917`, AUC `0.9253`
+  - Czech: BalAcc `0.9104`, AUC `0.9735`
+- `logreg_pca + centroid_shift`
+  - English: BalAcc `0.8542`, AUC `0.9323`
+  - Czech: BalAcc `0.9175`, AUC `0.9710`
 
-3. **No preserva tan bien el compromiso CZ + EN.**
-   Algunas variantes con `centroid_shift` ayudan English, pero deterioran Czech o vuelven el sistema mas inestable a nivel de umbral.
+Lectura:
 
-La conclusion fue pragmaticamente simple: para un modelo unificado, `raw` funciona mejor que forzar alineaciones geometricas adicionales.
+1. **`centroid_shift` mejora claramente English.**
+   La ganancia en English no es marginal: suben `accuracy`, `balanced_accuracy`, `precision`, `recall`, `f1` y `auc`.
+
+2. **`centroid_shift` tambien mejora ligeramente Czech en balanced accuracy.**
+   Aunque el `AUC` checo baja de forma minima, el compromiso global CZ+EN queda mejor.
+
+3. **La nueva decision ya no depende solo del benchmark English.**
+   Tambien fue validada con evaluacion bidireccional completa usando los mismos `98` sujetos checos y `48` sujetos ingleses.
+
+La conclusion actualizada es simple: con el dataset ingles ampliado, `centroid_shift` supera a `raw` como solucion unificada final.
 
 #### 6. Asimetria Czech-English
 

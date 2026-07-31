@@ -1,13 +1,6 @@
 import React from 'react'
-import { FaCheckCircle, FaClock, FaChartBar, FaMicrochip, FaUpload, FaPlay, FaFileAudio, FaWaveSquare, FaSignal, FaBrain, FaDatabase } from 'react-icons/fa'
+import { FaCheckCircle, FaClock, FaUpload, FaPlay, FaFileAudio, FaBrain, FaGlobe, FaDatabase } from 'react-icons/fa'
 import { formatMs, formatPercent } from '../../utils/formatters'
-
-function getConfidenceLevel(confidence) {
-  const numericConfidence = Number(confidence || 0)
-  if (numericConfidence >= 0.85) return 'Alta'
-  if (numericConfidence >= 0.65) return 'Media'
-  return 'Exploratoria'
-}
 
 function EmptyResults() {
   return (
@@ -19,7 +12,7 @@ function EmptyResults() {
           </div>
           <div className="result-step__content">
             <strong>1. Sube el audio</strong>
-            <p>Selecciona un archivo WAV de voz</p>
+            <p>Selecciona uno o más archivos WAV de voz</p>
           </div>
         </div>
         <div className="result-step">
@@ -46,8 +39,6 @@ function EmptyResults() {
 }
 
 export function ResultsPanel({ prediction, probabilityEntries }) {
-  const confidenceLevel = getConfidenceLevel(prediction?.confidence)
-
   return (
     <div className="analysis-card analysis-results" id="results">
       <div className="analysis-card__header">
@@ -64,45 +55,63 @@ export function ResultsPanel({ prediction, probabilityEntries }) {
             </div>
             <strong className="result-main__value">{prediction.predicted_label}</strong>
             <p className="result-main__description">
-              Confianza: {formatPercent(prediction.confidence)} • Nivel: {confidenceLevel}
+              Confianza: {formatPercent(prediction.confidence)}
             </p>
+            <p className="result-main__description">Resultado experimental a nivel de sujeto; no constituye un diagnóstico.</p>
           </div>
 
-          <div className="result-metrics">
-            <div className="result-metrics__item">
-              <FaClock size={18} />
-              <span className="result-metrics__label">Tiempo total</span>
-              <strong className="result-metrics__value">{formatMs(prediction.timings_ms?.total)}</strong>
+          {prediction.reference_label != null && (
+            <div className={`reference-result${prediction.reference_match ? ' is-match' : ' is-mismatch'}`}>
+              <span className="eyebrow">Referencia de la base de pruebas</span>
+              <div className="reference-result__line">
+                <strong>{prediction.demo_subject_display_id}</strong>
+                <span>Referencia: {prediction.reference_label}</span>
+                <span>{prediction.reference_match ? 'Coincide con la predicción' : 'No coincide con la predicción'}</span>
+              </div>
             </div>
-            <div className="result-metrics__item">
-              <FaWaveSquare size={18} />
-              <span className="result-metrics__label">Ventana análisis</span>
-              <strong className="result-metrics__value">{prediction.timings_ms?.embedding ? '768ms' : '-'}</strong>
-            </div>
-            <div className="result-metrics__item">
-              <FaSignal size={18} />
-              <span className="result-metrics__label">Threshold</span>
-              <strong className="result-metrics__value">{prediction.confidence >= 0.7 ? '≥70%' : '<'+'70%'}</strong>
-            </div>
-          </div>
+          )}
 
           <div className="result-metrics">
             <div className="result-metrics__item">
               <FaBrain size={18} />
               <span className="result-metrics__label">Modelo</span>
-              <strong className="result-metrics__value">{prediction.metadata?.model_version || 'itelv5'}</strong>
+              <strong className="result-metrics__value">{prediction.model_id}</strong>
+            </div>
+            <div className="result-metrics__item">
+              <FaGlobe size={18} />
+              <span className="result-metrics__label">Idioma</span>
+              <strong className="result-metrics__value">{prediction.language?.toUpperCase()}</strong>
             </div>
             <div className="result-metrics__item">
               <FaDatabase size={18} />
-              <span className="result-metrics__label">Audio size</span>
-              <strong className="result-metrics__value">{prediction.metadata?.duration_seconds ? `${(prediction.metadata.duration_seconds * 16).toFixed(0)} KB` : '-'}</strong>
-            </div>
-            <div className="result-metrics__item">
-              <FaMicrochip size={18} />
-              <span className="result-metrics__label">Veces embedding</span>
-              <strong className="result-metrics__value">{prediction.timings_ms?.embedding ? Math.ceil(Number(prediction.metadata?.duration_seconds || 0) / 0.768) : '-'}</strong>
+              <span className="result-metrics__label">Archivos</span>
+              <strong className="result-metrics__value">{prediction.file_count}</strong>
             </div>
           </div>
+
+          {prediction.warnings?.length > 0 && (
+            <div className="analysis-error">{prediction.warnings.join(' ')}</div>
+          )}
+
+          <div className="result-metrics result-metrics--single">
+            <div className="result-metrics__item">
+              <FaDatabase size={18} />
+              <span className="result-metrics__label">Fuente de features</span>
+              <strong className="result-metrics__value">
+                {prediction.feature_source || 'computed'} · {prediction.cache_hits || 0} cache hits
+              </strong>
+            </div>
+          </div>
+
+          {prediction.timings_ms?.total != null && (
+            <div className="result-metrics result-metrics--single">
+              <div className="result-metrics__item">
+                <FaClock size={18} />
+                <span className="result-metrics__label">Tiempo total reportado</span>
+                <strong className="result-metrics__value">{formatMs(prediction.timings_ms.total)}</strong>
+              </div>
+            </div>
+          )}
 
           <div className="result-distribution">
             <h4>Distribución de probabilidades</h4>
@@ -124,23 +133,6 @@ export function ResultsPanel({ prediction, probabilityEntries }) {
             </div>
           </div>
 
-          <div className="result-metadata">
-            <h4>Metadatos del audio</h4>
-            <div className="result-metadata__grid">
-              <div>
-                <span>Archivo</span>
-                <strong>{prediction.metadata?.filename || '-'}</strong>
-              </div>
-              <div>
-                <span>Duración</span>
-                <strong>{prediction.metadata?.duration_seconds || '-'} s</strong>
-              </div>
-              <div>
-                <span>Sample rate</span>
-                <strong>{prediction.metadata?.sample_rate || '-'}</strong>
-              </div>
-            </div>
-          </div>
         </>
       ) : (
         <EmptyResults />

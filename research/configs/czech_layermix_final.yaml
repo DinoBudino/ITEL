@@ -1,0 +1,16 @@
+model_id: czech-layermix
+prediction_unit: subject
+languages: [cs]
+preprocessing:
+  sample_rate: 16000
+  highpass_hz: 100
+  target_rms: 0.08
+  max_peak: 0.99
+  min_duration_seconds: 0.3
+encoder:
+  bundle: HUBERT_BASE
+  layer_policy: all_12
+model:
+  architecture: AttentionBiLSTMClassifierV3
+  use_layer_mix: true
+  aggregation: mean_sample_probability

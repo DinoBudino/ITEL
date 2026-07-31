@@ -4,15 +4,15 @@ from pathlib import Path
 
 import librosa
 import numpy as np
-from scipy.signal import butter, filtfilt
+from packages.audio_pipeline.preprocessing import highpass_filter as _shared_highpass_filter
+from packages.audio_pipeline.preprocessing import normalize_rms as _shared_normalize_rms
 
 from .config import CONFIG
 
 
 def highpass_filter(samples: np.ndarray, sr: int, cutoff_hz: int | None = None, order: int = 5) -> np.ndarray:
     cutoff = cutoff_hz or CONFIG.audio.highpass_hz
-    b, a = butter(order, cutoff / (0.5 * sr), btype="high", analog=False)
-    return filtfilt(b, a, samples)
+    return _shared_highpass_filter(samples, sr, cutoff, order)
 
 
 def normalize_peak(samples: np.ndarray) -> np.ndarray:
@@ -24,15 +24,7 @@ def normalize_peak(samples: np.ndarray) -> np.ndarray:
 
 def normalize_rms(samples: np.ndarray, target_rms: float | None = None) -> np.ndarray:
     target = target_rms or CONFIG.audio.target_rms
-    rms = float(np.sqrt(np.mean(np.square(samples)))) if len(samples) else 0.0
-    if rms <= 1e-8:
-        return samples
-    normalized = samples * (target / rms)
-    peak = float(np.max(np.abs(normalized))) if len(normalized) else 0.0
-    max_peak = CONFIG.audio.max_peak_after_rms
-    if peak > max_peak > 0:
-        normalized = normalized * (max_peak / peak)
-    return normalized
+    return _shared_normalize_rms(samples, target, CONFIG.audio.max_peak_after_rms)
 
 
 def trim_silence(samples: np.ndarray, top_db: float | None = None) -> np.ndarray:

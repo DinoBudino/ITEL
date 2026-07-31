@@ -17,9 +17,13 @@ itel-audio-tel/
 │     ├─ package.json
 │     └─ Dockerfile
 ├─ packages/
-│  └─ inference_engine/      # Motor reutilizable de inferencia
-├─ assets/
-│  └─ models/                # Modelo ONNX, scaler y artefactos
+│  ├─ audio_pipeline/        # Preprocesamiento y HuBERT compartidos
+│  └─ model_runtime/         # Registro y runtimes de modelos promovidos
+├─ models/
+│  └─ registry/              # Manifests versionados; binarios ignorados
+├─ docs/
+│  ├─ architecture/          # Contratos y ciclo de vida
+│  └─ model-cards/           # Alcance y limitaciones
 ├─ research/
 │  ├─ README.md              # Modelos finales y guia de investigacion
 │  ├─ scripts/               # Entrenamiento, evaluacion y generacion de figuras
@@ -34,9 +38,11 @@ itel-audio-tel/
 
 ## Arquitectura funcional
 
-La ruta oficial de inferencia se mantiene sin reescribir la logica principal:
+La inferencia oficial es por sujeto y recibe uno o mas WAV:
 
-`WAV -> preprocessing -> HuBERT embeddings -> scaler -> ONNX classifier -> JSON`
+`WAV[] -> perfil RMS -> HuBERT -> modelo seleccionado -> agregacion por sujeto -> JSON`
+
+Research, evaluacion LOSO y serving son etapas distintas. Los modelos de cada fold no se consideran artefactos desplegables. Consulta `docs/architecture/model-lifecycle.md`.
 
 ## Modelos finales
 
@@ -44,19 +50,20 @@ La linea de investigacion activa mantiene dos modelos finales documentados en `r
 
 | Modelo | Dominio | Rol | Metricas clave |
 | --- | --- | --- | --- |
-| `V3 LayerMix` | Czech (LANNA) | Modelo final del dominio cerrado | Sample BalAcc `0.8783`, Subject BalAcc `0.9432`, Subject AUC `0.9739` |
-| `Unified Multilingual` (`logreg_pca` + `raw`) | Czech + English | Modelo final unificado bilingue | EN BalAcc `0.8500`, EN AUC `0.9250`, CZ BalAcc `0.8927`, CZ AUC `0.9798` |
+| `V3 LayerMix` | Czech (LANNA) | Configuracion experimental final del dominio cerrado | Sample BalAcc `0.8783`, Subject BalAcc `0.9432`, Subject AUC `0.9739` |
+| `Unified Multilingual` (`logreg_pca` + `centroid_shift`) | Czech + English | Adaptacion supervisada bilingue, no zero-shot | EN BalAcc `0.8542`, EN AUC `0.9323`, CZ BalAcc `0.9175`, CZ AUC `0.9710` |
 
 Referencias rapidas:
 - Documentacion de investigacion: `research/README.md`
 - Comparativa maestra: `research/research_results/CSV/final_comparison/master_model_comparison.csv`
 - Metricas V3 LayerMix: `research/research_results/CSV/metrics_v3_layermix.json`
-- Metricas multilingues: `research/research_results/CSV/multilingual_transfer/multilingual_bidirectional_logreg_pca_raw.json`
+- Metricas multilingues: `research/research_results/CSV/multilingual_transfer/multilingual_bidirectional_logreg_pca_centroid.json`
 
 ### Backend
 
-- `FastAPI` expone los endpoints `GET /health`, `GET /model-info` y `POST /predict`
-- `packages/inference_engine/` conserva el pipeline reutilizable
+- `FastAPI` expone `GET /live`, `GET /ready`, `GET /v1/models` y `POST /v1/predictions/subject`
+- `packages/audio_pipeline/` evita diferencias entre research y serving
+- `packages/model_runtime/` valida manifests, artefactos y checksums
 - `/docs` se mantiene como interfaz tecnica secundaria para validacion y demostracion
 
 ### Frontend
@@ -71,11 +78,7 @@ Referencias rapidas:
 
 Se recomienda usar `Python 3.12` en un entorno virtual.
 
-Importante para el modo LANNA:
-
-- el repositorio no incluye los audios del dataset en `data/Healthy` y `data/Patients`
-- si quieres que funcione la tabla "Elegir de LANNA", debes copiar esos WAV manualmente dentro de `data/`
-- el archivo `data/.sample_audio_catalog.json` solo sirve como catalogo rapido; no reemplaza los audios
+La biblioteca LANNA esta desactivada por defecto para evitar exponer audio, identificadores y etiquetas. Solo puede habilitarse de forma explicita con `ITEL_ENABLE_SAMPLE_LIBRARY=true` en un entorno privado y autorizado.
 
 Instalar dependencias:
 
@@ -91,6 +94,55 @@ Levantar API:
 ```bash
 python -m uvicorn apps.api.app.main:app --reload
 ```
+
+El proceso puede arrancar sin modelos para exponer `/live` y el catalogo. `/ready` devuelve `503` hasta que se generen los bundles reales:
+
+```bash
+python research/scripts/promote_multilingual_model.py
+python research/scripts/train_czech_final.py
+python research/scripts/promote_czech_layermix.py --checkpoint artifacts/czech-layermix-final.pt
+```
+
+### Cache privada y progreso
+
+Los WAV ENNI conocidos pueden reutilizar exactamente sus representaciones HuBERT precomputadas sin modificar el modelo `1.0.0`. La cache no contiene audio, labels ni IDs de sujeto y permanece ignorada por Git:
+
+```bash
+python research/scripts/build_serving_feature_cache.py
+```
+
+El API carga un unico HuBERT compartido durante el arranque, valida la cache y expone progreso real mediante `POST /v1/predictions/subject/stream`. Los embeddings de audios nuevos solo se conservan en una cache LRU en memoria durante la vida del proceso.
+
+Variables operativas:
+
+- `ITEL_FEATURE_CACHE_DIR`, por defecto `artifacts/serving_cache`
+- `ITEL_MEMORY_CACHE_ENTRIES`, por defecto `512`
+
+Para GPU se recomienda un unico worker por proceso. El chunking de audio existe exclusivamente como benchmark offline y no forma parte del serving oficial:
+
+```bash
+python research/scripts/benchmark_chunked_serving.py --help
+```
+
+### Demo temporal con base completa
+
+El perfil temporal monta en solo lectura los `2,975` audios Czech elegibles y los `48` audios English, protege toda la aplicacion con un PIN y muestra referencias unicamente despues de predecir. Los datasets no se copian a las imagenes Docker.
+
+Preparacion local de catalogo y caches:
+
+```bash
+python research/scripts/build_demo_catalog.py
+python research/scripts/build_serving_feature_cache.py --audio-manifest research/manifests/cz_main_cleaned.csv --sequence-manifest research/processed_data/manifests/hubert_sequences_natural_multilingual_light.csv --output-dir artifacts/serving_cache/multilingual-cz-en/1.0.0/cs
+python research/scripts/build_czech_layermix_score_cache.py --batch-size 4
+```
+
+Inicio del stack autenticado y Cloudflare Tunnel:
+
+```bat
+scripts\start_cloudflare_demo.bat
+```
+
+El script muestra el usuario `demo` y un PIN temporal, valida los `146` sujetos, `3,023` audios y las caches, y elimina credenciales/contenedores al cerrar. El stack normal `docker-compose.prod.yml` permanece sin biblioteca.
 
 URLs:
 
@@ -129,11 +181,7 @@ Servicios esperados:
 - backend: `http://localhost:8000`
 - docs: `http://localhost:8000/docs`
 
-Nota sobre LANNA en Docker:
-
-- antes de levantar los contenedores, coloca el dataset de audios en `data/Healthy` y `data/Patients`
-- el volumen de Docker monta `./data` dentro del backend, por eso esa carpeta debe existir localmente
-- si no copias los audios, la app seguira funcionando para subir WAV manualmente, pero la biblioteca LANNA no tendra muestras reales para analizar
+Docker no incorpora ni monta datasets, secretos o resultados de investigacion. Los bundles promovidos se mantienen ignorados dentro de sus directorios del registro local y deben existir antes de construir una imagen lista para inferencia.
 
 ## Stack productivo local
 
@@ -146,7 +194,8 @@ docker compose -f docker-compose.prod.yml up -d --build
 URLs esperadas:
 
 - app: `http://127.0.0.1`
-- api: `http://127.0.0.1/api/health`
+- liveness: `http://127.0.0.1/api/live`
+- readiness: `http://127.0.0.1/api/ready`
 
 Para revisar estado y logs:
 
@@ -178,7 +227,7 @@ El script:
 - espera a que el proxy local responda en `http://127.0.0.1`
 - abre un Quick Tunnel apuntando a `http://127.0.0.1:80`
 
-Cloudflare imprimira una URL publica temporal `https://*.trycloudflare.com` que puedes compartir para la demo.
+Cloudflare imprimira una URL publica temporal `https://*.trycloudflare.com`. No publiques una instancia que tenga habilitada la biblioteca de muestras ni datos sensibles montados.
 
 Notas importantes:
 
@@ -217,19 +266,19 @@ Si alguna vez quieres cambiar la configuracion guardada, edita o elimina `.env.t
 
 ## Variables de entorno del backend
 
-- `ITEL_MODEL_DIR`
-- `ITEL_TARGET_SR`
-- `ITEL_HP_CUTOFF`
-- `ITEL_TARGET_DURATION`
+- `ITEL_MODEL_REGISTRY_DIR`
 - `ITEL_MAX_UPLOAD_SIZE_MB`
-- `ITEL_MODEL_VERSION`
-- `ITEL_HUBERT_BUNDLE`
-- `ITEL_LOG_LEVEL`
+- `ITEL_MAX_TOTAL_UPLOAD_SIZE_MB`
+- `ITEL_MAX_FILES_PER_SUBJECT`
+- `ITEL_ENABLE_SAMPLE_LIBRARY`
+- `ITEL_SAMPLE_AUDIO_DIR`
+- `ITEL_FEATURE_CACHE_DIR`
+- `ITEL_MEMORY_CACHE_ENTRIES`
 - `ITEL_CORS_ORIGINS`
 
-Valor por defecto importante:
+Los parametros que definen features, encoder, clases y thresholds pertenecen al manifest del modelo y no pueden modificarse mediante variables de entorno.
 
-- `ITEL_MODEL_DIR=assets/models`
+Los limites predeterminados aceptan hasta `30 MB` por archivo y `50 MB` por solicitud completa, cubriendo los WAV naturales de los corpus Czech e English utilizados por el proyecto.
 
 ## Dependencias por contexto
 
@@ -257,8 +306,9 @@ mlflow ui --backend-store-uri research/research_results/mlruns
 ## Convencion de nombres aplicada
 
 - carpetas de producto: `apps/api`, `apps/web`
-- paquete reusable: `packages/inference_engine`
-- activos del modelo: `assets/models`
+- paquetes reutilizables: `packages/audio_pipeline`, `packages/model_runtime`
+- manifests de modelos: `models/registry`
+- artefactos historicos legacy: `assets/models` (no usados por el API)
 - material academico: `research/`
 
 Dentro de `research/`, la referencia vigente para scripts, resultados y modelos finales es `research/README.md`.

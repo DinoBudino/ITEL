@@ -9,8 +9,10 @@ htmlcov/
 
 # Virtual environments
 .venv/
+.venv-*/
 venv/
 env/
+/package-lock.json
 
 # Node / frontend
 apps/web/node_modules/
@@ -24,6 +26,7 @@ frontend/
 .env
 .env.*
 *.env
+.demo.htpasswd
 
 # Editor / OS
 .vscode/
@@ -47,12 +50,12 @@ separated_voices/
 LANNA_Czech_Data/
 English_Data/
 Test/
-data/Healthy/
-data/Patients/
-!data/.sample_audio_catalog.json
+data/**
+!data/.gitkeep
 
 # Research pipeline artifacts
 research/logs/
+research/research_results/serving_benchmarks/
 research/LANNA_Czech_Data/
 research/English_Data/**
 !research/English_Data/
@@ -67,6 +70,8 @@ research/reports/CSV/**
 !research/reports/CSV/.gitkeep
 assets/models/**
 !assets/models/.gitkeep
+artifacts/**
+!artifacts/.gitkeep
 
 # Large generated binaries
 *.npy

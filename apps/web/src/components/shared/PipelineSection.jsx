@@ -17,7 +17,7 @@ const pipelineStepsData = [
   {
     title: 'Validación del audio',
     subtitle: 'Verificación inicial',
-    description: 'Se verifica que el archivo sea WAV, muestreo mínimo 16kHz, duración entre 2 y 10 segundos, y nivel de ruido aceptable.',
+    description: 'Se verifica que cada archivo corresponda a una muestra de audio WAV válida antes de iniciar el análisis.',
     technicalNote: 'Si falla, se rechaza con mensaje claro para el usuario.',
     icon: FaMicrophone,
     color: '#3b82f6'
@@ -25,31 +25,31 @@ const pipelineStepsData = [
   {
     title: 'Preprocesamiento',
     subtitle: 'Limpieza y normalización',
-    description: 'Remuestreo a 16kHz, eliminación de silencios iniciales/finales, normalización de amplitud y reducción de ruido de fondo.',
-    technicalNote: 'Se aplica filtro pasa-altos y VAD (Voice Activity Detection).',
+    description: 'Las grabaciones se preparan para producir una señal consistente y compatible con el modelo seleccionado.',
+    technicalNote: 'El procesamiento se aplica de forma independiente a cada archivo.',
     icon: FaMagic,
     color: '#2563eb'
   },
   {
-    title: 'Extracción de embeddings',
-    subtitle: 'Representación acústicas',
-    description: 'El audio procesado se transforma en un vector de características acústicas mediante un modelo preentrenado (Wav2Vec2 2.0).',
-    technicalNote: 'Embedding de 768 dimensiones que captura rasgos fonéticos y prosódicos.',
+    title: 'Análisis acústico',
+    subtitle: 'Modelo seleccionado',
+    description: 'El modelo activo procesa cada grabación de acuerdo con el idioma indicado para obtener evidencia acústica.',
+    technicalNote: 'La arquitectura y los idiomas compatibles se obtienen del catálogo de modelos.',
     icon: FaNetworkWired,
     color: '#1d4ed8'
   },
   {
-    title: 'Clasificación con confianza',
-    subtitle: 'Predicción TEL',
-    description: 'Un clasificador LightGBM evalúa el embedding y produce una predicción: "TEL positivo" o "TEL negativo", junto con un nivel de confianza (0-100%).',
-    technicalNote: 'El umbral de confianza mínimo configurable es 70% para emitir resultado.',
+    title: 'Agregación por sujeto',
+    subtitle: 'Predicción conjunta',
+    description: 'La evidencia de todos los archivos se combina para producir una única predicción a nivel de sujeto.',
+    technicalNote: 'La confianza y las probabilidades son reportadas directamente por la API.',
     icon: FaBalanceScale,
     color: '#1e40af'
   },
   {
     title: 'Generación del informe',
     subtitle: 'Resultados y métricas',
-    description: 'Se entregan: clase estimada, confianza, tiempos de cada etapa (ms) y metadatos del audio. Todo en formato JSON o visual.',
+    description: 'Se entregan la clase estimada, la confianza y la distribución de probabilidades en formato visual o exportable.',
     technicalNote: 'El informe puede descargarse o visualizarse en la interfaz.',
     icon: FaClipboardList,
     color: '#1e3a8a'
@@ -187,18 +187,18 @@ const prevSlide = () => {
         transition={{ delay: 0.3 }}
       >
         <div className="pipeline-metrics__item">
-          <span className="pipeline-metrics__value">~1.2s</span>
-          <span className="pipeline-metrics__label">Tiempo promedio</span>
-        </div>
-        <div className="pipeline-metrics__divider" />
-        <div className="pipeline-metrics__item">
-          <span className="pipeline-metrics__value">70%</span>
-          <span className="pipeline-metrics__label">Confianza mínima</span>
-        </div>
-        <div className="pipeline-metrics__divider" />
-        <div className="pipeline-metrics__item">
           <span className="pipeline-metrics__value">WAV</span>
-          <span className="pipeline-metrics__label">16kHz</span>
+          <span className="pipeline-metrics__label">Uno o más archivos</span>
+        </div>
+        <div className="pipeline-metrics__divider" />
+        <div className="pipeline-metrics__item">
+          <span className="pipeline-metrics__value">Sujeto</span>
+          <span className="pipeline-metrics__label">Nivel de análisis</span>
+        </div>
+        <div className="pipeline-metrics__divider" />
+        <div className="pipeline-metrics__item">
+          <span className="pipeline-metrics__value">CZ · EN</span>
+          <span className="pipeline-metrics__label">Idiomas disponibles</span>
         </div>
       </motion.div>
 
@@ -213,10 +213,6 @@ const prevSlide = () => {
           <h3>Herramienta de apoyo, no diagnóstico autónomo</h3>
         </div>
         <p>La predicción debe ser interpretada por un profesional de la salud, integrando el contexto clínico y pruebas adicionales. ITEL ofrece una estimación basada en patrones acústicos, no reemplaza la evaluación neuropsicológica.</p>
-        <div className="pipeline-ethical__stats">
-          <span>Dataset clínico: 800+ niños</span>
-          <span>Sensibilidad: 86% • Especificidad: 89%</span>
-        </div>
       </motion.article>
     </section>
   );

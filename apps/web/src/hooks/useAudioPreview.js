@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 
-export function useAudioPreview(file) {
+export function useAudioPreview(files) {
   const [audioUrl, setAudioUrl] = useState('')
 
   useEffect(() => {
+    const file = files?.[0]
+
     if (!file) {
       setAudioUrl('')
       return undefined
@@ -13,7 +15,7 @@ export function useAudioPreview(file) {
     setAudioUrl(nextUrl)
 
     return () => URL.revokeObjectURL(nextUrl)
-  }, [file])
+  }, [files])
 
   return audioUrl
 }

@@ -1,0 +1,19 @@
+services:
+  backend:
+    gpus: all
+    environment:
+      ITEL_ENABLE_SAMPLE_LIBRARY: "false"
+      ITEL_ENABLE_DEMO_LIBRARY: "true"
+      ITEL_DEMO_CATALOG_FILE: .sample_audio_catalog.json
+      ITEL_DEMO_CZECH_DIR: demo_czech
+      ITEL_DEMO_ENGLISH_DIR: demo_english
+      ITEL_FEATURE_CACHE_DIR: artifacts/serving_cache
+    volumes:
+      - ./artifacts/demo_catalog/.sample_audio_catalog.json:/service/.sample_audio_catalog.json:ro
+      - ./research/LANNA_Czech_Data:/service/demo_czech:ro
+      - ./research/English_Data:/service/demo_english:ro
+
+  proxy:
+    volumes:
+      - ./deploy/nginx/demo.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./.demo.htpasswd:/etc/nginx/.htpasswd:ro
